@@ -1,0 +1,14 @@
+{
+  "workflow_id": "subtitle.asr.v0.1",
+  "engine": {
+    "type": "faster-whisper",
+    "model_size": "medium",
+    "device": "auto",
+    "compute_type": "int8"
+  },
+  "io": {
+    "input_extensions": [".mp3", ".wav", ".m4a", ".mp4", ".mov"],
+    "output_formats": ["srt", "txt"]
+  },
+  "language": "ko"
+}

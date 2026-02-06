@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-progress-indeterminate {
+    animation: progress-indeterminate 1.5s infinite linear;
+    transform-origin: 0% 50%;
+  }
+
+  @keyframes progress-indeterminate {
+    0% {
+      transform: translateX(0) scaleX(0);
+    }
+    40% {
+      transform: translateX(0) scaleX(0.4);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.5);
+    }
+  }
+}

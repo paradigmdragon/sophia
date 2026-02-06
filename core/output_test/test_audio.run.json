@@ -1,0 +1,11 @@
+{
+  "file": "test_audio.mp3",
+  "hash": "1c0c1f6941becec621030a54509519c0",
+  "engine": "faster-whisper",
+  "model": "medium",
+  "language": "ko",
+  "duration_total_sec": 5.55,
+  "media_duration_sec": 3.0,
+  "status": "success",
+  "ollama_available": false
+}
