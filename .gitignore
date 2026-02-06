@@ -1,0 +1,27 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node/Tauri
+node_modules/
+dist/
+out/
+target/
+
+# OS
+.DS_Store
+
+# Sophia runtime/workspace (generated)
+runtime/
+workspace/outputs/
+workspace/events/
+workspace/state/
+workspace/processed/
+workspace/inbox/
+workspace/tasks/*.lock
+
+# Logs
+*.log

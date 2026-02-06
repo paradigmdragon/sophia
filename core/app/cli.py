@@ -40,5 +40,54 @@ def transcribe(files, outdir, config):
         logger.error(f"Critical Error: {e}")
         sys.exit(1)
 
+from app.task.loader import TaskLoader
+from app.task.runner import TaskRunner
+import time
+
+@cli.command()
+@click.option("--watch", is_flag=True, help="Watch for queued tasks continuously")
+@click.option("--task", help="Run a specific task by ID (file path or name)")
+@click.option("--workspace", default="workspace", help="Path to workspace root")
+def run(watch, task, workspace):
+    """Run tasks from the workspace."""
+    # Resolve workspace path relative to CWD if not absolute
+    workspace_path = os.path.abspath(workspace)
+    tasks_dir = os.path.join(workspace_path, "tasks")
+    
+    loader = TaskLoader(tasks_dir)
+    runner = TaskRunner(workspace_path)
+    
+    logger.info(f"Sophia Task Runner v0.1.3 starting (Workspace: {workspace_path})")
+
+    if task:
+        # Run specific task
+        # Check if argument is full path or just filename
+        task_path = task
+        if not os.path.exists(task_path):
+            task_path = os.path.join(tasks_dir, task)
+            if not task_path.endswith(".task.json"):
+                task_path += ".task.json"
+        
+        if not os.path.exists(task_path):
+            logger.error(f"Task file not found: {task}")
+            sys.exit(1)
+            
+        runner.process_task(task_path)
+        
+    elif watch:
+        logger.info("Watching for queued tasks...")
+        try:
+            while True:
+                queued = loader.scan_queued()
+                for task_file in queued:
+                    runner.process_task(task_file)
+                
+                if not queued:
+                    time.sleep(1) # Poll interval
+        except KeyboardInterrupt:
+            logger.info("Stopping watcher...")
+    else:
+        logger.warning("Please specify --watch or --task <id>")
+
 if __name__ == "__main__":
     cli()
