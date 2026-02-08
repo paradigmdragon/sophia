@@ -1,58 +1,102 @@
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { MarkdownEditor } from "../components/MarkdownEditor";
 import { noteService } from "../lib/noteService";
+import { FileSidebar } from "../components/FileSidebar";
+import { PanelLeft } from "lucide-react";
 
 export function EditorPage() {
+    const [selectedPath, setSelectedPath] = useState<string | null>(null);
     const [content, setContent] = useState<string>("");
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
+    // Initial Load: Today's Note
     useEffect(() => {
-        async function load() {
-            const text = await noteService.loadTodayNote();
-            setContent(text);
-            setIsLoaded(true);
+        loadDefaultNote();
+    }, []);
+
+    const loadDefaultNote = async () => {
+        // Default to today's note if nothing selected
+        if (!selectedPath) {
+            const todayPath = noteService.getTodayFileName();
+            // Ensure directory exists first?
+            await noteService.ensureNotesDir();
+            const noteContent = await noteService.loadTodayNote();
+            setContent(noteContent);
+            setSelectedPath(todayPath);
         }
-        load();
-    }, []);
+    };
 
-    // Auto-save debounce could be implemented here or in the service.
-    // For simplicity, we save on every change (or rely on Editor's onBlur/onChange).
-    // Let's assume handleChange is called often, so we might want a debouncer.
-    // But for now, direct save is safer for data loss prevention if performance allows.
-    // Actually, `writeTextFile` might be expensive.
-    
-    // Let's modify MarkdownEditor to accept an `onChange` that we can debounce.
-    // Or just pass the saver.
+    // Load content when path changes
+    useEffect(() => {
+        if (selectedPath) {
+            loadFile(selectedPath);
+        }
+    }, [selectedPath]);
 
-    const handleContentChange = useCallback((newContent: string) => {
+    const loadFile = async (path: string) => {
+        try {
+            const fileContent = await noteService.readFile(path);
+            setContent(fileContent);
+        } catch (error) {
+            console.error("Error loading file:", error);
+        }
+    };
+
+    const handleSave = async (newContent: string) => {
         setContent(newContent);
-        noteService.saveTodayNote(newContent);
-    }, []);
-
-    if (!isLoaded) {
-        return <div className="h-full w-full flex items-center justify-center bg-[#1e1e1e] text-gray-500">Loading...</div>;
-    }
-
-    const today = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        if (selectedPath) {
+            setIsSaving(true);
+            try {
+                await noteService.saveFile(selectedPath, newContent);
+            } finally {
+                setIsSaving(false);
+            }
+        }
+    };
 
     return (
-        <div className="h-full w-full flex flex-col bg-[#1e1e1e] text-gray-200">
-            {/* Header: Date */}
-            <div className="px-8 py-6 border-b border-[#333]">
-                <h1 className="text-3xl font-serif text-gray-100">{today}</h1>
-            </div>
+        <div className="h-full w-full flex bg-[#1e1e1e] text-gray-200 overflow-hidden relative">
+            {/* Sidebar */}
+            {isSidebarOpen && (
+                <div className="h-full flex-shrink-0">
+                    <FileSidebar 
+                        currentFile={selectedPath}
+                        onSelectFile={setSelectedPath}
+                        isCollapsed={false}
+                        className="h-full border-r border-[#333]"
+                    />
+                </div>
+            )}
 
-            {/* Editor Area */}
-            <div className="flex-1 overflow-hidden relative">
-                 {/* 
-                    Passing key to force re-attach if needed, but not necessary here.
-                    Passing initialContent.
-                    We need to update MarkdownEditor to allow controlled input or just initialContent.
-                    Current MarkdownEditor uses `initialContent` prop only on mount.
-                    So we pass `content` as `initialContent` only once when `isLoaded` becomes true.
-                 */}
-                 <MarkdownEditor initialContent={content} onChange={handleContentChange} />
+            {/* Main Content: Editor */}
+            <div className="flex-1 flex flex-col min-w-0">
+                {/* Header: File Name & Controls */}
+                <div className="h-10 px-4 border-b border-[#333] flex items-center justify-between bg-[#1e1e1e]">
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            className={`p-1.5 rounded-md hover:bg-[#333] text-gray-400 ${isSidebarOpen ? 'text-blue-400' : ''}`}
+                            title="Toggle Sidebar"
+                        >
+                            <PanelLeft size={18} />
+                        </button>
+                        <h1 className="text-sm font-medium text-gray-300 truncate">
+                            {selectedPath ? selectedPath.split('/').pop() : 'Untitled'}
+                        </h1>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {isSaving && <span className="text-xs text-gray-500 animate-pulse">Saving...</span>}
+                    </div>
+                </div>
+
+                {/* Editor Area */}
+                <div className="flex-1 overflow-hidden relative">
+                     <MarkdownEditor 
+                        value={content} 
+                        onChange={handleSave} 
+                    />
+                </div>
             </div>
         </div>
     );

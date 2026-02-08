@@ -5,6 +5,7 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:allow-start-dragging",
     "opener:default",
     "dialog:default",
     {
@@ -33,6 +34,30 @@
     },
     {
       "identifier": "fs:allow-exists",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-mkdir",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-rename",
       "allow": [
         { "path": "/Users/dragonpd/Sophia/workspace/**" },
         { "path": "/Users/dragonpd/Sophia/logs/**" },

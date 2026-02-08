@@ -12,8 +12,8 @@ interface StatusPanelProps {
 export function StatusPanel({ selectedFile, isProcessing, onStart, onCancel, onOpenPath }: StatusPanelProps) {
   if (!selectedFile) {
     return (
-      <div className="area-panel">
-        <div className="glass-panel items-center justify-center text-gray-600 gap-4">
+      <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col items-center justify-center text-gray-600 gap-4">
             <div className="w-12 h-12 rounded-full bg-[#1e293b] flex items-center justify-center">
                 <span className="text-2xl">⚡</span>
             </div>
@@ -27,8 +27,8 @@ export function StatusPanel({ selectedFile, isProcessing, onStart, onCancel, onO
   }
 
   return (
-    <div className="area-panel">
-      <div className="glass-panel p-6">
+    <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col p-6 relative">
       {/* Header Info */}
       <div className="mb-8">
         <h2 className="text-lg font-medium text-white break-all leading-tight mb-2">

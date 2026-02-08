@@ -1,34 +1,28 @@
+import { writeTextFile, readTextFile, exists, mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
 
-import { writeTextFile, readTextFile, exists, BaseDirectory, create, mkdir } from '@tauri-apps/plugin-fs';
-
-const NOTES_DIR = 'notes'; // Relative to AppLocalData or Document? 
-// User instruction: "notes/{yyyy-mm-dd}.md"
-// Let's use BaseDirectory.AppLocalData for now, or Workspace if defined.
-// Re-reading taskManager.ts, it used absolute path '/Users/dragonpd/Sophia/workspace'.
-// I should stick to that pattern for consistency, or use BaseDirectory if possible.
-// Given strict "notes/{yyyy-mm-dd}.md", let's assume a 'notes' folder in the workspace root.
 // Workspace Root: /Users/dragonpd/Sophia/workspace
-
 const WORKSPACE_ROOT = '/Users/dragonpd/Sophia/workspace';
 const NOTES_PATH = `${WORKSPACE_ROOT}/notes`;
 
+export interface FileNode {
+    name: string;
+    path: string;
+    isDirectory: boolean;
+    children?: FileNode[];
+}
+
 export const noteService = {
     async ensureNotesDir() {
-        // This is a bit tricky with absolute paths in browser JS without a proper backend bridge if FS plugin doesn't support absolute paths easily without configuration.
-        // But we added "fs:scope-..." capabilities.
-        // Let's try to use the absolute path if allowed, or fallback.
-        // For now, let's assume we can write to the workspace.
-        // We might need to create the directory.
-        // tauri-plugin-fs `mkdir` with recursive.
         try {
-           // We can't easily check if dir exists with absolute path using just `exists` if it expects BaseDir.
-           // But `readDir` might work.
-           // Actually, `mkdir` is safer.
-           // Wait, `tauri-plugin-shell` can consistently make dirs.
-           // But let's try `tauri-plugin-fs`.
-           // If we use absolute paths, we just pass the path string.
-           // Note: tauri-plugin-fs v2 might require scopes.
-           // I'll assume the scope configuration in `default.json` covers it (it has broad allow-lists).
+            // Check if directory exists by trying to read it
+            // If error, create it
+            // Since we use absolute paths, we can't use BaseDirectory.AppLocalData easily without configuring scope.
+            // Assuming scope is open for WORKSPACE_ROOT.
+            try {
+                await readDir(NOTES_PATH);
+            } catch {
+                await mkdir(NOTES_PATH, { recursive: true });
+            }
         } catch (e) {
             console.error("Error ensuring notes dir", e);
         }
@@ -45,16 +39,10 @@ export const noteService = {
     async loadTodayNote(): Promise<string> {
         const path = this.getTodayFileName();
         try {
-            // Check if exists
-            // Since `exists` is async and might need permissions, let's just try reading.
-            // If it fails, return empty.
-            // Actually, `exists` is available.
-            const fileExists = await exists(path);
-            if (fileExists) {
+            if (await exists(path)) {
                 return await readTextFile(path);
-            } else {
-                return ""; // New empty note
             }
+            return ""; 
         } catch (e) {
             console.error("Failed to load note:", e);
             return ""; 
@@ -64,9 +52,126 @@ export const noteService = {
     async saveTodayNote(content: string): Promise<void> {
         const path = this.getTodayFileName();
         try {
+            await this.ensureNotesDir();
             await writeTextFile(path, content);
         } catch (e) {
             console.error("Failed to save note:", e);
         }
+    },
+
+    // --- File System Operations for Sidebar ---
+
+    async listNotes(dirPath: string = NOTES_PATH): Promise<FileNode[]> {
+        try {
+            await this.ensureNotesDir();
+            const entries = await readDir(dirPath);
+            const nodes: FileNode[] = [];
+
+            for (const entry of entries) {
+                // Skip hidden files
+                if (entry.name.startsWith('.')) continue;
+
+                const fullPath = `${dirPath}/${entry.name}`;
+                const node: FileNode = {
+                    name: entry.name,
+                    path: fullPath,
+                    isDirectory: !!entry.isDirectory,
+                };
+
+                if (entry.isDirectory) {
+                    node.children = await this.listNotes(fullPath); 
+                    // Use recursive for now, or load on demand?
+                    // Recursive is easier for small counts. 
+                    // But if deep, might be slow.
+                    // Let's do recursive for now as notes unlikely to be huge.
+                }
+                nodes.push(node);
+            }
+
+            // Sort: Folders first, then files. Alphabetical.
+            return nodes.sort((a, b) => {
+                if (a.isDirectory === b.isDirectory) return a.name.localeCompare(b.name);
+                return a.isDirectory ? -1 : 1;
+            });
+        } catch (e) {
+            console.error("Failed to list notes:", e);
+            return [];
+        }
+    },
+
+    async createFolder(parentPath: string = NOTES_PATH, name: string): Promise<string | null> {
+        const newPath = `${parentPath}/${name}`;
+        try {
+            await mkdir(newPath, { recursive: true });
+            return newPath;
+        } catch (e) {
+            console.error("Failed to create folder:", e);
+            return null;
+        }
+    },
+
+    async createNote(parentPath: string = NOTES_PATH, name: string, content: string = ""): Promise<string | null> {
+        // Ensure extension
+        if (!name.endsWith('.md')) name += '.md';
+        const newPath = `${parentPath}/${name}`;
+        try {
+            await writeTextFile(newPath, content);
+            return newPath;
+        } catch (e) {
+            console.error("Failed to create note:", e);
+            return null;
+        }
+    },
+
+    async renameItem(oldPath: string, newName: string): Promise<boolean> {
+        const parent = oldPath.substring(0, oldPath.lastIndexOf('/'));
+        const newPath = `${parent}/${newName}`;
+        try {
+            await rename(oldPath, newPath);
+            return true;
+        } catch (e) {
+           console.error("Failed to rename:", e);
+           return false;
+        }
+    },
+
+    async deleteItem(path: string): Promise<boolean> {
+        try {
+            // await remove(path, { recursive: true }); // 'recursive' for folders
+            // remove signature in v2 might differ?
+            // Usually remove(path, options).
+            // Let's assume it handles files too.
+             await remove(path, { recursive: true });
+            return true;
+        } catch (e) {
+            console.error("Failed to delete:", e);
+            return false;
+        }
+    },
+    
+    async readFile(path: string): Promise<string> {
+        try {
+            return await readTextFile(path);
+        } catch(e) {
+            console.error("Failed to read file", e);
+            throw e;
+        }
+    },
+
+    async saveFile(path: string, content: string): Promise<void> {
+        try {
+            await writeTextFile(path, content);
+        } catch(e) {
+             console.error("Failed to save file", e);
+             throw e;
+        }
+    },
+
+    async exists(path: string): Promise<boolean> {
+        return await exists(path);
+    },
+
+    getNotesPath(): string {
+        return NOTES_PATH;
     }
 };

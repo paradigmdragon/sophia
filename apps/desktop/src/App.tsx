@@ -1,38 +1,35 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { NotePage } from "./pages/NotePage";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { EditorPage } from "./pages/EditorPage";
+import { SophiaNotePage } from "./pages/SophiaNotePage";
 import { ChatPage } from "./pages/ChatPage";
+import { HearingPage } from "./pages/HearingPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import { AnchorWidget } from "./components/AnchorWidget";
-import { SettingsModal, LineWrapSettings, DEFAULT_SETTINGS } from "./components/SettingsModal";
-import { useState } from "react";
+import { TitleBar } from "./components/TitleBar";
 
 function App() {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [lineWrapSettings, setLineWrapSettings] = useState<LineWrapSettings>(DEFAULT_SETTINGS);
+  const location = useLocation();
 
-  const handleSaveSettings = (newSettings: LineWrapSettings) => {
-      setLineWrapSettings(newSettings);
-      localStorage.setItem("sophia_settings_v1", JSON.stringify({ line_wrap: newSettings }));
-  };
+  // Hide Anchor on Chat and Settings pages
+  const showAnchor = location.pathname !== '/chat' && location.pathname !== '/settings';
 
   return (
     <div className="flex flex-col h-screen bg-[#1e1e1e] text-white overflow-hidden relative">
-      <div className="flex-1 overflow-hidden relative">
+      {/* Custom Title Bar Navigation */}
+      <TitleBar />
+
+      <div className="flex-1 overflow-hidden relative z-0">
         <Routes>
-          <Route path="/" element={<Navigate to="/note" replace />} />
-          <Route path="/note" element={<NotePage />} />
+          <Route path="/" element={<EditorPage />} />
+          <Route path="/hearing" element={<HearingPage />} />
+          <Route path="/note" element={<SophiaNotePage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
 
-      {/* Global Anchor Widget */}
-      <AnchorWidget />
-
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)}
-        settings={lineWrapSettings}
-        onSave={handleSaveSettings}
-      />
+      {/* Global Anchor Widget (Hidden on Chat/Settings) */}
+      {showAnchor && <AnchorWidget />}
     </div>
   );
 }

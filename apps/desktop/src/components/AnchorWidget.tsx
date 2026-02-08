@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { AnchorMenu } from "./AnchorMenu";
 import { inboxService } from "../lib/inboxService";
-import { useNavigate } from "react-router-dom";
 
 export function AnchorWidget() {
-    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [itemCount, setItemCount] = useState(0);
     const [isPulsing, setIsPulsing] = useState(false);
@@ -27,11 +25,7 @@ export function AnchorWidget() {
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
-    const handleNavigate = (view: 'journal' | 'chat') => {
-        if (view === 'journal') navigate('/note');
-        if (view === 'chat') navigate('/chat');
-        setIsOpen(false);
-    };
+
 
     return (
         <div className="fixed bottom-6 right-6 flex flex-col items-end z-50">
@@ -40,8 +34,7 @@ export function AnchorWidget() {
             <AnchorMenu 
                 isOpen={isOpen} 
                 onClose={() => setIsOpen(false)}
-                onNavigate={handleNavigate}
-                unreadCount={itemCount}
+                // We'll pass the unread count here if needed, but for now just open/close
             />
 
             {/* Anchor Button */}

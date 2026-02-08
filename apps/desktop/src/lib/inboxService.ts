@@ -19,8 +19,7 @@ export const inboxService = {
             const manifest = JSON.parse(content);
             const patches = manifest.patches || {};
             
-            const items: InboxItem[] = Object.values(patches)
-                // @ts-ignore
+            const items: InboxItem[] = (Object.values(patches) as any[])
                 .filter((p: any) => p.status === 'pending')
                 .map((p: any) => ({
                     id: p.patch_id,
@@ -28,10 +27,9 @@ export const inboxService = {
                     context: p.issue_code,
                     status: 'pending',
                     timestamp: p.created_at
-                }))
-                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+                })) as InboxItem[];
                 
-            return items;
+            return items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         } catch (e) {
             console.error("Failed to load inbox:", e);
             return [];

@@ -20,7 +20,7 @@ interface FileQueueProps {
 export function FileQueue({ files, selectedFileId, onSelect, onRemove, onAddFiles }: FileQueueProps) {
   
   return (
-    <div className="area-queue">
+    <div className="flex-1 border-r border-[#333] flex flex-col min-w-0">
       <div className="glass-panel">
         {/* Queue Toolbar */}
         <div className="flex flex-col gap-3 px-6 py-4 border-b border-[#334155] bg-[#1e293b]">

@@ -1,17 +1,25 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
 
 interface MarkdownEditorProps {
     initialContent?: string;
+    value?: string; // Controlled value
     onChange?: (value: string) => void;
-    className?: string; // Added to fix lint error in NotePage too if we keep it there temporarily
+    className?: string;
 }
 
-export function MarkdownEditor({ initialContent = "", onChange, className }: MarkdownEditorProps) {
+export function MarkdownEditor({ initialContent = "", value, onChange }: MarkdownEditorProps) {
     const editorRef = useRef<any>(null);
-    const [content, setContent] = useState(initialContent || localStorage.getItem("sophia_draft_v1") || "# Sophia Notebook\n\nStart thinking...");
+    const [content, setContent] = useState(value !== undefined ? value : (initialContent || localStorage.getItem("sophia_draft_v1") || "# Sophia Notebook\n\nStart thinking..."));
 
-    const handleEditorDidMount: OnMount = (editor, monaco) => {
+    // Sync external value changes
+    React.useEffect(() => {
+        if (value !== undefined) {
+            setContent(value);
+        }
+    }, [value]);
+
+    const handleEditorDidMount: OnMount = (editor) => {
         editorRef.current = editor;
         
         // Drag and Drop Logic
