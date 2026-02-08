@@ -36,6 +36,16 @@ export function LogoHeader({ status, onOpenSettings, onRefresh }: LogoHeaderProp
         >
             <Settings size={16} />
         </button>
+
+         {/* SONJAPGO Link - Top Right */}
+         <a 
+            href="https://sonjapgo.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm font-bold text-white hover:text-blue-200 font-sans tracking-wide ml-4"
+        >
+            SONJAPGO
+        </a>
       </div>
     </div>
   );

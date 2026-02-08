@@ -13,7 +13,7 @@ from app.common.writer import Writer
 logger = get_logger("Pipeline")
 
 class Pipeline:
-    def __init__(self, output_dir: str = None, config_path: Optional[str] = None):
+    def __init__(self, output_dir: str = None, config_path: Optional[str] = None, event_callback=None):
         if config_path:
             self.config = ConfigLoader(config_path).load()
         else:
@@ -24,6 +24,8 @@ class Pipeline:
         self.refiner = Refiner()
         self.writer = Writer()
         
+        self.event_callback = event_callback
+        
         # Paths
         self.outbox = output_dir if output_dir else "outbox"
         self.logs = "logs" # Keep logs in project dir or could be redirected? For now keep simple.
@@ -31,6 +33,13 @@ class Pipeline:
         # Create output dir if not exists
         if not os.path.exists(self.outbox):
              os.makedirs(self.outbox, exist_ok=True)
+
+    def _emit(self, event_type: str, data: dict = None):
+        """Emit event via callback or fallback to stdout"""
+        if self.event_callback:
+            self.event_callback(event_type, data)
+        else:
+            emit_event(event_type, data)
 
     def run(self, files: List[str]):
         logger.info("Starting Sophia Pipeline (v0.1.2)...")
@@ -41,7 +50,7 @@ class Pipeline:
         
         if not files:
             logger.info("No files provided.")
-            emit_event("run_done", {"status": "no_files"})
+            self._emit("run_done", {"status": "no_files"})
             return
 
         logger.info(f"Processing {len(files)} files.")
@@ -50,11 +59,11 @@ class Pipeline:
         for file_path in files:
             self.process_file(file_path)
         
-        emit_event("run_done")
+        self._emit("run_done")
 
     def process_file(self, file_path: str):
         filename = os.path.basename(file_path)
-        emit_event("file_start", {"file": filename})
+        self._emit("file_start", {"file": filename})
         # logger.info(f"Processing: {filename}")
         
         start_time = time.time()
@@ -68,17 +77,17 @@ class Pipeline:
 
             # ASR
             # Mock progress for now or hook into whisper callback if possible (future)
-            emit_event("progress", {"file": filename, "sec": 0.0, "status": "loading_model"})
+            self._emit("progress", {"file": filename, "sec": 0.0, "status": "loading_model"})
             
             logger.info("Calling engine.transcribe...")
-            emit_event("log", {"message": f"Starting transcription for {filename}..."})
+            self._emit("log", {"message": f"Starting transcription for {filename}..."})
             
             # This call might take time if loading model or inferencing
             segments, info = self.engine.transcribe(file_path, config=self.config)
             
             segment_count = len(segments)
             logger.info(f"Transcribed {segment_count} segments. Language: {info.language}")
-            emit_event("log", {"message": f"Inference complete. Segments: {segment_count}, Lang: {info.language}"})
+            self._emit("log", {"message": f"Inference complete. Segments: {segment_count}, Lang: {info.language}"})
             
             # Prepare Outputs
             base_name = os.path.splitext(filename)[0]
@@ -88,13 +97,13 @@ class Pipeline:
             txt_path = os.path.join(self.outbox, f"{base_name}.txt")
             log_path = os.path.join(self.outbox, f"{base_name}.run.json") 
             
-            emit_event("log", {"message": f"Writing output files to {self.outbox}..."})
+            self._emit("log", {"message": f"Writing output files to {self.outbox}..."})
             
             # Write
             self.writer.write_srt(segments, srt_path)
             self.writer.write_txt(segments, txt_path)
             
-            emit_event("log", {"message": "Files written successfully."})
+            self._emit("log", {"message": "Files written successfully."})
             
             # Log Data
             duration = time.time() - start_time
@@ -112,7 +121,7 @@ class Pipeline:
             self.writer.write_log(log_data, log_path)
             
             # --- Refinement Step ---
-            emit_event("refine_started", {"file": filename})
+            self._emit("refine_started", {"file": filename})
             base_output_path = os.path.join(self.outbox, base_name)
             
             # segments is a list of Segment objects (from faster_whisper)
@@ -123,18 +132,18 @@ class Pipeline:
             
             refine_result = self.refiner.refine(segments, base_output_path, config=self.config)
             
-            emit_event("refine_completed", {
+            self._emit("refine_completed", {
                 "file": filename, 
                 "outputs": refine_result
             })
             # -----------------------
 
-            emit_event("file_done", {"file": filename, "status": "success", "output": srt_path})
+            self._emit("file_done", {"file": filename, "status": "success", "output": srt_path})
             # No move to processed in this version, keep original in place
 
         except Exception as e:
             logger.error(f"Failed to process {filename}: {e}")
-            emit_event("file_done", {"file": filename, "status": "error", "error": str(e)})
+            self._emit("file_done", {"file": filename, "status": "error", "error": str(e)})
             
             # Write error log
             # error_log_path = os.path.join(self.outbox, f"{os.path.splitext(filename)[0]}.error.json")

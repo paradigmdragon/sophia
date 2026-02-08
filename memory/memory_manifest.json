@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.1",
+  "current_mapping_version": "1.0",
+  "user_profile_summary": {},
+  "episodes": {
+    "ep_20260208_3469": {
+      "episode_id": "ep_20260208_3469",
+      "revision": {
+        "rev": 1,
+        "prev_episode_ref": null,
+        "change_note_thin": null
+      },
+      "sources": [],
+      "signature": {
+        "bitset": "0x0000000000000000",
+        "bit_length": 64,
+        "mapping_version": "1.0",
+        "label_hint": null
+      },
+      "snapshot": {
+        "intent_thin": "",
+        "outcome_thin": "",
+        "open_questions": [],
+        "key_terms": []
+      },
+      "lifecycle": {
+        "state": "open",
+        "opened_at": "2026-02-08T12:43:34.043511",
+        "end_at": null,
+        "closed_by": null
+      },
+      "stats_cache": null
+    }
+  },
+  "patches": {},
+  "episode_decisions": []
+}

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tauri-appsophia-desktop",
+  "productName": "Sophia",
   "version": "0.1.0",
   "identifier": "com.dragonpd.sophia",
   "build": {
@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "tauri-appsophia-desktop",
+        "title": "Sophia",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "theme": "Dark"
       }
     ],
     "security": {

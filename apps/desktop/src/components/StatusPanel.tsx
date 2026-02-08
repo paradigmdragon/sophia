@@ -5,10 +5,11 @@ interface StatusPanelProps {
   selectedFile: FileItem | undefined;
   isProcessing: boolean;
   onStart: () => void;
+  onCancel: () => void;
   onOpenPath: (path: string) => void;
 }
 
-export function StatusPanel({ selectedFile, isProcessing, onStart, onOpenPath }: StatusPanelProps) {
+export function StatusPanel({ selectedFile, isProcessing, onStart, onCancel, onOpenPath }: StatusPanelProps) {
   if (!selectedFile) {
     return (
       <div className="area-panel">
@@ -63,9 +64,18 @@ export function StatusPanel({ selectedFile, isProcessing, onStart, onOpenPath }:
         {(selectedFile.status === 'processing' || selectedFile.status === 'refining') && (
             <div className="space-y-6">
                 <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-gray-400">
+                    <div className="flex justify-between items-center text-xs text-gray-400">
                         <span>상태</span>
-                        <span className="text-blue-400 uppercase font-bold tracking-wider">{selectedFile.status}</span>
+                         <div className="flex items-center gap-3">
+                            <span className="text-blue-400 uppercase font-bold tracking-wider">{selectedFile.status}</span>
+                            <button 
+                                onClick={onCancel}
+                                className="text-red-500 hover:text-red-400 hover:bg-red-500/10 p-1 rounded transition-colors"
+                                title="작업 취소"
+                            >
+                                <span className="text-[10px] font-bold border border-red-500/50 px-1.5 py-0.5 rounded">STOP</span>
+                            </button>
+                        </div>
                     </div>
                     {/* Fake Progress Bar for now since we don't have exact percent from backend yet */}
                     <div className="h-1.5 w-full bg-[#1e293b] rounded-full overflow-hidden">

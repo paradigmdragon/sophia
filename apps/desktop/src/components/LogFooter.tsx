@@ -10,9 +10,10 @@ interface LogFooterProps {
   lastLog?: LogEntry;
   onExpand: () => void;
   isProcessing: boolean;
+  onCancel?: () => void;
 }
 
-export function LogFooter({ lastLog, onExpand, isProcessing }: LogFooterProps) {
+export function LogFooter({ lastLog, onExpand, isProcessing, onCancel }: LogFooterProps) {
   return (
     <div className="area-footer justify-between cursor-pointer hover:bg-[#0a0f1e] relative group" onClick={onExpand}>
       
@@ -25,7 +26,16 @@ export function LogFooter({ lastLog, onExpand, isProcessing }: LogFooterProps) {
 
       <div className="flex items-center gap-2 overflow-hidden w-full">
         {isProcessing ? (
-             <Loader2 size={12} className="text-blue-500 animate-spin shrink-0" />
+             <div className="flex items-center gap-2 shrink-0">
+                <Loader2 size={12} className="text-blue-500 animate-spin" />
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onCancel && onCancel(); }}
+                    className="hover:text-red-400 text-gray-500 transition-colors"
+                    title="작업 중단"
+                >
+                    <span className="text-[10px] bg-red-500/10 text-red-500 border border-red-500/20 px-1.5 rounded hover:bg-red-500 hover:text-white transition-colors">STOP</span>
+                </button>
+             </div>
         ) : (
             <span className="text-blue-500 shrink-0">➜</span>
         )}

@@ -101,7 +101,11 @@ class TaskRunner:
             # Or pass dict if supported. pipeline.py supports config_path str.
             # We will rely on default config for now or handle snapshot later.
             
-            pipeline = Pipeline(output_dir=outputs_dir)
+            # Wrapper for Pipeline to match EventWriter signature
+            def pipeline_event_callback(event_type, data=None):
+                self.event_writer.emit(run_id, task_id, event_type, data)
+
+            pipeline = Pipeline(output_dir=outputs_dir, event_callback=pipeline_event_callback)
             
             # Run Single File
             # Pipeline.process_file expects a file path.

@@ -88,6 +88,144 @@ manifest.json v0.1 (FINAL)
   }
 }
 
+⸻
+
+memory_manifest.json v0.1 (FINAL)  // Episode Memory Ledger
+
+목적
+  •  “원문(Raw) 미포함 + 참조만” 원칙으로 대화/작업 로그를 Episode 단위로 좌표화
+  •  Episode 종료(매듭)는 event_log 없이 episode_decisions + lifecycle 업데이트로만 처리
+  •  과거 Episode는 재해석하지 않고(mapping_version 박제) 성장 이력을 보존
+
+1) 전체 형태
+
+{
+  "schema_version": "0.1",
+  "current_mapping_version": "1.0",
+
+  // (선택) 사용자 얇은 요약. 파생 데이터로 취급(재생성 가능)
+  "user_profile_summary": {},
+
+  "episodes": {
+    "ep_20260208_0001": {
+      "episode_id": "ep_20260208_0001",
+
+      // 1) Revision (불변성)
+      // 수정은 overwrite가 아니라 새 episode 생성 + prev 연결
+      "revision": {
+        "rev": 1,
+        "prev_episode_ref": null,
+        "change_note_thin": null
+      },
+
+      // 2) Sources (원문 참조만, 텍스트 복사 금지)
+      "sources": [
+        {
+          "type": "chat_log",
+          "uri": "logs/chat_20260208.jsonl",
+          "range": { "kind": "message_id", "start": "m_000102", "end": "m_000105" },
+          "hash": "sha256:..."   // 선택: 무결성 검증용
+        }
+      ],
+
+      // 3) Signature (좌표/검색용)
+      "signature": {
+        "bitset": "0x12F0A0B3",     // Hex 고정
+        "bit_length": 64,
+        "mapping_version": "1.0",   // Episode별 박제
+        "label_hint": "Layer:Meta | View:1st"  // 선택: 디버깅 힌트(사람용)
+      },
+
+      // 4) Snapshot (LLM 얇은 회상용)
+      "snapshot": {
+        "intent_thin": "…",
+        "outcome_thin": "…",
+        "open_questions": ["…"],
+        "key_terms": ["…"]  // v0.1: Optional(권장). 확정은 decision을 통해서만.
+      },
+
+      // 5) Lifecycle (시스템 상태)
+      "lifecycle": {
+        "state": "open",                // open | closed
+        "opened_at": "2026-02-08T10:00:00Z",
+        "end_at": null,
+        "closed_by": null               // decision_made | timeout | context_switch | manual_close
+      },
+
+      // 6) Stats Cache (파생 데이터)
+      "stats_cache": {
+        "importance": 0,
+        "progress": 0,
+        "interaction_count": 0,
+        "updated_at": "2026-02-08T10:00:00Z"
+      }
+    }
+  },
+
+  // 사용자의 선택 이벤트 누적 로그(진실의 원천)
+  "episode_decisions": [
+    {
+      "decision_id": "ed_20260208_0001",
+      "target_episode": "ep_20260208_0001",
+      "type": "adopt_patch",                 // 또는 시스템이 정한 enum 확장
+      "value": "opt_2",
+      "reason_code": "LATER",
+      "decided_at": "2026-02-08T10:15:00Z"
+    }
+  ]
+}
+
+2) 필드 규격 (스키마 계약)
+
+2.1 episodes
+  • key: ep_{YYYYMMDD}_{NNNN} (string)
+  • value:
+    • episode_id (string, required)
+    • revision (object, required)
+      • rev (int, required)
+      • prev_episode_ref (string|null, required)
+      • change_note_thin (string|null, optional)
+    • sources (array, required)
+      • type (enum, required): chat_log | asr_srt | doc_ref | file_ref
+      • uri (string, required)
+      • range (object, required)
+        • kind (enum): message_id | line_range | time_range
+        • start / end (string|int)
+      • hash (string|null, optional): "sha256:..." 권장
+    • signature (object, required)
+      • bitset (string, required): Hex("0x...") 고정
+      • bit_length (int, required): 기본 64
+      • mapping_version (string, required)
+      • label_hint (string, optional): 디버깅 힌트(저장 비용 낮음)
+    • snapshot (object, required)
+      • intent_thin (string, required)
+      • outcome_thin (string, required)
+      • open_questions (array, optional)
+      • key_terms (array, optional): v0.1은 Optional(권장)
+    • lifecycle (object, required)
+      • state (enum, required): open | closed
+      • opened_at (ISO string, required)
+      • end_at (ISO string|null, required)
+      • closed_by (enum|null, required): decision_made | timeout | context_switch | manual_close
+    • stats_cache (object, optional): 파생 데이터(재계산 가능)
+
+2.2 episode_decisions
+  • decision_id (string, required)
+  • target_episode (string, required)
+  • type (string|enum, required)
+  • value (string|object|null, required)
+  • reason_code (string|enum|null, optional)
+  • decided_at (ISO string, required)
+
+3) v0.1 운영 규칙 (필수)
+  1. 원문 데이터는 Episode에 저장하지 않는다(Reference Only)
+  2. JSONL(Chat Log)은 발화만 기록한다(시스템 이벤트로 오염 금지)
+  3. Episode 수정은 overwrite 금지. 새 Episode 생성 + prev 연결(불변성)
+  4. Signature는 Hex("0x...") 고정. Episode별 mapping_version 박제.
+  5. key_terms는 v0.1 Optional(권장). “확정 지식” 취급은 Decision을 통해서만.
+  6. event_log 파일은 생성하지 않는다. (아래 Episode Boundary Rule로 종료 처리)
+
+
 
 ⸻
 
@@ -865,3 +1003,42 @@ Sophia Output
 
 ⸻
 
+
+
+Episode Boundary Rule (FINAL)
+	1.	명시적 종료(Explicit Close)
+
+	•	트리거: episode_decisions[]에 항목이 추가되는 시점
+	•	동작: 해당 target_episode의 episodes[target].lifecycle를 다음과 같이 갱신한다
+	•	state = "closed"
+	•	closed_by = "decision_made"
+	•	end_at = decided_at
+	•	기록: 별도 이벤트 로그를 생성하지 않는다
+	•	episode_decisions 자체가 종료 이벤트의 정본(Ledger)이다
+
+	2.	암시적 종료(Implicit Close)
+
+	•	트리거: 런타임이 세션 타임아웃 또는 컨텍스트 전환을 감지한 시점
+	•	동작: 해당 Episode의 episodes[target].lifecycle만 갱신한다
+	•	state = "closed"
+	•	closed_by = "timeout" | "context_switch" | "manual_close"
+	•	end_at = <runtime timestamp>
+	•	기록: episode_decisions는 생성하지 않는다
+	•	사용자 의지가 아닌 시스템 처리이므로 Ledger를 오염시키지 않는다
+
+	3.	Chat Log(JSONL) 순수성 규칙
+
+	•	Chat JSONL은 오직 사용자/소피아(및 필요 시 ide_agent)의 발화 메시지만 기록한다
+	•	open/close 같은 시스템 이벤트는 JSONL에 기록하지 않는다
+
+	4.	일관성 규칙(Consistency)
+
+	•	episodes[target].lifecycle.state="closed"인 Episode는, 이후 새로운 발화가 들어오면
+	•	새 Episode를 open하는 것이 원칙이다(나선형 성장 단위 유지)
+	•	episodes[target].updated_at는 lifecycle 변경 시 갱신한다
+
+	5.	event_log 금지 규칙 (확정)
+
+	•	별도의 event_log 파일을 생성하지 않는다
+	•	명시적 종료는 episode_decisions가 담당한다
+	•	암시적 종료(timeout/context_switch/manual_close)는 episodes[target].lifecycle 업데이트로만 처리한다

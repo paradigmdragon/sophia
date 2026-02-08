@@ -7,8 +7,49 @@
     "core:default",
     "opener:default",
     "dialog:default",
-    "fs:allow-write-text-file",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        { "path": "/Users/dragonpd/Sophia/workspace/**" },
+        { "path": "/Users/dragonpd/Sophia/logs/**" },
+        { "path": "/Users/dragonpd/Sophia/docs/**" }
+      ]
+    },
     "fs:allow-appdata-write",
-    "fs:allow-appdata-read"
+    "fs:allow-appdata-read",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "run-python",
+          "cmd": "python3",
+          "args": ["-m", "app.cli", "chat", { "validator": ".*" }]
+        }
+      ]
+    }
   ]
 }

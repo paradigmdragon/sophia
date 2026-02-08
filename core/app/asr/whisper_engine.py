@@ -24,10 +24,14 @@ class ASREngine:
         engine_conf = conf.get("engine", {})
         
         model_size = engine_conf.get("model_size", "medium")
-        device = engine_conf.get("device", "auto")
-        compute_type = engine_conf.get("compute_type", "float16")
+        device = "cpu" # FORCE CPU DEBUGGING
+        compute_type = "int8" # FORCE INT8 DEBUGGING
 
+        if str(device) == "cpu":
+            compute_type = "int8" # Fallback for CPU
+            
         logger.info(f"Loading Whisper model: {model_size} ({device}, {compute_type})...")
+        logger.info("If this is the first run, the model will be downloaded. This may take a few minutes.")
         try:
             self._model = WhisperModel(model_size, device=device, compute_type=compute_type)
             logger.info("Model loaded successfully.")
