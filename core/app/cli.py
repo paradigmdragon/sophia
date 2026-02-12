@@ -3,10 +3,19 @@ import sys
 import os
 
 # Ensure app can be imported
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+# Ensure app can be imported
+# Dual-path injection to support both 'from app...' and 'from core...' styles legacy codebase
+current_dir = os.path.dirname(__file__)
+core_path = os.path.abspath(os.path.join(current_dir, '..'))
+root_path = os.path.abspath(os.path.join(current_dir, '..', '..'))
 
-from app.pipeline import Pipeline
-from app.common.utils import get_logger
+if core_path not in sys.path:
+    sys.path.insert(0, core_path)
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
+
+from core.app.pipeline import Pipeline
+from core.app.common.utils import get_logger
 
 logger = get_logger("CLI")
 
@@ -40,8 +49,8 @@ def transcribe(files, outdir, config):
         logger.error(f"Critical Error: {e}")
         sys.exit(1)
 
-from app.task.loader import TaskLoader
-from app.task.runner import TaskRunner
+from core.app.task.loader import TaskLoader
+from core.app.task.runner import TaskRunner
 import time
 
 @cli.command()
@@ -124,6 +133,59 @@ def chat(message):
         
     except Exception as e:
         logger.error(f"Chat Error: {e}")
+        sys.exit(1)
+
+@cli.command()
+@click.argument("video_path")
+@click.option("--srt", required=False, help="Path to SRT file for analysis/remapping")
+def rough_cut(video_path, srt):
+    """
+    Auto Rough-Cut v0.1 Pipeline.
+    """
+    try:
+        from core.rough_cut import RoughCutEngine
+        import json
+        
+        logger.info(f"Starting Rough-Cut for: {video_path}")
+        
+        engine = RoughCutEngine()
+        
+        # 1. Prepare Workspace & Metadata
+        ctx = engine.analyzer.prepare_workspace(video_path)
+        work_dir = ctx["work_dir"]
+        logger.info(f"Workspace: {work_dir}")
+        
+        # 2. Analyze Candidates
+        candidates = engine.analyzer.analyze_candidates(work_dir, srt_path=srt)
+        logger.info(f"Candidates: {len(candidates)} found")
+        
+        # 3. Decision Simulation (v0.1: Default = Cut candidates, Keep others)
+        # In real UI, user would modify decisions. Here we just accept defaults.
+        # But wait, logic says "Default Action" in candidate. 
+        # So "descisions" list should be empty if we accept defaults?
+        # Renderer logic: "For c in candidates: If user explicitly kept it... else CUT"
+        # So passing empty decisions means "Do what candidates say" -> Cut all candidates.
+        decisions = [] 
+        
+        # 4. Calculate Stable Keep Intervals
+        duration_ms = ctx["meta"]["duration_ms"]
+        keep_intervals = engine.renderer.calculate_keep_intervals(duration_ms, candidates, decisions)
+        logger.info(f"Keep Intervals: {len(keep_intervals)} segments")
+        
+        # 5. Render
+        engine.renderer.render(work_dir, keep_intervals, ctx["meta"])
+        
+        # 6. Remap SRT if provided
+        if srt:
+            engine.renderer.remap_srt(srt, keep_intervals, os.path.join(work_dir, "output_roughcut.srt"))
+            
+        logger.info("Rough-Cut Pipeline Completed Successfully.")
+        print(json.dumps({"status": "success", "work_dir": work_dir}, ensure_ascii=False))
+        
+    except Exception as e:
+        logger.error(f"Rough-Cut Error: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -7,3 +7,12 @@
 {"message_id": "m_824cbbfe5c24", "timestamp": "2026-02-08T12:43:34.043005", "role": "user", "content": "말?"}
 {"message_id": "m_215a70a58e23", "timestamp": "2026-02-08T12:43:44.249651", "role": "user", "content": "반응이 느린거구나"}
 {"message_id": "m_31e6de21b1f9", "timestamp": "2026-02-08T12:44:07.652852", "role": "user", "content": "지금 오후 9시 43분인데 시간 표시도 잘못되었네 "}
+{"message_id": "m_e71fe325833c", "timestamp": "2026-02-08T13:08:52.817389", "role": "user", "content": "12312312"}
+{"message_id": "m_48b39d1aaed5", "timestamp": "2026-02-08T13:09:00.398793", "role": "user", "content": "안녕"}
+{"message_id": "m_ed887127c4ff", "timestamp": "2026-02-08T16:34:51.238069", "role": "user", "content": "Test message"}
+{"message_id": "m_1a94ec5ba817", "timestamp": "2026-02-08T16:35:29.914062", "role": "user", "content": "이게 무슨 의미인가요?"}
+{"message_id": "m_b266004accdd", "timestamp": "2026-02-08T16:35:55.738863", "role": "sophia", "content": "이 단어가 이 상황에서 갖는 특별한 의미는 무엇인가요?"}
+{"message_id": "m_d8cde60c9636", "timestamp": "2026-02-08T16:36:16.848604", "role": "user", "content": "이게 무슨 의미인가요?"}
+{"message_id": "m_e5b70adc7395", "timestamp": "2026-02-08T16:36:46.648293", "role": "sophia", "content": "그 단어가 이 상황에서 갖는 특별한 의미는 무엇인가요?"}
+{"message_id": "m_ad05030f2a08", "timestamp": "2026-02-08T16:36:57.991108", "role": "user", "content": "소피아, 안녕"}
+{"message_id": "m_a4fefe5ca23f", "timestamp": "2026-02-08T16:37:06.365693", "role": "sophia", "content": "지금 가장 명확히 하고 싶은 질문은 무엇인가요?"}

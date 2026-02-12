@@ -1,0 +1,3 @@
+Proposed 1 candidates based on text: 'Just some random noise.'
+  - cand_8c1ca585: Confidence=20% | Note='Default fallback'
+    Backbone: 0x0000

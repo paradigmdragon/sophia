@@ -6,7 +6,7 @@ export interface InboxItem {
     id: string; // patch_id
     message: string; // thin_summary (The Question)
     context: string; // snippet or issue_code (hidden but useful for debug)
-    status: 'pending' | 'adopted' | 'deferred' | 'rejected';
+    status: 'pending' | 'committed' | 'deferred' | 'rejected';
     timestamp: string;
 }
 
@@ -36,7 +36,7 @@ export const inboxService = {
         }
     },
 
-    async updateItemStatus(itemId: string, status: 'adopted' | 'deferred' | 'rejected'): Promise<boolean> {
+    async updateItemStatus(itemId: string, status: 'committed' | 'deferred' | 'rejected'): Promise<boolean> {
         try {
             if (!(await exists(MANIFEST_PATH))) return false;
             

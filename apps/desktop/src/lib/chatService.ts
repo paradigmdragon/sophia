@@ -52,7 +52,13 @@ export const chatService = {
      */
     async getDailyLogs(): Promise<ChatMessage[]> {
         try {
-            const dateStr = new Date().toISOString().split('T')[0];
+            // Use local date to match backend's datetime.now()
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            
             const logFile = `${LOG_ROOT}/${dateStr}.jsonl`;
 
             if (!await exists(logFile)) {

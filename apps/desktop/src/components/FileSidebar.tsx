@@ -20,6 +20,12 @@ export function FileSidebar({ onSelectFile, currentFile, className = "", isColla
     const [isResizing, setIsResizing] = useState(false);
     const [renamingPath, setRenamingPath] = useState<string | null>(null);
     const [renameValue, setRenameValue] = useState("");
+    const [selectedPaths, setSelectedPaths] = useState<Set<string>>(new Set());
+    const [lastSelectedPath, setLastSelectedPath] = useState<string | null>(null); // For Shift+Click range
+    
+    // DnD State
+    const [draggedNodes, setDraggedNodes] = useState<FileNode[]>([]); // Support multiple
+    const [dragOverNode, setDragOverNode] = useState<string | null>(null);
     
     // Rename Input Ref
     const renameInputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +59,8 @@ export function FileSidebar({ onSelectFile, currentFile, className = "", isColla
                  const newNodes = await noteService.listNotes();
                  setFileTree(newNodes);
                  setIsRefreshing(false);
-                 onSelectFile(welcomePath); // Select it
+                 handleSelect(welcomePath, false, false); 
+                 onSelectFile(welcomePath); 
                  return;
              }
         }
@@ -109,9 +116,11 @@ export function FileSidebar({ onSelectFile, currentFile, className = "", isColla
         const path = await noteService.createNote(undefined, uniqueName + ".md");
         if (path) {
             await refreshNotes();
+            await refreshNotes();
+            handleSelect(path, false, false);
             onSelectFile(path);
             setRenamingPath(path);
-            setRenameValue(uniqueName); // Display without extension
+            setRenameValue(uniqueName); 
         }
     };
 
@@ -179,29 +188,257 @@ export function FileSidebar({ onSelectFile, currentFile, className = "", isColla
         document.removeEventListener('mouseup', stopResize);
     };
 
+    // --- Selection Logic ---
+    
+    const handleSelect = (path: string, multiSelect: boolean, rangeSelect: boolean) => {
+        const newSelected = new Set(multiSelect ? selectedPaths : []);
+        
+        if (rangeSelect && lastSelectedPath) {
+            // Simple range selection: Flatten tree and find range
+            // This requires flattening the current visible tree. 
+            // For now, let's implement simple multi-select first or complex range later.
+            // A full range select requires knowing the visual order.
+            // We'll stick to simple multi-select or just add the single item if range logic is complex.
+            // Let's implement robust range select if possible:
+            const flatVisibleNodes: string[] = [];
+            const traverse = (nodes: FileNode[]) => {
+                for (const node of nodes) {
+                    flatVisibleNodes.push(node.path);
+                    if (node.isDirectory && expandedFolders.has(node.path) && node.children) {
+                        traverse(node.children);
+                    }
+                }
+            };
+            traverse(fileTree);
+            
+            const startIdx = flatVisibleNodes.indexOf(lastSelectedPath);
+            const endIdx = flatVisibleNodes.indexOf(path);
+            
+            if (startIdx !== -1 && endIdx !== -1) {
+                const min = Math.min(startIdx, endIdx);
+                const max = Math.max(startIdx, endIdx);
+                for (let i = min; i <= max; i++) {
+                     newSelected.add(flatVisibleNodes[i]);
+                }
+            } else {
+                 newSelected.add(path);
+            }
+        } else {
+            if (multiSelect) {
+                if (newSelected.has(path)) newSelected.delete(path);
+                else newSelected.add(path);
+            } else {
+                newSelected.add(path);
+            }
+        }
+
+        setSelectedPaths(newSelected);
+        setLastSelectedPath(path);
+        
+        // If single select, also trigger onSelectFile for preview
+        if (newSelected.size === 1 && newSelected.has(path)) {
+             onSelectFile(path);
+        } else if (newSelected.size === 0) {
+             onSelectFile("");
+        }
+    };
+
+    // --- Drag and Drop Logic ---
+
+    const handleDragStart = (e: React.DragEvent, node: FileNode) => {
+        e.stopPropagation();
+        
+        // If dragging a node that is NOT in selection, select it solely
+        let draggingPaths = [node.path];
+        if (selectedPaths.has(node.path)) {
+            draggingPaths = Array.from(selectedPaths);
+        } else {
+            setSelectedPaths(new Set([node.path]));
+            setLastSelectedPath(node.path);
+        }
+
+        // We need to resolve FileNodes for these paths to store in state if needed, 
+        // or just store paths. State `draggedNodes` needs FileNode[].
+        // For simplicity, let's just store paths in dataTransfer and use state for visual?
+        // Actually, we perform move based on paths.
+        
+        setDraggedNodes(draggingPaths.map(p => ({ path: p, name: p.split('/').pop() || '', isDirectory: false }))); // Dummy nodes mainly for count
+        
+        e.dataTransfer.setData("text/plain", JSON.stringify(draggingPaths));
+        e.dataTransfer.effectAllowed = "move";
+        
+        // Custom drag image showing count?
+        if (draggingPaths.length > 1) {
+             // const dragIcon = document.createElement('div'); ...
+             // Optional polish.
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent, targetNode: FileNode) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const draggingCount = draggedNodes.length;
+        if (draggingCount === 0) return;
+        
+        // If target is inside the list of dragged items, invalid.
+        // But we only have paths. 
+        // Also check recursive.
+        
+        // Only allow dropping on directories
+        if (targetNode.isDirectory) {
+             setDragOverNode(targetNode.path);
+             e.dataTransfer.dropEffect = "move";
+        } else {
+             setDragOverNode(null);
+             e.dataTransfer.dropEffect = "none";
+        }
+    };
+
+    const handleDrop = async (e: React.DragEvent, targetNode: FileNode) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragOverNode(null);
+        
+        const data = e.dataTransfer.getData("text/plain");
+        if (!data || !targetNode.isDirectory) return;
+
+        let pathsToMove: string[] = [];
+        try {
+            pathsToMove = JSON.parse(data);
+            if (!Array.isArray(pathsToMove)) pathsToMove = [data]; // Fallback for single legacy
+        } catch {
+            pathsToMove = [data];
+        }
+
+        let movedCount = 0;
+        let errors = [];
+
+        for (const draggedPath of pathsToMove) {
+             if (targetNode.path.startsWith(draggedPath)) {
+                 console.warn("Cannot move parent into child:", draggedPath);
+                 continue;
+             }
+             
+             const success = await noteService.moveItem(draggedPath, targetNode.path);
+             if (success) movedCount++;
+             else errors.push(draggedPath);
+        }
+
+        if (movedCount > 0) {
+            console.log(`Moved ${movedCount} items successfully.`);
+            await refreshNotes();
+            setExpandedFolders(prev => new Set(prev).add(targetNode.path));
+            // Keep selection? Or clear? Usually clear or select moved items.
+            // Paths changed, so clearing is safer.
+            setSelectedPaths(new Set());
+        }
+        
+        if (errors.length > 0) {
+             alert(`Failed to move ${errors.length} items.\n${errors.join('\n')}`);
+        }
+
+        setDraggedNodes([]);
+    };
+
+    const handleRootDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (draggedNodes.length === 0) return;
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleRootDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        const data = e.dataTransfer.getData("text/plain");
+        if (!data) return;
+
+        let pathsToMove: string[] = [];
+        try {
+            pathsToMove = JSON.parse(data);
+        } catch {
+            pathsToMove = [data];
+        }
+
+        const rootPath = noteService.getNotesPath();
+        let movedCount = 0;
+        let errors = [];
+
+        for (const draggedPath of pathsToMove) {
+             const currentParent = draggedPath.substring(0, draggedPath.lastIndexOf('/'));
+             if (currentParent === rootPath) continue;
+
+             const success = await noteService.moveItem(draggedPath, rootPath);
+             if (success) movedCount++;
+             else errors.push(draggedPath);
+        }
+
+        if (movedCount > 0) {
+            await refreshNotes();
+            setSelectedPaths(new Set());
+        }
+
+        if (errors.length > 0) {
+             alert(`Failed to move ${errors.length} items to root.\n${errors.join('\n')}`);
+        }
+
+        setDraggedNodes([]);
+        setDragOverNode(null);
+    };
+
     const renderNode = (node: FileNode, depth: number = 0) => {
         const isExpanded = expandedFolders.has(node.path);
         const isActive = currentFile === node.path;
+        const isSelected = selectedPaths.has(node.path); // Multi-select state
         const isRenaming = renamingPath === node.path;
 
         return (
             <div key={node.path}>
                 <div 
                     className={`
-                        group flex items-center gap-2 px-3 py-1.5 cursor-pointer select-none
-                        ${isActive ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:bg-[#2a2a2e] hover:text-gray-200'}
+                        group flex items-center gap-2 px-3 py-1.5 cursor-pointer select-none relative
+                        ${isSelected ? 'bg-[#37373d] text-white' : 'text-gray-400 hover:bg-[#2a2a2e] hover:text-gray-200'}
                         ${depth > 0 ? 'ml-4 border-l border-[#333]' : ''}
+                        ${dragOverNode === node.path ? 'bg-blue-900/30 outline outline-1 outline-blue-500' : ''}
                     `}
                     style={{ paddingLeft: `${depth * 12 + 12}px` }}
-                    onClick={() => {
+                    draggable={!isRenaming}
+                    onDragStart={(e) => handleDragStart(e, node)}
+                    onDragOver={(e) => handleDragOver(e, node)}
+                    onDrop={(e) => handleDrop(e, node)}
+                    onClick={(e) => {
                         if (isRenaming) return;
-                        if (node.isDirectory) toggleFolder(node.path);
-                        else onSelectFile(node.path);
+                        e.stopPropagation(); // Handle click here
+                        
+                        // Toggle folder if clicking icon/arrow is customary, 
+                        // but user usually clicks row to select. 
+                        // Let's separate Folder Toggle from Selection if possible?
+                        // Standard behavior: Click selects. Double Click renames. 
+                        // Arrow click toggles.
+                        // Here we don't have separate arrow hit area easily. 
+                        // Let's say: Click on row -> Select. 
+                        // If Directory -> Toggle too? VSCode toggles on click.
+                        
+                        const multiSelect = e.metaKey || e.ctrlKey;
+                        const rangeSelect = e.shiftKey;
+                        
+                        handleSelect(node.path, multiSelect, rangeSelect);
+                        
+                        // Also toggle if directory and single click? 
+                        // Maybe only toggle if not modifying selection?
+                        if (node.isDirectory && !multiSelect && !rangeSelect) {
+                            toggleFolder(node.path);
+                        }
                     }}
                     onDoubleClick={(e) => startRenaming(node, e)}
                 >
                     {/* Icon */}
-                    <span className="opacity-80 flex-shrink-0">
+                    <span 
+                        className="opacity-80 flex-shrink-0"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if(node.isDirectory) toggleFolder(node.path);
+                        }}
+                    >
                         {node.isDirectory ? (
                              isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
                         ) : (
@@ -280,7 +517,11 @@ export function FileSidebar({ onSelectFile, currentFile, className = "", isColla
             </div>
 
             {/* File List */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden py-2 custom-scrollbar">
+            <div 
+                className="flex-1 overflow-y-auto overflow-x-hidden py-2 custom-scrollbar"
+                onDragOver={handleRootDragOver}
+                onDrop={handleRootDrop}
+            >
                 {fileTree.map(node => renderNode(node))}
                 {fileTree.length === 0 && (
                     <div className="text-center text-xs text-gray-600 mt-4">

@@ -135,6 +135,28 @@ export const noteService = {
         }
     },
 
+    async moveItem(oldPath: string, newParentPath: string): Promise<boolean> {
+        const fileName = oldPath.split('/').pop();
+        if (!fileName) return false;
+        const newPath = `${newParentPath}/${fileName}`;
+        
+        console.log(`[moveItem] Moving ${oldPath} -> ${newPath}`);
+
+        // Prevent moving into itself
+        if (newPath.startsWith(oldPath) && newPath !== oldPath) return false;
+        // Prevent no-op
+        if (oldPath === newPath) return false;
+
+        try {
+            await rename(oldPath, newPath);
+            console.log("[moveItem] Rename successful");
+            return true;
+        } catch (e) {
+            console.error("[moveItem] Failed to move item:", e);
+            return false;
+        }
+    },
+
     async deleteItem(path: string): Promise<boolean> {
         try {
             // await remove(path, { recursive: true }); // 'recursive' for folders
@@ -173,5 +195,67 @@ export const noteService = {
 
     getNotesPath(): string {
         return NOTES_PATH;
+    },
+
+    // --- Card Parsing Logic ---
+    async parseNoteCards(path: string): Promise<NoteCard[]> {
+        const content = await this.readFile(path);
+        const cards: NoteCard[] = [];
+        
+        // Split by "---" separator if present, or just process lines
+        // Rule: 
+        // ## Title
+        // Summary text (2-3 lines)
+        // [Optional] Tags #tag
+        
+        // Simple parser: Split by "## " checks
+        const sections = content.split(/^## /m); 
+        
+        for (const section of sections) {
+            if (!section.trim()) continue;
+            
+            const lines = section.split('\n');
+            const title = lines[0].trim();
+            const bodyLines = lines.slice(1).filter(l => l.trim() !== '' && !l.trim().startsWith('---'));
+            
+            // Extract tags? (User said "Tags (optional) 1 line (small)")
+            // Let's assume tags line starts with # or we just parse hashtags from the body
+            let tags: string[] = [];
+            const summaryLines: string[] = [];
+            
+            for (const line of bodyLines) {
+                if (line.trim().startsWith('#')) {
+                    // Treat as tags line if it contains hashtags
+                    const foundTags = line.match(/#[^\s#]+/g);
+                    if (foundTags) tags = [...tags, ...foundTags];
+                } else {
+                    summaryLines.push(line);
+                }
+            }
+            
+            // Join summary, limit length for preview in parsing? 
+            // The UI will handle truncation, but here we just return structured data.
+            const summary = summaryLines.join('\n').trim();
+
+            if (title) {
+                cards.push({
+                    id: Math.random().toString(36).substr(2, 9), // Temp ID
+                    title,
+                    summary,
+                    tags,
+                    originalContent: section // Store full section as "original" for now
+                });
+            }
+        }
+        
+        return cards;
     }
 };
+
+export interface NoteCard {
+    id: string;
+    title: string;
+    summary: string;
+    tags: string[];
+    originalContent: string;
+}

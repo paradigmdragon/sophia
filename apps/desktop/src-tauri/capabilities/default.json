@@ -71,7 +71,7 @@
       "allow": [
         {
           "name": "run-python",
-          "cmd": "python3",
+          "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python",
           "args": ["-m", "app.cli", "chat", { "validator": ".*" }]
         }
       ]

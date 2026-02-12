@@ -32,6 +32,598 @@
       "stats_cache": null
     }
   },
-  "patches": {},
+  "patches": {
+    "p_0c48b178": {
+      "patch_id": "p_0c48b178",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-01",
+      "thin_summary": "이 단어는 이 상황에서 어떤 특별한 의미를 갖나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "define_context",
+          "label": "맥락적 정의 추가"
+        },
+        {
+          "id": "opt_2",
+          "semantic": "keep_ambiguous",
+          "label": "모호함 유지"
+        }
+      ],
+      "created_at": "2026-02-08T16:35:29.916033",
+      "updated_at": "2026-02-08T16:35:29.916036"
+    },
+    "p_e8cd9724": {
+      "patch_id": "p_e8cd9724",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-01",
+      "thin_summary": "이 단어는 이 상황에서 어떤 특별한 의미를 갖나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "define_context",
+          "label": "맥락적 정의 추가"
+        },
+        {
+          "id": "opt_2",
+          "semantic": "keep_ambiguous",
+          "label": "모호함 유지"
+        }
+      ],
+      "created_at": "2026-02-08T16:36:16.850396",
+      "updated_at": "2026-02-08T16:36:16.850402"
+    },
+    "p_f5b4fff2": {
+      "patch_id": "p_f5b4fff2",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "네, 당신의 사색을 도울 준비가 되었습니다.",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-08T16:36:57.995316",
+      "updated_at": "2026-02-08T16:36:57.995318"
+    },
+    "p_ffd890fa": {
+      "patch_id": "p_ffd890fa",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "네, 당신의 사색을 도울 준비가 되었습니다.",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T09:19:30.030884",
+      "updated_at": "2026-02-09T09:19:30.030886"
+    },
+    "p_d1af63db": {
+      "patch_id": "p_d1af63db",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "네, 당신의 사색을 도울 준비가 되었습니다.",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:03:11.864231",
+      "updated_at": "2026-02-09T10:03:11.864233"
+    },
+    "p_b8edc559": {
+      "patch_id": "p_b8edc559",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:05:49.507668",
+      "updated_at": "2026-02-09T10:05:49.507671"
+    },
+    "p_e17248eb": {
+      "patch_id": "p_e17248eb",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:06:45.291997",
+      "updated_at": "2026-02-09T10:06:45.292001"
+    },
+    "p_f33a8b86": {
+      "patch_id": "p_f33a8b86",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:08:16.606161",
+      "updated_at": "2026-02-09T10:08:16.606164"
+    },
+    "p_6fa2c4e1": {
+      "patch_id": "p_6fa2c4e1",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:08:59.593724",
+      "updated_at": "2026-02-09T10:08:59.593726"
+    },
+    "p_7ee9b422": {
+      "patch_id": "p_7ee9b422",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T10:10:09.486950",
+      "updated_at": "2026-02-09T10:10:09.486955"
+    },
+    "p_423b270f": {
+      "patch_id": "p_423b270f",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-01",
+      "thin_summary": "이 단어는 이 상황에서 어떤 특별한 의미를 갖나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "define_context",
+          "label": "맥락적 정의 추가"
+        },
+        {
+          "id": "opt_2",
+          "semantic": "keep_ambiguous",
+          "label": "모호함 유지"
+        }
+      ],
+      "created_at": "2026-02-09T10:11:52.493117",
+      "updated_at": "2026-02-09T10:11:52.493120"
+    },
+    "p_5bfbaada": {
+      "patch_id": "p_5bfbaada",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T16:57:26.530201",
+      "updated_at": "2026-02-09T16:57:26.531554"
+    },
+    "p_135a1867": {
+      "patch_id": "p_135a1867",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T16:59:18.591485",
+      "updated_at": "2026-02-09T16:59:18.592847"
+    },
+    "p_e9801248": {
+      "patch_id": "p_e9801248",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T16:59:53.405442",
+      "updated_at": "2026-02-09T16:59:53.413504"
+    },
+    "p_8282c358": {
+      "patch_id": "p_8282c358",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T17:00:34.790037",
+      "updated_at": "2026-02-09T17:00:34.793001"
+    },
+    "p_550c645c": {
+      "patch_id": "p_550c645c",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T17:01:39.321187",
+      "updated_at": "2026-02-09T17:01:39.322526"
+    },
+    "p_3f4e55c2": {
+      "patch_id": "p_3f4e55c2",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-09T17:15:15.471828",
+      "updated_at": "2026-02-09T17:15:15.475754"
+    },
+    "p_2210eb38": {
+      "patch_id": "p_2210eb38",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-10T07:00:22.361407",
+      "updated_at": "2026-02-10T07:00:22.362198"
+    },
+    "p_6966b97f": {
+      "patch_id": "p_6966b97f",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-10T07:10:56.354698",
+      "updated_at": "2026-02-10T07:10:56.356929"
+    },
+    "p_3586e30b": {
+      "patch_id": "p_3586e30b",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-10T13:02:10.980311",
+      "updated_at": "2026-02-10T13:02:10.985086"
+    },
+    "p_e9fa3797": {
+      "patch_id": "p_e9fa3797",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-10T23:29:43.318423",
+      "updated_at": "2026-02-10T23:29:43.318423"
+    },
+    "p_25a2ff7a": {
+      "patch_id": "p_25a2ff7a",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:03:12.933504",
+      "updated_at": "2026-02-12T07:03:12.933509"
+    },
+    "p_56925d7a": {
+      "patch_id": "p_56925d7a",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:03:33.648475",
+      "updated_at": "2026-02-12T07:03:33.648481"
+    },
+    "p_0fcef424": {
+      "patch_id": "p_0fcef424",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:04:07.229545",
+      "updated_at": "2026-02-12T07:04:07.229550"
+    },
+    "p_aec6d0cb": {
+      "patch_id": "p_aec6d0cb",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:04:18.819172",
+      "updated_at": "2026-02-12T07:04:18.819176"
+    },
+    "p_fe63cee6": {
+      "patch_id": "p_fe63cee6",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:19:45.334607",
+      "updated_at": "2026-02-12T07:19:45.334611"
+    },
+    "p_adb5541c": {
+      "patch_id": "p_adb5541c",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:21:02.390073",
+      "updated_at": "2026-02-12T07:21:02.390077"
+    },
+    "p_c9b42f69": {
+      "patch_id": "p_c9b42f69",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:21:12.203700",
+      "updated_at": "2026-02-12T07:21:12.203704"
+    },
+    "p_f2f5fe5c": {
+      "patch_id": "p_f2f5fe5c",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:21:21.548878",
+      "updated_at": "2026-02-12T07:21:21.548883"
+    },
+    "p_df6e175a": {
+      "patch_id": "p_df6e175a",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:24:42.812335",
+      "updated_at": "2026-02-12T07:24:42.812339"
+    },
+    "p_0bb534ca": {
+      "patch_id": "p_0bb534ca",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "지금은 무슨 생각을 하시나요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-12T07:24:48.346327",
+      "updated_at": "2026-02-12T07:24:48.346333"
+    },
+    "p_ea611c6e": {
+      "patch_id": "p_ea611c6e",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "안녕하세요, 무엇을 도와드릴까요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-13T01:33:41.106276",
+      "updated_at": "2026-02-13T01:33:41.106280"
+    }
+  },
   "episode_decisions": []
 }

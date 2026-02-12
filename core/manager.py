@@ -85,43 +85,52 @@ class EpisodeManager:
         3. Create Patches (Resonance)
         4. Generate Expression (LLM)
         """
-        # 1. Log (Sensory)
-        msg_id = self.logger.log_message("user", text)
+        # 1. Detect (Epidora - Right Brain / Ui)
+        # We detect FIRST to tag the input with its coordinate (Shin).
+        signals = self.epidora.detect(text)
+        epidora_coords = [s.code for s in signals] if signals else ["UNKNOWN"]
+        
+        # 2. Log (Sensory - Shin)
+        # Log not just text, but its coordinate in the world.
+        msg_id = self.logger.log_message("user", text, epidora_coordinates=epidora_coords)
         
         active_ep = self.get_or_create_active_episode()
-        
-        # 2. Detect (Epidora)
-        signals = self.epidora.detect(text)
         
         # 3. Resonance (Patch Creation) & 4. Expression
         new_patches = []
         sophia_response = None
         
+        # [Context Injection] - In (Reflecting)
+        # Retrieve recent history for Short-Term Memory
+        recent_history = self.logger.get_recent_messages(limit=10)
+        context_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in recent_history])
+        
         for sig in signals:
-            patch_id = f"p_{uuid.uuid4().hex[:8]}"
-            patch = Patch(
-                patch_id=patch_id,
-                target_episode_id=active_ep.episode_id,
-                engine=EngineType.SOPHIA,
-                type=PatchType.REASONING,
-                issue_code=sig.code,
-                thin_summary=sig.message,
-                status=PatchStatus.PENDING,
-                options=sig.options,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
-            )
+            # Create Patch
+            patch_id = f"p_{str(uuid.uuid4())[:8]}"
+            patch = {
+                "patch_id": patch_id,
+                "target_episode_id": active_ep.episode_id,
+                "engine": "sophia",
+                "type": "reasoning",
+                "issue_code": sig.code,
+                "thin_summary": sig.message,
+                "status": "pending",
+                "options": [{"id": "opt_1", "semantic": "greeting", "label": "인사"}], # Mock options
+                "created_at": str(datetime.now()),
+                "updated_at": str(datetime.now())
+            }
             self.manifest.patches[patch_id] = patch
             new_patches.append(patch)
             
-            # Generate Question for the FIRST signal only (to avoid overwhelming)
+            # Generate Question (Expression)
             if sophia_response is None:
                 sophia_response = self.llm.generate_question(
                     signal_code=sig.code,
                     signal_message=sig.message, 
-                    snippet=sig.snippet
+                    snippet=sig.snippet,
+                    previous_context=context_str
                 )
-                # Log Sophia's response (Self-Reflective Logging)
                 self.logger.log_message("sophia", sophia_response)
             
         self.save_manifest()

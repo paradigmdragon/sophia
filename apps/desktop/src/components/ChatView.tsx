@@ -71,28 +71,57 @@ export function ChatView() {
         }
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
+        const text = inputText;
         const newUserMessage: ChatMessage = {
             id: `usr_${Date.now()}`,
             sender: 'user',
-            text: inputText,
+            text: text,
             timestamp: new Date()
         };
 
         setMessages(prev => [...prev, newUserMessage]);
         setInputText("");
 
-        // Mock Sophia thinking/reply logic (or just wait for next signal)
-        // For v0.1, we just log the user input (in manager) -> Generate Signal -> Inbox -> Sophia Message
-        // But here we are just UI. The backend (Manager) should be listening to this input.
-        // We need a way to send input to Manager.
-        // For v0.1, let's assume 'chat logs' are written to file and Manager picks them up?
-        // Or we use tauri invoke to send message.
-        
-        // TODO: Implement 'send_message' command. 
-        // For now, just a valid UI.
+        try {
+            // Call Sophia API
+            // 1. Ingest (Create Episode) or use a default Session Episode?
+            // For v0.1 simplification, we'll just hit /propose with a specific ID or create one on fly.
+            // Let's assume we want to trigger a thought process:
+            // Step A: Ingest (Ref: chat_ui)
+            const ingestRes = await fetch("http://localhost:8090/ingest", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ref_uri: "chat_ui" })
+            });
+            const ingestData = await ingestRes.json();
+            const epId = ingestData.episode_id;
+
+            // Step B: Propose (Trigger Candidates)
+            await fetch("http://localhost:8090/propose", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ episode_id: epId, text: text })
+            });
+
+            // Step C: Dispatch (Try to get a response?)
+            // If Dispatch is successful, it might add to Inbox?
+            // Currently InboxService reads from file.
+            // We need the API to write to that file or we need to poll the API Status?
+            
+            // For now, let's just trigger Dispatch so if there is a message it goes to queue.
+            // AND we need to simulate a response in UI if the system is "Thinking".
+            
+            // Temporary: We just rely on inbox polling.
+            // But we need to make sure the backend WRITES to the inbox file or exposed via API.
+            // Since backend uses HeartEngine, and HeartEngine uses MessageQueue.
+            // We need a bridge.
+
+        } catch (e) {
+            console.error("Failed to send message to Sophia:", e);
+        }
     };
 
     return (
@@ -110,16 +139,17 @@ export function ChatView() {
                         className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div 
-                            className={`max-w-[70%] rounded-lg p-3 text-sm leading-relaxed shadow-sm
+                            className={`max-w-[70%] rounded-lg p-3 text-sm leading-relaxed shadow-sm w-fit
                             ${msg.sender === 'user' 
                                 ? 'bg-blue-600 text-white rounded-br-none' 
                                 : 'bg-[#2d2d2d] text-gray-200 rounded-bl-none border border-[#333]'
                             }`}
                         >
-                            {msg.text}
-                            <div className="text-[10px] opacity-50 text-right mt-1">
+                            <span className="break-words">{msg.text}</span>
+                            <span className="text-[10px] opacity-50 ml-2 select-none float-right mt-1.5 align-bottom">
                                 {msg.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                            </div>
+                            </span>
+                            <div className="clear-both"></div>
                         </div>
                     </div>
                 ))}
@@ -133,12 +163,18 @@ export function ChatView() {
                         type="text" 
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        onKeyDown={(e) => {
+                            if (e.nativeEvent.isComposing) return;
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleSendMessage();
+                            }
+                        }}
                         placeholder="메시지 입력..."
                         className="flex-1 bg-[#1e1e1e] border border-[#333] rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                     />
                     <button 
-                        onClick={handleSendMessage}
+                        onClick={() => handleSendMessage()}
                         className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center transition-colors"
                     >
                         ➤

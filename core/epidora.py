@@ -13,8 +13,15 @@ class EpidoraSignal(BaseModel):
 class EpidoraEngine:
     def __init__(self):
         self.patterns = {
+            "EPI-00": {
+                "regex": r"(안녕|반가워|시작|Sophia|소피아)",
+                "message": "안녕하세요, 무엇을 도와드릴까요?",
+                "options": [
+                    PatchOption(id="opt_1", semantic="greeting", label="인사")
+                ]
+            },
             "EPI-01": {
-                "regex": r"(정의|뜻|의미).*(뭐|무엇|인가|뭔|어떤)",
+                "regex": r"((정의|뜻|의미).*(뭐|무엇|인가|뭔|어떤|무슨)|(뭐|무엇|인가|뭔|어떤|무슨).*(정의|뜻|의미))",
                 "message": "이 단어는 이 상황에서 어떤 특별한 의미를 갖나요?",
                 "options": [
                     PatchOption(id="opt_1", semantic="define_context", label="맥락적 정의 추가"),

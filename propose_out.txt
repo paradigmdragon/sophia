@@ -1,0 +1,3 @@
+Proposed 1 candidates based on text: 'This is a timeless principle.'
+  - cand_233d5854: Confidence=85% | Note='Detected axiomatic rule'
+    Backbone: 0x4416

@@ -67,20 +67,38 @@ export function ChatOverlay({ isOpen, onClose }: ChatOverlayProps) {
         }
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
+        const text = inputText;
         const newUserMessage: ChatMessage = {
             id: `usr_${Date.now()}`,
             sender: 'user',
-            text: inputText,
+            text: text,
             timestamp: new Date()
         };
 
         setMessages(prev => [...prev, newUserMessage]);
         setInputText("");
         
-        // TODO: Send input to Manager via command or file log
+        try {
+            const ingestRes = await fetch("http://localhost:8090/ingest", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ref_uri: "chat_overlay" })
+            });
+            const ingestData = await ingestRes.json();
+            const epId = ingestData.episode_id;
+
+            await fetch("http://localhost:8090/propose", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ episode_id: epId, text: text })
+            });
+
+        } catch (e) {
+            console.error("Failed to send message to Sophia:", e);
+        }
     };
 
     if (!isOpen) return null;
@@ -106,16 +124,17 @@ export function ChatOverlay({ isOpen, onClose }: ChatOverlayProps) {
                         className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div 
-                            className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-sm
+                            className={`max-w-[85%] rounded-lg p-3 text-sm leading-relaxed shadow-sm w-fit
                             ${msg.sender === 'user' 
                                 ? 'bg-blue-600 text-white rounded-br-none' 
                                 : 'bg-[#2d2d2d] text-gray-200 rounded-bl-none border border-[#333]'
                             }`}
                         >
-                            {msg.text}
-                            <div className="text-[10px] opacity-50 text-right mt-1">
+                            <span className="break-words">{msg.text}</span>
+                            <span className="text-[10px] opacity-50 ml-2 select-none float-right mt-1.5 align-bottom">
                                 {msg.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                            </div>
+                            </span>
+                            <div className="clear-both"></div>
                         </div>
                     </div>
                 ))}
@@ -129,9 +148,15 @@ export function ChatOverlay({ isOpen, onClose }: ChatOverlayProps) {
                         type="text" 
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="이 생각에 대해 이야기하기..."
-                        className="flex-1 bg-[#1e1e1e] border border-[#333] rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                        onKeyDown={(e) => {
+                            if (e.nativeEvent.isComposing) return;
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleSendMessage();
+                            }
+                        }}
+                        placeholder="Ask Sophia..."
+                        className="flex-1 bg-[#252526] border border-[#444] rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
                         autoFocus
                     />
                     <button 
