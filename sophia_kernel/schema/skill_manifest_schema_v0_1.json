@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sophia://schemas/skill-manifest-v0.1",
+  "title": "Sophia SKILL_MANIFEST_SCHEMA v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "version",
+    "skill_id",
+    "scope",
+    "entrypoint",
+    "capabilities",
+    "verification",
+    "rollback",
+    "limits"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "skill_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "engine",
+        "workspace",
+        "media_asr",
+        "manifest_memory"
+      ]
+    },
+    "entrypoint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "fs.read",
+          "fs.write",
+          "manifest.read",
+          "manifest.write",
+          "memory.read",
+          "memory.write",
+          "media.read",
+          "asr.transcribe",
+          "audit.append"
+        ]
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "hook"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "advisory",
+            "strict"
+          ],
+          "default": "advisory"
+        },
+        "hook": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "backup_root"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "snapshot_restore"
+        },
+        "backup_root": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "timeout_ms",
+        "max_retries"
+      ],
+      "properties": {
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 300000
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "capabilities": {
+            "contains": {
+              "const": "fs.write"
+            }
+          }
+        },
+        "required": [
+          "capabilities"
+        ]
+      },
+      "then": {
+        "properties": {
+          "verification": {
+            "properties": {
+              "mode": {
+                "const": "strict"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capabilities": {
+            "contains": {
+              "const": "manifest.write"
+            }
+          }
+        },
+        "required": [
+          "capabilities"
+        ]
+      },
+      "then": {
+        "properties": {
+          "verification": {
+            "properties": {
+              "mode": {
+                "const": "strict"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

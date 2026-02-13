@@ -73,6 +73,26 @@
           "name": "run-python",
           "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python",
           "args": ["-m", "app.cli", "chat", { "validator": ".*" }]
+        },
+        {
+          "name": "run-ingest-logs",
+          "cmd": "/Users/dragonpd/Sophia/.venv/bin/python",
+          "args": ["scripts/ingest_ide_logs.py"]
+        },
+        {
+          "name": "run-append-note",
+          "cmd": "/Users/dragonpd/Sophia/.venv/bin/python",
+          "args": ["scripts/append_note_ui.py"]
+        },
+        {
+          "name": "run-append-chat-memory",
+          "cmd": "/Users/dragonpd/Sophia/.venv/bin/python",
+          "args": [
+            "scripts/append_chat_memory.py",
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": "\\d+" }
+          ]
         }
       ]
     }

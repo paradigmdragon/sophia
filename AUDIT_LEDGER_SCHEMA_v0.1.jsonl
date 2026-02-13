@@ -1,0 +1,1 @@
+{"schema_version":"0.1","run_id":"run_<uuid>","skill_id":"<scope.skill_id>","inputs_hash":"sha256:<hex>","outputs_hash":"sha256:<hex>","diff_refs":["/Users/dragonpd/Sophia/.sophia/diffs/<run_id>.patch"],"status":"queued|running|verified|committed|rolled_back|failed","timestamps":{"queued_at":"<RFC3339>","started_at":"<RFC3339>","finished_at":"<RFC3339>"}}

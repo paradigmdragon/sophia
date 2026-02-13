@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { AnchorMenu } from "./AnchorMenu";
 import { inboxService } from "../lib/inboxService";
+import SonaEyeGraph from "./SonaEyeGraph";
 
 export function AnchorWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [itemCount, setItemCount] = useState(0);
-    const [isPulsing, setIsPulsing] = useState(false);
 
     useEffect(() => {
         checkInbox();
@@ -16,11 +16,6 @@ export function AnchorWidget() {
     const checkInbox = async () => {
         const items = await inboxService.getPendingItems();
         setItemCount(items.length);
-        if (items.length > 0) {
-            setIsPulsing(true);
-        } else {
-            setIsPulsing(false);
-        }
     };
 
     const toggleMenu = () => setIsOpen(!isOpen);
@@ -41,26 +36,23 @@ export function AnchorWidget() {
             <button 
                 onClick={toggleMenu}
                 className={`
-                    w-12 h-12 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative
+                    w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative overflow-hidden
                     ${isOpen 
-                        ? 'bg-blue-600 scale-110' 
-                        : 'bg-[#252526] hover:bg-[#333] border border-[#444]'
+                        ? 'bg-[#1e1e1e] ring-2 ring-blue-500/50' 
+                        : 'bg-[#1e1e1e] hover:bg-[#252526] border border-[#333]'
                     }
                 `}
                 title="Sophia Anchor"
             >
-                {/* Simple Dot Icon */}
-                <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${isOpen || itemCount > 0 ? 'bg-white' : 'bg-gray-500'}`} />
-                
-                {/* Pulse Animation for Has Thoughts */}
-                {!isOpen && isPulsing && (
-                    <span className="absolute inset-0 rounded-full animate-ping bg-blue-500 opacity-20"></span>
-                )}
+                {/* Sona Eye Graph Logo */}
+                <div className="w-full h-full flex items-center justify-center scale-[1.8]">
+                    <SonaEyeGraph />
+                </div>
                 
                 {/* Red Badge */}
                 {!isOpen && itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                        <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[9px] text-white items-center justify-center font-bold shadow-sm">
+                    <span className="absolute top-0 right-0 flex h-5 w-5 z-10">
+                        <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-[10px] text-white items-center justify-center font-bold shadow-sm border border-[#1e1e1e]">
                             {itemCount}
                         </span>
                     </span>

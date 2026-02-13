@@ -1,0 +1,2 @@
+{"ts": "2026-02-12T19:42:37.948690Z", "data": {"title": "Decision 1", "body": "Keep append-only memory for Phase-1.", "tags": ["smoke", "phase1"], "refs": {"script": "smoke_append_notes.py"}, "v": "note_v0"}}
+{"ts": "2026-02-13T03:53:52.317885Z", "data": {"title": "스키마 고정은 후순위", "body": "스키마는 당장 고정하지 않고, 1~2주 운영 로그를 보고 note schema v0.1을 확정한다.", "tags": ["decision", "schema"], "refs": {"reason": "초기 변동성 높음"}, "v": "note_v0"}}

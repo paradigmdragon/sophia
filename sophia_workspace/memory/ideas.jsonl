@@ -1,0 +1,2 @@
+{"ts": "2026-02-12T19:42:37.944458Z", "data": {"title": "Kernel idea", "body": "Add lightweight namespace metrics.", "tags": ["smoke", "phase1"], "refs": {"script": "smoke_append_notes.py"}, "v": "note_v0"}}
+{"ts": "2026-02-13T03:53:52.315814Z", "data": {"title": "노트 자동 분류 후보", "body": "notes/ideas/decisions/actions 4분류를 기반으로, 추후 스키마 고정 전에 실제 로그 패턴을 수집한다.", "tags": ["notes", "taxonomy"], "refs": {}, "v": "note_v0"}}

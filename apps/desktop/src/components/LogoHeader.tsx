@@ -1,4 +1,5 @@
 import { Settings, RotateCw } from "lucide-react";
+import SonaEyeGraph from "./SonaEyeGraph";
 
 interface LogoHeaderProps {
   status: "idle" | "processing";
@@ -9,10 +10,14 @@ interface LogoHeaderProps {
 export function LogoHeader({ status, onOpenSettings, onRefresh }: LogoHeaderProps) {
   return (
     <div className="area-header">
-      <div className="flex items-center gap-2 text-gray-300">
-        <span className="font-bold tracking-tight">Sophia</span>
-        <span className="text-gray-600">/</span>
-        <span className="text-gray-400 text-xs uppercase tracking-wider">Local ASR</span>
+      <div className="flex items-center gap-3 text-gray-300">
+        <div className="w-8 h-8 relative">
+            <SonaEyeGraph />
+        </div>
+        <div className="flex flex-col">
+            <span className="font-bold tracking-tight leading-none">Sophia</span>
+            <span className="text-gray-500 text-[10px] uppercase tracking-wider leading-none">Local ASR</span>
+        </div>
       </div>
       
       <div className="flex items-center gap-2">

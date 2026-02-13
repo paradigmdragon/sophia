@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sophia://schemas/audit-ledger-record-v0.1",
+  "title": "Sophia AUDIT_LEDGER_RECORD_SCHEMA v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "skill_id",
+    "inputs_hash",
+    "outputs_hash",
+    "diff_refs",
+    "status",
+    "timestamps"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputs_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "outputs_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "diff_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "verified",
+        "committed",
+        "rolled_back",
+        "failed"
+      ]
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "queued_at",
+        "started_at",
+        "finished_at"
+      ],
+      "properties": {
+        "queued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

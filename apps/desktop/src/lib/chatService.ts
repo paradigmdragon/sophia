@@ -4,6 +4,7 @@ import { readTextFile, exists } from '@tauri-apps/plugin-fs';
 
 const LOG_ROOT = '/Users/dragonpd/Sophia/logs/chat';
 const CORE_ROOT = '/Users/dragonpd/Sophia/core';
+const CHAT_MEMORY_NOTE_THRESHOLD = 240;
 
 export interface ChatMessage {
     message_id: string;
@@ -43,6 +44,38 @@ export const chatService = {
             }
         } catch (error) {
             console.error('Failed to execute chat command:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Appends a user chat message into memory/actions.
+     * Optionally mirrors long text into memory/notes via threshold rule.
+     */
+    async appendUserMessageToMemory(
+        text: string,
+        channel: string = "General",
+        noteThreshold: number = CHAT_MEMORY_NOTE_THRESHOLD
+    ): Promise<any> {
+        try {
+            const command = Command.create('run-append-chat-memory', [
+                text,
+                channel,
+                String(noteThreshold)
+            ], { cwd: '/Users/dragonpd/Sophia' });
+
+            const output = await command.execute();
+            if (output.code !== 0) {
+                throw new Error(output.stderr || output.stdout || 'append chat memory failed');
+            }
+
+            try {
+                return JSON.parse(output.stdout);
+            } catch {
+                return { status: 'ok' };
+            }
+        } catch (error) {
+            console.error('Failed to append user chat message to memory:', error);
             throw error;
         }
     },

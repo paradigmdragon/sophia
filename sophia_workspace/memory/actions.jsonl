@@ -1,0 +1,125 @@
+{"ts": "2026-02-12T19:42:37.953141Z", "data": {"title": "Next action", "body": "Draft verifier evidence schema.", "tags": ["smoke", "phase1"], "refs": {"script": "smoke_append_notes.py"}, "v": "note_v0"}}
+{"ts": "2026-02-13T03:53:52.319536Z", "data": {"title": "다음 구현 순서", "body": "1) note_writer 도입 2) smoke script 3) IDE 작업 로그를 memory.append로 자동 적재 4) 이후 schema 확정", "tags": ["todo", "next"], "refs": {}, "v": "note_v0"}}
+{"ts": "2026-02-13T03:57:22.734654Z", "data": {"title": "Git Commit: 7a6df82", "body": "feat(kernel): add smoke test and git-ingest for memory automation", "tags": ["git", "commit", "auto-ingest"], "refs": {"commit": "7a6df8294d6444c2e7c5e3574ba5439af8f9c088", "ts": "2026-02-13T03:57:22.733154+00:00"}, "v": "git_v1"}}
+{"ts": "2026-02-13T04:06:54.736139Z", "data": {"kind": "shell_command", "ts": "", "cmd": "python3 -m venv venv", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.738059Z", "data": {"kind": "shell_command", "ts": "", "cmd": "source venv/bin/activate && pip install -r requirements.txt && pip install requests", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.741057Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"Test message\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.744793Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샽�것� 무샪� 샽��미샽�가샺��?\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.748180Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샦��탴�샵��, 샵��냥��\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.751578Z", "data": {"kind": "shell_command", "ts": "", "cmd": "echo \"LLM Interface Updated with Dynamic Persona V1.1\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.754450Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샽�것� 무샪� 샽��미샵�?\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.757314Z", "data": {"kind": "shell_command", "ts": "", "cmd": "cd /Users/dragonpd/Sophia", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.761332Z", "data": {"kind": "shell_command", "ts": "", "cmd": "mkdir -p core/rough_cut", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.764712Z", "data": {"kind": "shell_command", "ts": "", "cmd": "cd /Users/dragonpd/Sophia/core", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.767954Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli rough-cut test_audio.mp3", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.771390Z", "data": {"kind": "shell_command", "ts": "", "cmd": "ffmpeg -f lavfi -i color=c=black:s=1280x720:d=5 -f lavfi -i anullsrc=r=44100:cl=mono -t 5 -c:v libx264 -c:a aac dummy_video.mp4", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.774631Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli rough-cut dummy_video.mp4", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.778587Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샫��갃� 탹��샽�\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.782646Z", "data": {"kind": "shell_command", "ts": "", "cmd": "time /Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"탥��샪�탪�\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.786381Z", "data": {"kind": "shell_command", "ts": "", "cmd": "time /Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샦��탴�샵�� 샵��냥��\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.789853Z", "data": {"kind": "shell_command", "ts": "", "cmd": "ollama ps", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.794224Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샵��냥��\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.798891Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"냤��냪�� 샶�냶�것� 샣��각탵��냫��?\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.803221Z", "data": {"kind": "shell_command", "ts": "", "cmd": "ls -t logs/chat | head -n 1", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.807123Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"사과냪�� 무샪� 샣��샽�지?\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.812159Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"샵��냥��\" && /Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"방긃� 내가 샵��냥��샽�냽�곃� 탶��지?\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.817081Z", "data": {"kind": "shell_command", "ts": "", "cmd": "cd /Users/dragonpd/Sophia/Docs", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.821625Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python -m app.cli chat \"Test\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.826645Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Test\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.832137Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Testing after fix\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.837404Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Test after import fix\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.842693Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Testing manual run\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.848599Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Testing dual path fix\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.854102Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"Testing after pydantic fix\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.859946Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/python /Users/dragonpd/Sophia/core/app/cli.py chat \"탥��샪�탪�\"", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.866322Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/core/venv/bin/pip install pysrt", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.872354Z", "data": {"kind": "shell_command", "ts": "", "cmd": "npm run tauri dev", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.878699Z", "data": {"kind": "shell_command", "ts": "", "cmd": "cd desktop", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.885293Z", "data": {"kind": "shell_command", "ts": "", "cmd": "cd apps/desktop", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.891851Z", "data": {"kind": "shell_command", "ts": "", "cmd": "[plugin:vite:react-babel] /Users/dragonpd/Sophia/apps/desktop/src/components/TitleBar.tsx: Unexpected token (15:4)\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.899162Z", "data": {"kind": "shell_command", "ts": "", "cmd": "18 |             {/* Added left padding/margin to account for macOS Traffic Lights in Overlay mode */}\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.905929Z", "data": {"kind": "shell_command", "ts": "", "cmd": "/Users/dragonpd/Sophia/apps/desktop/src/components/TitleBar.tsx:15:4\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.912639Z", "data": {"kind": "shell_command", "ts": "", "cmd": "13 |  \\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.919662Z", "data": {"kind": "shell_command", "ts": "", "cmd": "14 |      return (\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.926614Z", "data": {"kind": "shell_command", "ts": "", "cmd": "15 |      return (\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.933423Z", "data": {"kind": "shell_command", "ts": "", "cmd": "|      ^\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.940493Z", "data": {"kind": "shell_command", "ts": "", "cmd": "16 |          <div data-tauri-drag-region className=\"h-10 bg-[#1e1e1e] flex items-center justify-end px-4 border-b border-[...\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.947782Z", "data": {"kind": "shell_command", "ts": "", "cmd": "17 |              {/* Window Drag Area (Left/Center) */}\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.954952Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.962313Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샵��것�샪�냫��냫�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.969498Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샵��냾��냪�� **샷��샽�샀��탪�샷��것� 그냬�냁�� 냭��샀�샤�� 샨��샀��맃� 탵��것� 탵��냪��  �샨��샀�� 지샫��샤�� �**샾��냫��냫�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.976538Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샤�몃� 샀��거, 샫�탶�� 지샫��맃� 남겼샪�냫��냫�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.983966Z", "data": {"kind": "shell_command", "ts": "", "cmd": "⸻\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.991326Z", "data": {"kind": "shell_command", "ts": "", "cmd": "������� Sophia  � Title Bar 냳��냾��그 문샀�� 샨��샀�� 지샫��샤��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:54.999458Z", "data": {"kind": "shell_command", "ts": "", "cmd": "목탱��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.006836Z", "data": {"kind": "shell_command", "ts": "", "cmd": "커샪�탥� 탣�샽�탫�밃� 샸�샷�샽�� 맃�샺�샪�냁�� 냳��냾��그탵��샷� 창 샽�냯��샽� 가냪�탵��냯��냁�� 탵��냫�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.015294Z", "data": {"kind": "shell_command", "ts": "", "cmd": "탸��샾� 밃�복 샫��냯��샷��냯�� 샽�냯�� 붃�가 ⃦�� 샤�샀�� + DOM 구상� 문샀��냁�� 탬��냫�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.022895Z", "data": {"kind": "shell_command", "ts": "", "cmd": "1. Tauri 창 샤�샀�� 샨��샀�� (탵��샨��)\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.030925Z", "data": {"kind": "shell_command", "ts": "", "cmd": "src-tauri/tauri.conf.json\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.038944Z", "data": {"kind": "shell_command", "ts": "", "cmd": "{\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.047085Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\"tauri\": {\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.055293Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\"windows\": [\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.063527Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\"decorations\": false,\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.072069Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\"transparent\": false,\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.080432Z", "data": {"kind": "shell_command", "ts": "", "cmd": "\"resizable\": true\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.088497Z", "data": {"kind": "shell_command", "ts": "", "cmd": "}\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.093891Z", "data": {"kind": "shell_command", "ts": "", "cmd": "]\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.102022Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t기본 OS 탣�샽�탫�밃� 사샺� ⃽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.109815Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t커샪�탥� 탣�샽�탫�밃� 사샺� 샀��샀��냁�� 샤�샀��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.118290Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t샽� 샤�샀�� 샷��샼�면 data-tauri-drag-region 냯��샾��탵��지 샵��샽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.126399Z", "data": {"kind": "shell_command", "ts": "", "cmd": "2. 탣�샽�탫�밃� DOM 구상� 갃�샀��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.135185Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샣�냫� Title Bar 컴탯�냤��탪�냪�� 밃�냳��샫�� 샽� 구상�를 냴�른냫�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.143525Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<header\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.152058Z", "data": {"kind": "shell_command", "ts": "", "cmd": "class=\"titlebar\"\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.160176Z", "data": {"kind": "shell_command", "ts": "", "cmd": "data-tauri-drag-region\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.168566Z", "data": {"kind": "shell_command", "ts": "", "cmd": ">\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.177152Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<div class=\"titlebar-left\" data-tauri-drag-region>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.186033Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<span class=\"app-title\" data-tauri-drag-region>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.194565Z", "data": {"kind": "shell_command", "ts": "", "cmd": "Sophia\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.203267Z", "data": {"kind": "shell_command", "ts": "", "cmd": "</span>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.211504Z", "data": {"kind": "shell_command", "ts": "", "cmd": "</div>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.220376Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<div class=\"titlebar-right\">\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.228718Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<button data-tauri-drag-region=\"false\">⃼��︃�</button>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.237155Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<button data-tauri-drag-region=\"false\">������</button>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.245907Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<button data-tauri-drag-region=\"false\">⃺��︃�</button>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.254141Z", "data": {"kind": "shell_command", "ts": "", "cmd": "</header>\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.262538Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샀��냬� 귃�칃�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.271619Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t냳��냾��그 가냪�탵�� 샸�샷� ⃦�� data-tauri-drag-region\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.280720Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t클릭 가냪�탵�� 샺��샦��(벃�탪�, 샵��샽�콃�) ⃦�� 밃�냳��샫��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.289844Z", "data": {"kind": "shell_command", "ts": "", "cmd": "data-tauri-drag-region=\"false\"\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.298972Z", "data": {"kind": "shell_command", "ts": "", "cmd": "3. CSS 샀��샵� 상�건 (줃�샺��)\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.307989Z", "data": {"kind": "shell_command", "ts": "", "cmd": ".titlebar {\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.317326Z", "data": {"kind": "shell_command", "ts": "", "cmd": "display: flex;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.326181Z", "data": {"kind": "shell_command", "ts": "", "cmd": "align-items: center;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.335138Z", "data": {"kind": "shell_command", "ts": "", "cmd": "justify-content: space-between;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.344124Z", "data": {"kind": "shell_command", "ts": "", "cmd": "height: 40px;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.352844Z", "data": {"kind": "shell_command", "ts": "", "cmd": "padding: 0 12px;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.361793Z", "data": {"kind": "shell_command", "ts": "", "cmd": "position: relative;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.370662Z", "data": {"kind": "shell_command", "ts": "", "cmd": "z-index: 1000;\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.380450Z", "data": {"kind": "shell_command", "ts": "", "cmd": "긃�지 사탵�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.389770Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\ttitlebar 샼��샷�� absolute / fixed overlay ⃽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.399081Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t탨�몃� 냀��샽�샶�냁�� 냭�냪�� 구상� ⃽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.408482Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\tpointer-events: none 사샺� ⃽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.418046Z", "data": {"kind": "shell_command", "ts": "", "cmd": "4. 즃�샫�� 검즃�샺� 쵃�샦�� 탥��샪�탪� (샽�것� 샵�� 냰��면 샤�샀�� 문샀��)\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.427478Z", "data": {"kind": "shell_command", "ts": "", "cmd": "<div\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.436286Z", "data": {"kind": "shell_command", "ts": "", "cmd": "style=\"height:40px;background:#222;\"\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.445689Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t샽� 밃�를 냳��냾��그탵�샤�� 창샽� 샽�냯��냰��냪��지 탹��샽�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.455504Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t⃽�� 샽�냯�� 샵�� 냰��면 ⃦�� tauri.conf.json 샤�샀�� 샸�륃�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.465983Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t⃼�� 샽�냯��냰��면 ⃦�� 기상� UI 냀��샽�샶�가 냳��냾��그를 맃�곃� 샾��샽��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.476547Z", "data": {"kind": "shell_command", "ts": "", "cmd": "5. 샹��룃� 상�건\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.487136Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t탣�샽�탫�밃� 샵��무 빃� 샸�샷�샽�낃� 클릭 ⃦�� 창 샽�냯�� 가냪�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.498064Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t샵��샽�콃� 클릭 샫�� ⃦�� 벃�탪� 냯��샾�� 샀��샣�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.508953Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t벃�탪� 샼��샷��샤��냪�� 냳��냾��그 ⃽�� / 빃� 샸�샷�샷��샤��냪�� 냳��냾��그 ⭃�\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.519645Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\tmacOS 기준, 창 샽�냯�� 샾��샷�샪�냿�것� 냯��샾��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.530308Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샺��샵� (샷��샽�샀��탪�샺� 탵�� 줃�)\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.541660Z", "data": {"kind": "shell_command", "ts": "", "cmd": "decorations=false 기밃� 커샪�탥� 탣�샽�탫�밃� 구상�냁�� 샀��탹��탵��곃�, 냳��냾��그 샸�샷�과 클릭 샸�샷�샽�� data-tauri-drag-region샼�냁�� 몃�탹��탾�� 붃�리탵��냽�.\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.552904Z", "data": {"kind": "shell_command", "ts": "", "cmd": "냫�샽�� 냫�곃� 탵��샺��탵��면:\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.564357Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t⃯�︃� Title Bar 벃�탪�볃� 탮��샽�지 샽�냯�� 샷�결\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.575667Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t⃯�︃� macOS Traffic Light 직샀�� 구탸��\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.586307Z", "data": {"kind": "shell_command", "ts": "", "cmd": "�\t⃯�︃� 샼��냯��샺�/맥 붃�기 첃�리\\", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.597402Z", "data": {"kind": "shell_command", "ts": "", "cmd": "샻��탵��면 밃�냁�� 샽�샶�샤�� 샭�줃�것�.", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T04:06:55.604994Z", "data": {"kind": "shell_command", "ts": "", "cmd": "��������������������", "cwd": "", "source": "zsh_history"}}
+{"ts": "2026-02-13T09:43:40.206491Z", "data": {"kind": "ide_worklog", "ts": "2026-02-13T09:43:40.204255Z", "tool": "anti-gravity", "source_path": "20260213_1845_antigravity_git_ingest_implemented.md", "content": "# Git Ingest Implementation\n\n## Summary\nImplemented a `git_ingest.py` script and a Git `post-commit` hook to automatically ingest commit metadata into Sophia's memory (`actions` namespace). This ensures all code changes are tracked in the memory stream for future context.\n\n## Files changed\n- `/Users/dragonpd/Sophia/scripts/git_ingest.py`\n- `/Users/dragonpd/Sophia/.git/hooks/post-commit`\n- `/Users/dragonpd/Sophia/task.md`\n\n## Commands run\n- `python scripts/git_ingest.py` (Smoke test)\n- `chmod +x .git/hooks/post-commit`\n- `git commit -m \"feat(kernel): add smoke test and git-ingest...\"`\n\n## Test results\n- **Success**: `actions.jsonl` contains the commit message and hash.\n- **Success**: `.sophia/audit/ledger.jsonl` recorded the `memory.append` execution.\n- **Verification**: `[Sophia] Ingest successful` message appeared in Git output.\n\n## Next suggestion\n- Implement \"Automatic Ingest\" for IDE edit events or generic file saves if needed.\n- Refine memory schema to separate \"Code Events\" from \"User Notes\".\n", "content_truncated": false, "redacted": false, "source": "ide_logs_drop"}}
+{"ts": "2026-02-13T10:18:58.629253Z", "data": {"kind": "ide_log", "source": "ide_drop", "file": "20260213_1845_antigravity_git_ingest_implemented.md", "ts": "2026-02-13T18:45:00Z", "title": "Git Ingest Implementation", "body": "## Summary\nImplemented a `git_ingest.py` script and a Git `post-commit` hook to automatically ingest commit metadata into Sophia's memory (`actions` namespace). This ensures all code changes are tracked in the memory stream for future context.\n\n## Files changed\n- `/Users/dragonpd/Sophia/scripts/git_ingest.py`\n- `/Users/dragonpd/Sophia/.git/hooks/post-commit`\n- `/Users/dragonpd/Sophia/task.md`\n\n## Commands run\n- `python scripts/git_ingest.py` (Smoke test)\n- `chmod +x .git/hooks/post-commit`\n- `git commit -m \"feat(kernel): add smoke test and git-ingest...\"`\n\n## Test results\n- **Success**: `actions.jsonl` contains the commit message and hash.\n- **Success**: `.sophia/audit/ledger.jsonl` recorded the `memory.append` execution.\n- **Verification**: `[Sophia] Ingest successful` message appeared in Git output.\n\n## Next suggestion\n- Implement \"Automatic Ingest\" for IDE edit events or generic file saves if needed.\n- Refine memory schema to separate \"Code Events\" from \"User Notes\".", "tags": ["ide", "log", "anti-gravity"], "redacted": false, "ingested_at": "2026-02-13T10:18:58.626146Z", "content_truncated": false}}
+{"ts": "2026-02-13T11:53:07.410462Z", "data": {"kind": "chat_message", "ts": "2026-02-13T11:53:07.407712Z", "role": "user", "text": "chat-send-hook-smoke", "channel": "General"}}
+{"ts": "2026-02-13T12:11:43.367186Z", "data": {"title": "Git Commit: 7193fd7", "body": "feat: Implement Add Note feature and update UI with SonaEyeGraph logo", "tags": ["git", "commit", "auto-ingest"], "refs": {"commit": "7193fd760962e86bbd45944fae8953c7633434c3", "ts": "2026-02-13T12:11:43.364193+00:00"}, "v": "git_v1"}}
