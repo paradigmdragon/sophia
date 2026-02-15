@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 // import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { inboxService } from "../lib/inboxService";
+import { apiUrl } from "../lib/apiBase";
 
 interface ChatMessage {
     id: string;
@@ -82,7 +83,7 @@ export function ChatOverlay({ isOpen, onClose }: ChatOverlayProps) {
         setInputText("");
         
         try {
-            const ingestRes = await fetch("http://localhost:8090/ingest", {
+            const ingestRes = await fetch(apiUrl("/ingest"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ref_uri: "chat_overlay" })
@@ -90,7 +91,7 @@ export function ChatOverlay({ isOpen, onClose }: ChatOverlayProps) {
             const ingestData = await ingestRes.json();
             const epId = ingestData.episode_id;
 
-            await fetch("http://localhost:8090/propose", {
+            await fetch(apiUrl("/propose"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ episode_id: epId, text: text })

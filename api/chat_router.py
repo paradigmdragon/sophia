@@ -2,25 +2,29 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import func
+from sqlalchemy import func, inspect as sa_inspect, text
 
 from api.config import settings
 from api.ledger_events import write_lifecycle_event
 from api.sophia_notes import append_system_note
+from core.chat.chat_contract import CHAT_CONTRACT_SCHEMA, make_clarify_contract
+from core.chat.chat_gate import parse_validate_and_gate
+from core.chat.user_rules_store import learn_from_clarify_response, match_user_rules
 from core.engine.local_brain import (
     build_intent_reply as local_build_intent_reply,
     build_question_prompt as local_build_question_prompt,
     classify_intent as local_classify_intent,
 )
 from core.forest.grove import analyze_to_forest
-from core.memory.schema import ChatTimelineMessage, QuestionPool, create_session_factory
+from core.llm_interface import LLMInterface
+from core.memory.schema import ChatTimelineMessage, MindItem, QuestionPool, WorkPackage, create_session_factory
 from sophia_kernel.modules.mind_diary import ingest_trigger_event, maybe_build_daily_diary
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -75,7 +79,7 @@ QUESTION_SIGNAL_RULES: list[dict[str, Any]] = [
 
 class ChatMessagePayload(BaseModel):
     content: str = Field(min_length=1)
-    context_tag: str = "general"
+    context_tag: str = "chat"
     channel: str = "General"
     linked_node: str | None = None
     importance: float | None = None
@@ -84,7 +88,7 @@ class ChatMessagePayload(BaseModel):
 class AddMessagePayload(BaseModel):
     role: Literal["user", "sophia"]
     content: str = Field(min_length=1)
-    context_tag: str = "general"
+    context_tag: str = "chat"
     importance: float = Field(default=0.5, ge=0.0, le=1.0)
     emotion_signal: str | None = None
     linked_cluster: str | None = None
@@ -115,19 +119,19 @@ def _to_iso(value: datetime | None) -> str:
     return dt.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-def _normalize_context_tag(value: str | None, channel: str | None = None) -> str:
+def _normalize_context_tag(value: str | None) -> str:
     raw = (value or "").strip().lower()
-    if not raw and channel:
-        raw = channel.strip().lower()
     if not raw:
-        return "system"
+        return "chat"
     raw = raw.replace(" ", "-")
     raw = re.sub(r"[^a-z0-9:_-]+", "-", raw).strip("-")
     if not raw:
-        return "system"
+        return "chat"
 
     canonical_map = {
-        "general": "system",
+        "general": "chat",
+        "chat": "chat",
+        "user": "chat",
         "question": "question-queue",
         "questions": "question-queue",
         "question-queue": "question-queue",
@@ -155,7 +159,16 @@ def _normalize_context_tag(value: str | None, channel: str | None = None) -> str
         topic = raw[len("forest-") :].strip("-")
         return f"forest:{topic or 'general'}"
 
-    return "system"
+    return raw
+
+
+def _should_auto_reply(role: str, context_tag: str) -> bool:
+    if role != "user":
+        return False
+    # "system" is reserved for internal logs/records and should not trigger chat replies.
+    if context_tag == "system":
+        return False
+    return True
 
 
 def _normalize_status(value: str | None) -> str:
@@ -189,6 +202,7 @@ def _serialize_message(message: ChatTimelineMessage) -> dict[str, Any]:
         "emotion_signal": message.emotion_signal,
         "linked_cluster": message.linked_cluster,
         "linked_node": message.linked_node,
+        "meta": message.meta if isinstance(message.meta, dict) else None,
         "created_at": ts,
         "timestamp": ts,  # backward compatibility
         "status": message.status,
@@ -205,6 +219,7 @@ def _save_message(
     emotion_signal: str | None = None,
     linked_cluster: str | None = None,
     linked_node: str | None = None,
+    meta: dict[str, Any] | None = None,
     status: str = "normal",
     created_at: datetime | None = None,
 ) -> ChatTimelineMessage:
@@ -217,6 +232,7 @@ def _save_message(
         emotion_signal=emotion_signal,
         linked_cluster=linked_cluster,
         linked_node=linked_node,
+        meta=meta,
         status=_normalize_status(status),
         created_at=created_at or _utc_now(),
     )
@@ -235,6 +251,251 @@ def _build_template_reply(intent: str, seed_text: str) -> str:
 
 def _build_question_prompt(cluster_id: str) -> str:
     return local_build_question_prompt(cluster_id)
+
+
+def _shorten_text(value: str, *, max_chars: int = 180) -> str:
+    return " ".join((value or "").split())[:max_chars]
+
+
+def _parse_iso_dt(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        dt = value
+    elif isinstance(value, str):
+        raw = value.strip()
+        if not raw:
+            return None
+        try:
+            dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    else:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
+def _is_recent(value: Any, *, days: int = 7) -> bool:
+    dt = _parse_iso_dt(value)
+    if dt is None:
+        return False
+    return (_utc_now() - dt) <= timedelta(days=days)
+
+
+def _build_bitmap_summary(session) -> dict[str, Any]:
+    bind = session.get_bind()
+    if bind is None:
+        return {"candidates": [], "anchors": []}
+
+    try:
+        inspector = sa_inspect(bind)
+    except Exception:
+        return {"candidates": [], "anchors": []}
+
+    candidates: list[dict[str, Any]] = []
+    anchors: list[dict[str, Any]] = []
+    try:
+        if inspector.has_table("candidates"):
+            rows = session.execute(
+                text(
+                    """
+                    SELECT candidate_id, note_thin, confidence, proposed_at
+                    FROM candidates
+                    ORDER BY proposed_at DESC
+                    LIMIT 20
+                    """
+                )
+            ).fetchall()
+            for row in rows:
+                proposed_at = row[3]
+                if proposed_at is not None and not _is_recent(proposed_at, days=7):
+                    continue
+                parsed_proposed_at = _parse_iso_dt(proposed_at)
+                candidates.append(
+                    {
+                        "id": str(row[0]),
+                        "note": _shorten_text(str(row[1] or ""), max_chars=120),
+                        "confidence": int(row[2] or 0),
+                        "proposed_at": _to_iso(parsed_proposed_at) if parsed_proposed_at else "",
+                    }
+                )
+                if len(candidates) >= 5:
+                    break
+
+        if inspector.has_table("backbones"):
+            rows = session.execute(
+                text(
+                    """
+                    SELECT backbone_id, combined_bits, role, adopted_at
+                    FROM backbones
+                    ORDER BY adopted_at DESC
+                    LIMIT 20
+                    """
+                )
+            ).fetchall()
+            for row in rows:
+                adopted_at = row[3]
+                if adopted_at is not None and not _is_recent(adopted_at, days=7):
+                    continue
+                parsed_adopted_at = _parse_iso_dt(adopted_at)
+                anchors.append(
+                    {
+                        "id": str(row[0]),
+                        "bits": int(row[1] or 0),
+                        "role": str(row[2] or ""),
+                        "adopted_at": _to_iso(parsed_adopted_at) if parsed_adopted_at else "",
+                    }
+                )
+                if len(anchors) >= 5:
+                    break
+    except Exception:
+        return {"candidates": [], "anchors": []}
+
+    return {"candidates": candidates, "anchors": anchors}
+
+
+def build_chat_context(context_tag: str, session, payload: AddMessagePayload) -> dict[str, Any]:
+    recent_rows = (
+        session.query(ChatTimelineMessage)
+        .filter(ChatTimelineMessage.context_tag == context_tag)
+        .order_by(ChatTimelineMessage.created_at.desc(), ChatTimelineMessage.id.desc())
+        .limit(10)
+        .all()
+    )
+    recent = [
+        {
+            "role": row.role,
+            "text": _shorten_text(row.content, max_chars=180),
+            "status": row.status,
+            "created_at": _to_iso(row.created_at),
+        }
+        for row in reversed(recent_rows)
+    ]
+
+    mind_rows = (
+        session.query(MindItem)
+        .order_by(MindItem.priority.desc(), MindItem.updated_at.desc(), MindItem.id.asc())
+        .limit(5)
+        .all()
+    )
+    mind = [
+        {
+            "type": row.type,
+            "title": _shorten_text(row.title, max_chars=80),
+            "summary_120": _shorten_text(row.summary_120, max_chars=120),
+            "priority": int(row.priority or 0),
+            "risk_score": float(row.risk_score or 0.0),
+            "confidence": float(row.confidence or 0.0),
+        }
+        for row in mind_rows
+    ]
+
+    user_rules = match_user_rules(session, payload.content.strip(), limit=5)
+    bitmap = _build_bitmap_summary(session)
+
+    return {
+        "context_tag": context_tag,
+        "linked_node": payload.linked_node,
+        "linked_cluster": payload.linked_cluster,
+        "recent_messages": recent,
+        "mind_top": mind,
+        "user_rules": user_rules,
+        "bitmap": bitmap,
+    }
+
+
+def _call_local_llm_contract(user_text: str, context: dict[str, Any]) -> str:
+    llm = LLMInterface()
+    schema_min = {
+        "required": CHAT_CONTRACT_SCHEMA.get("required", []),
+        "properties": CHAT_CONTRACT_SCHEMA.get("properties", {}),
+    }
+    system_prompt = "\n".join(
+        [
+            "You are Sophia local chat orchestrator.",
+            "Return ONLY valid JSON. Never include markdown or prose.",
+            "If uncertain, output kind=CLARIFY.",
+            "Use schema chat_contract.v0.1 exactly.",
+            "For CLARIFY, ask exactly one question.",
+            "For ANSWER, include at least one source ref.",
+            "For TASK_PLAN, keep 1~3 steps and do not execute.",
+        ]
+    )
+    user_prompt = "\n".join(
+        [
+            "[chat_contract_schema]",
+            json.dumps(schema_min, ensure_ascii=False),
+            "",
+            "[chat_context]",
+            json.dumps(context, ensure_ascii=False),
+            "",
+            "[user_input]",
+            user_text.strip(),
+            "",
+            "[output_rules]",
+            "Output JSON object only.",
+        ]
+    )
+    raw = llm._call_ollama(llm.primary_model, system_prompt, user_prompt)
+    if raw:
+        return raw
+    fallback = llm._call_ollama(llm.fallback_model, system_prompt, user_prompt)
+    return fallback or ""
+
+
+def _find_latest_pending_clarify(session, *, context_tag: str) -> ChatTimelineMessage | None:
+    row = (
+        session.query(ChatTimelineMessage)
+        .filter(
+            ChatTimelineMessage.role == "sophia",
+            ChatTimelineMessage.context_tag == context_tag,
+            ChatTimelineMessage.status == "pending",
+        )
+        .order_by(ChatTimelineMessage.created_at.desc(), ChatTimelineMessage.id.desc())
+        .first()
+    )
+    if row is None:
+        return None
+    meta = row.meta if isinstance(row.meta, dict) else {}
+    if str(meta.get("kind", "")).upper() != "CLARIFY":
+        return None
+    return row
+
+
+def _enqueue_task_plan(session, *, contract: dict[str, Any], context_tag: str, linked_node: str | None) -> str | None:
+    task_plan = contract.get("task_plan")
+    if not isinstance(task_plan, dict):
+        return None
+    steps = task_plan.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return None
+
+    package_id = f"wp_{uuid4().hex}"
+    row = WorkPackage(
+        id=package_id,
+        title="Chat Task Plan",
+        description=_shorten_text(str(contract.get("text", "")), max_chars=240),
+        payload={
+            "work_packet": {
+                "id": package_id,
+                "kind": "IMPLEMENT",
+                "context_tag": "work",
+                "linked_node": linked_node,
+                "acceptance_criteria": ["승인 후 IDE 전달", "실행은 별도 report 경로로 처리"],
+                "deliverables": ["return_payload.json"],
+                "return_payload_spec": {"status": "DONE|BLOCKED|FAILED", "signals": [], "artifacts": [], "notes": ""},
+                "steps": steps,
+            }
+        },
+        context_tag="work",
+        status="READY",
+        linked_node=linked_node,
+        created_at=_utc_now(),
+        updated_at=_utc_now(),
+    )
+    session.add(row)
+    session.flush()
+    return package_id
 
 
 def _normalize_evidence(
@@ -500,7 +761,11 @@ async def send_message(payload: ChatMessagePayload):
     try:
         _ensure_legacy_backfill(session)
 
-        context_tag = _normalize_context_tag(payload.context_tag, payload.channel)
+        print("CTX_IN:", payload.context_tag)
+        context_tag = _normalize_context_tag(payload.context_tag or "chat")
+        print("CTX_SAVED:", context_tag)
+        if context_tag == "system":
+            raise HTTPException(status_code=400, detail="context_tag 'system' is reserved for internal events")
         user_message = _save_message(
             session=session,
             role="user",
@@ -546,6 +811,9 @@ async def send_message(payload: ChatMessagePayload):
             "messages": [_serialize_message(user_message), _serialize_message(sophia_message)],
             "pending_inserted": [_serialize_message(m) for m in pending_messages],
         }
+    except HTTPException:
+        session.rollback()
+        raise
     except Exception as exc:
         session.rollback()
         raise HTTPException(status_code=500, detail=str(exc))
@@ -558,17 +826,78 @@ async def add_message(payload: AddMessagePayload):
     session = session_factory()
     try:
         _ensure_legacy_backfill(session)
+        print("CTX_IN:", payload.context_tag)
+        context_tag = _normalize_context_tag(payload.context_tag or "chat")
+        print("CTX_SAVED:", context_tag)
+        if payload.role == "user" and context_tag == "system":
+            raise HTTPException(status_code=400, detail="context_tag 'system' is reserved for internal events")
         row = _save_message(
             session=session,
             role=payload.role,
             content=payload.content.strip(),
-            context_tag=_normalize_context_tag(payload.context_tag),
+            context_tag=context_tag,
             importance=float(payload.importance),
             emotion_signal=payload.emotion_signal,
             linked_cluster=payload.linked_cluster,
             linked_node=payload.linked_node,
             status=payload.status,
         )
+
+        learned_rule: dict[str, Any] | None = None
+        if payload.role == "user":
+            latest_clarify = _find_latest_pending_clarify(session, context_tag=context_tag)
+            if latest_clarify is not None:
+                learned_rule = learn_from_clarify_response(
+                    session,
+                    clarify_meta=latest_clarify.meta if isinstance(latest_clarify.meta, dict) else {},
+                    user_text=payload.content.strip(),
+                )
+                if learned_rule is not None:
+                    latest_clarify.status = "resolved"
+                    session.add(latest_clarify)
+
+        reply_message: ChatTimelineMessage | None = None
+        task_plan_work_id: str | None = None
+        llm_gate: dict[str, Any] | None = None
+        if _should_auto_reply(payload.role, context_tag):
+            chat_context = build_chat_context(context_tag, session, payload)
+            raw_contract = _call_local_llm_contract(payload.content.strip(), chat_context)
+            contract, gate = parse_validate_and_gate(raw_contract, context=chat_context)
+            llm_gate = gate
+            reply_text = str(contract.get("text", "")).strip()
+            reply_kind = str(contract.get("kind", "CLARIFY")).upper()
+            reply_status = "pending" if reply_kind == "CLARIFY" else "normal"
+            if reply_kind == "TASK_PLAN":
+                task_plan_work_id = _enqueue_task_plan(
+                    session,
+                    contract=contract,
+                    context_tag=context_tag,
+                    linked_node=payload.linked_node,
+                )
+            reply_meta: dict[str, Any] = {
+                "schema": contract.get("schema"),
+                "kind": reply_kind,
+                "needs": contract.get("needs"),
+                "task_plan": contract.get("task_plan"),
+                "sources": contract.get("sources"),
+                "confidence_model": contract.get("confidence_model"),
+                "gate_score": gate.get("gate_score"),
+                "evidence_scope": gate.get("evidence_scope"),
+                "gate_reason": gate.get("reason", ""),
+                "fallback_applied": bool(gate.get("fallback_applied", False)),
+            }
+            if task_plan_work_id:
+                reply_meta["work_package_id"] = task_plan_work_id
+            reply_message = _save_message(
+                session=session,
+                role="sophia",
+                content=reply_text,
+                context_tag=context_tag,
+                importance=_calc_importance(reply_text),
+                emotion_signal=reply_kind.lower(),
+                meta=reply_meta,
+                status=reply_status,
+            )
 
         if payload.role == "user" and payload.linked_cluster:
             analysis = analyze_to_forest(
@@ -652,7 +981,48 @@ async def add_message(payload: AddMessagePayload):
                 dedup_key=f"question_response:{payload.linked_cluster}:{payload.content.strip()}",
             )
         session.commit()
-        return {"status": "ok", "message": _serialize_message(row)}
+
+        if learned_rule is not None:
+            write_lifecycle_event(
+                "USER_RULE_LEARNED",
+                {
+                    "project": "sophia",
+                    "context_tag": context_tag,
+                    "rule_key": learned_rule.get("key", ""),
+                    "rule_type": learned_rule.get("type", ""),
+                    "rule_id": learned_rule.get("id", 0),
+                },
+                skill_id="chat.learning",
+            )
+        if task_plan_work_id is not None:
+            write_lifecycle_event(
+                "WORK_PACKAGE_CREATED",
+                {
+                    "project": "sophia",
+                    "id": task_plan_work_id,
+                    "kind": "IMPLEMENT",
+                    "context_tag": "work",
+                    "source": "chat.task_plan",
+                },
+                skill_id="chat.autoplan",
+            )
+
+        messages = [_serialize_message(row)]
+        if reply_message is not None:
+            messages.append(_serialize_message(reply_message))
+        return {
+            "status": "ok",
+            "message": _serialize_message(row),
+            "messages": messages,
+            "context_tag": context_tag,
+            "reply_skipped": bool(payload.role == "user" and context_tag == "system"),
+            "gate": llm_gate or {},
+            "task_plan_work_id": task_plan_work_id,
+            "learned_rule": learned_rule,
+        }
+    except HTTPException:
+        session.rollback()
+        raise
     except Exception as exc:
         session.rollback()
         raise HTTPException(status_code=500, detail=str(exc))

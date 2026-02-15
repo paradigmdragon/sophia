@@ -1,4 +1,5 @@
 import { writeTextFile, readTextFile, exists, mkdir, readDir, remove, rename } from '@tauri-apps/plugin-fs';
+import { apiUrl } from "./apiBase";
 
 // Workspace Root: /Users/dragonpd/Sophia/workspace
 const WORKSPACE_ROOT = '/Users/dragonpd/Sophia/workspace';
@@ -148,9 +149,25 @@ export const noteService = {
         if (oldPath === newPath) return false;
 
         try {
-            await rename(oldPath, newPath);
-            console.log("[moveItem] Rename successful");
-            return true;
+            // Use API to ensure DB sync
+            // We assume API is running on localhost:8090
+            const response = await fetch(apiUrl('/fs/move'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ old_path: oldPath, new_path: newPath })
+            });
+            
+            if (response.ok) {
+                console.log("[moveItem] API Move successful");
+                return true;
+            } else {
+                // If API fails (e.g. server down), fallback to FS?
+                // User requirement asks for DB sync, so we should rely on API.
+                // But if only FS move happens, DB desyncs.
+                // Let's force API for now as consistency is priority.
+                console.error("[moveItem] API Move failed:", await response.text());
+                return false;
+            }
         } catch (e) {
             console.error("[moveItem] Failed to move item:", e);
             return false;

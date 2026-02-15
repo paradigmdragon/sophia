@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8090';
+import { apiUrl } from "./apiBase";
 
 export type MemoryNamespace = 'notes' | 'ideas' | 'decisions' | 'actions';
 
@@ -70,7 +70,7 @@ export interface MindDashboard {
 }
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE}${path}`, {
+    const response = await fetch(apiUrl(path), {
         headers: {
             'Content-Type': 'application/json',
             ...(init?.headers || {}),

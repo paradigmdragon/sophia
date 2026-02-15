@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 // import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { inboxService } from "../lib/inboxService";
+import { apiUrl } from "../lib/apiBase";
 
 interface ChatMessage {
     id: string;
@@ -91,7 +92,7 @@ export function ChatView() {
             // For v0.1 simplification, we'll just hit /propose with a specific ID or create one on fly.
             // Let's assume we want to trigger a thought process:
             // Step A: Ingest (Ref: chat_ui)
-            const ingestRes = await fetch("http://localhost:8090/ingest", {
+            const ingestRes = await fetch(apiUrl("/ingest"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ref_uri: "chat_ui" })
@@ -100,7 +101,7 @@ export function ChatView() {
             const epId = ingestData.episode_id;
 
             // Step B: Propose (Trigger Candidates)
-            await fetch("http://localhost:8090/propose", {
+            await fetch(apiUrl("/propose"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ episode_id: epId, text: text })

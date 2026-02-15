@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
-import { chatService, ChatMessage, WorkPackageItem } from "../lib/chatService";
+import { chatService, ChatHealthDiagnostic, ChatMessage, WorkPackageItem } from "../lib/chatService";
 import { ActivePanel, PanelTab } from "../components/ActivePanel";
 import { LogDropModal } from "../components/LogDropModal";
 import {
@@ -25,7 +25,7 @@ interface ChatFilter {
 }
 
 const CHAT_FILTERS: ChatFilter[] = [
-    { id: "all", label: "All", icon: FolderTree, composeDefault: "system" },
+    { id: "all", label: "All", icon: FolderTree, composeDefault: "chat" },
     { id: "grove", label: "Grove", icon: Sprout, composeDefault: "forest:grove" },
     { id: "canopy", label: "Canopy", icon: LayoutPanelTop, composeDefault: "forest:canopy" },
     { id: "questions", label: "Questions", icon: Brain, composeDefault: "question-queue" },
@@ -69,10 +69,13 @@ export function ChatPage() {
     const [reportJsonInput, setReportJsonInput] = useState("");
     const [inputText, setInputText] = useState("");
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [toastActionLabel, setToastActionLabel] = useState<string | null>(null);
+    const [diagnostic, setDiagnostic] = useState<ChatHealthDiagnostic | null>(null);
+    const [outboxCount, setOutboxCount] = useState(0);
     const [panelRefreshToken, setPanelRefreshToken] = useState(0);
     const [activeTab, setActiveTab] = useState<PanelTab>("notes");
     const [activeFilter, setActiveFilter] = useState<ChatFilterId>("all");
-    const [composeContextTag, setComposeContextTag] = useState("system");
+    const [composeContextTag, setComposeContextTag] = useState("chat");
     const [customTopicInput, setCustomTopicInput] = useState("");
     const [customContextTag, setCustomContextTag] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -141,8 +144,13 @@ export function ChatPage() {
         }
     };
 
+    const refreshOutboxCount = () => {
+        setOutboxCount(chatService.getOutbox().length);
+    };
+
     useEffect(() => {
         loadTimeline();
+        refreshOutboxCount();
         const timer = window.setInterval(loadTimeline, 2000);
         return () => window.clearInterval(timer);
     }, []);
@@ -174,25 +182,65 @@ export function ChatPage() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const showToast = (message: string) => {
+    const showToast = (message: string, actionLabel: string | null = null) => {
         setToastMessage(message);
-        window.setTimeout(() => setToastMessage(null), 3000);
+        setToastActionLabel(actionLabel);
+        window.setTimeout(() => {
+            setToastMessage(null);
+            setToastActionLabel(null);
+        }, 5000);
+    };
+
+    const handleRunHealthDiagnosis = async () => {
+        const info = await chatService.diagnoseHealth();
+        setDiagnostic(info);
+        if (info.status === 200) {
+            showToast("Health 체크 성공");
+            return;
+        }
+        showToast(`Health 체크 실패: ${info.error || info.healthResponse}`);
+    };
+
+    const handleRetryOutbox = async () => {
+        const result = await chatService.retryOutbox(50);
+        refreshOutboxCount();
+        if (result.sent > 0) {
+            await loadTimeline();
+            setPanelRefreshToken((prev) => prev + 1);
+            showToast(`재전송 완료: ${result.sent}건`);
+            return;
+        }
+        if (result.failed > 0) {
+            showToast(`재전송 실패: ${result.last_error}`, "진단");
+            return;
+        }
+        showToast("재전송할 메시지가 없습니다.");
     };
 
     const handleSendMessage = async () => {
         if (!inputText.trim()) return;
+        if (composeContextTag === "system") {
+            showToast("system 컨텍스트는 내부 기록 전용입니다. chat/work/memo 등으로 전환하세요.");
+            return;
+        }
         const text = inputText;
         setInputText("");
 
         try {
             const linkedNode = composeContextTag.startsWith("forest:") ? composeContextTag.split(":", 2)[1] : null;
             await chatService.sendMessage(text, composeContextTag, linkedNode);
+            const retry = await chatService.retryOutbox(20);
             await loadTimeline();
+            refreshOutboxCount();
+            if (retry.sent > 0) {
+                showToast(`보류 메시지 ${retry.sent}건 자동 재전송됨`);
+            }
             setPanelRefreshToken((prev) => prev + 1);
         } catch (error) {
             console.error("Failed to send message:", error);
             setInputText(text);
-            showToast("메시지 전송 실패 (네트워크/API 확인 필요)");
+            refreshOutboxCount();
+            showToast(`메시지 전송 실패: ${chatService.formatError(error)}`, "진단");
         }
     };
 
@@ -304,6 +352,11 @@ export function ChatPage() {
         setCustomContextTag(tag);
         setComposeContextTag(tag);
         setActiveFilter("custom");
+    };
+
+    const switchToChatContext = () => {
+        setActiveFilter("all");
+        setComposeContextTag("chat");
     };
 
     return (
@@ -565,18 +618,40 @@ export function ChatPage() {
                                                 handleSendMessage();
                                             }
                                         }}
-                                        placeholder="메시지를 입력하세요..."
+                                        placeholder={composeContextTag === "system" ? "system은 내부 로그 전용입니다. 대화 컨텍스트로 전환하세요." : "메시지를 입력하세요..."}
                                         className="flex-1 bg-transparent px-2 py-2 text-sm text-white focus:outline-none min-h-[40px]"
                                         autoFocus
                                     />
-                                    <button onClick={handleSendMessage} className="text-blue-500 hover:bg-[#333] p-2 rounded transition-colors">
+                                    <button
+                                        onClick={handleSendMessage}
+                                        disabled={composeContextTag === "system"}
+                                        className="text-blue-500 hover:bg-[#333] disabled:text-gray-600 disabled:hover:bg-transparent p-2 rounded transition-colors"
+                                    >
                                         ➤
                                     </button>
                                 </div>
                             </div>
                             <div className="text-[10px] text-gray-600 mt-1 flex justify-between px-1">
                                 <span>Enter to send, Shift+Enter for newline</span>
-                                <span>Single Timeline + Context Filter</span>
+                                <span className="flex items-center gap-2">
+                                    {composeContextTag === "system" && (
+                                        <button
+                                            onClick={switchToChatContext}
+                                            className="rounded border border-cyan-700/60 px-2 py-0.5 text-[10px] text-cyan-200 hover:bg-cyan-900/30"
+                                        >
+                                            대화로 전환
+                                        </button>
+                                    )}
+                                    {outboxCount > 0 && (
+                                        <button
+                                            onClick={handleRetryOutbox}
+                                            className="rounded border border-amber-700/60 px-2 py-0.5 text-[10px] text-amber-200 hover:bg-amber-900/30"
+                                        >
+                                            재전송 {outboxCount}
+                                        </button>
+                                    )}
+                                    <span>Single Timeline + Context Filter</span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -609,7 +684,43 @@ export function ChatPage() {
 
             {toastMessage && (
                 <div className="fixed right-4 bottom-4 z-40 rounded border border-yellow-700/60 bg-yellow-900/90 px-3 py-2 text-xs text-yellow-100 shadow-lg">
-                    {toastMessage}
+                    <div className="flex items-center gap-2">
+                        <span>{toastMessage}</span>
+                        {toastActionLabel && (
+                            <button
+                                onClick={handleRunHealthDiagnosis}
+                                className="rounded border border-yellow-400/60 px-2 py-0.5 text-[11px] text-yellow-100 hover:bg-yellow-700/40"
+                            >
+                                {toastActionLabel}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {diagnostic && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                    <div className="w-[680px] max-w-[92vw] rounded border border-[#3d3d3d] bg-[#1f1f1f] p-4 text-sm text-gray-200">
+                        <div className="mb-2 flex items-center justify-between">
+                            <h3 className="text-sm font-semibold">API 진단 결과</h3>
+                            <button
+                                onClick={() => setDiagnostic(null)}
+                                className="rounded border border-[#4a4a4a] px-2 py-0.5 text-xs text-gray-300 hover:bg-[#2c2c2c]"
+                            >
+                                닫기
+                            </button>
+                        </div>
+                        <pre className="max-h-[50vh] overflow-auto rounded border border-[#3b3b3b] bg-[#101114] p-3 text-xs text-gray-200 whitespace-pre-wrap">
+{`baseURL: ${diagnostic.baseURL}
+lastEndpoint: ${diagnostic.lastEndpoint}
+healthStatus: ${diagnostic.status ?? "N/A"}
+lastRequestStatus: ${diagnostic.lastRequestStatus ?? "N/A"}
+lastRequestError: ${diagnostic.lastRequestError || "N/A"}
+lastResponseText: ${diagnostic.lastResponseText || "N/A"}
+healthResponse: ${diagnostic.healthResponse || "N/A"}
+error: ${diagnostic.error || "N/A"}`}
+                        </pre>
+                    </div>
                 </div>
             )}
         </div>

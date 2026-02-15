@@ -1,4 +1,186 @@
-const API_BASE = 'http://localhost:8090';
+import { API_BASE, apiUrl } from "./apiBase";
+
+const CHAT_OUTBOX_KEY = "sophia.chat.outbox.v1";
+
+interface ChatRequestTrace {
+    baseURL: string;
+    endpoint: string;
+    status: number | null;
+    responseText: string;
+    error: string;
+}
+
+export interface ChatOutboxItem {
+    id: string;
+    text: string;
+    contextTag: string;
+    linkedNode: string | null;
+    queuedAt: string;
+    lastError: string;
+}
+
+export interface ChatHealthDiagnostic {
+    baseURL: string;
+    lastEndpoint: string;
+    status: number | null;
+    lastRequestStatus: number | null;
+    lastRequestError: string;
+    lastResponseText: string;
+    healthResponse: string;
+    error: string;
+}
+
+let lastTrace: ChatRequestTrace = {
+    baseURL: API_BASE,
+    endpoint: "",
+    status: null,
+    responseText: "",
+    error: "",
+};
+
+function _errorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    return String(error);
+}
+
+function formatChatError(error: unknown): string {
+    const raw = _errorMessage(error);
+    if (raw.includes("ERR_CONNECTION_REFUSED") || raw.includes("ECONNREFUSED")) {
+        return `${raw} (서버 down/포트 불일치 가능)`;
+    }
+    if (raw.includes("Failed to fetch")) {
+        return `${raw} (URL/CORS/Tauri allowlist 가능)`;
+    }
+    return raw;
+}
+
+function _readOutbox(): ChatOutboxItem[] {
+    try {
+        const raw = window.localStorage.getItem(CHAT_OUTBOX_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+                id: String(item.id || ""),
+                text: String(item.text || ""),
+                contextTag: String(item.contextTag || "chat"),
+                linkedNode: item.linkedNode ? String(item.linkedNode) : null,
+                queuedAt: String(item.queuedAt || new Date().toISOString()),
+                lastError: String(item.lastError || ""),
+            }))
+            .filter((item) => item.id && item.text);
+    } catch {
+        return [];
+    }
+}
+
+function _writeOutbox(items: ChatOutboxItem[]): void {
+    window.localStorage.setItem(CHAT_OUTBOX_KEY, JSON.stringify(items.slice(-200)));
+}
+
+function _pushOutbox(item: ChatOutboxItem): void {
+    const current = _readOutbox();
+    current.push(item);
+    _writeOutbox(current);
+}
+
+function _createOutboxItem(text: string, contextTag: string, linkedNode: string | null, lastError: string): ChatOutboxItem {
+    return {
+        id: `outbox_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+        text,
+        contextTag,
+        linkedNode,
+        queuedAt: new Date().toISOString(),
+        lastError: lastError.slice(0, 500),
+    };
+}
+
+async function _fetchWithDetails(path: string, init?: RequestInit): Promise<Response> {
+    const endpoint = path.startsWith("/") ? path : `/${path}`;
+    const url = apiUrl(endpoint);
+    lastTrace = {
+        baseURL: API_BASE,
+        endpoint,
+        status: null,
+        responseText: "",
+        error: "",
+    };
+    try {
+        const response = await fetch(url, init);
+        lastTrace.status = response.status;
+        return response;
+    } catch (error) {
+        const msg = _errorMessage(error);
+        lastTrace.error = msg;
+        throw new Error(`[${url}] ${msg}`);
+    }
+}
+
+async function _sendViaMessagesEndpoint(text: string, contextTag: string, linkedNode: string | null): Promise<SendMessageResponse> {
+    const response = await _fetchWithDetails("/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            role: "user",
+            content: text,
+            context_tag: contextTag,
+            linked_node: linkedNode,
+            status: "normal",
+            importance: 0.6,
+        }),
+    });
+    if (response.status === 404) {
+        const legacy = await _fetchWithDetails("/chat/message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: text,
+                channel: "General",
+                context_tag: contextTag,
+                linked_node: linkedNode,
+            }),
+        });
+        if (!legacy.ok) {
+            const legacyBody = await legacy.text();
+            lastTrace.responseText = legacyBody.slice(0, 1000);
+            throw new Error(`HTTP ${legacy.status} ${legacy.statusText}: ${legacyBody}`);
+        }
+        const rawLegacy = await legacy.json();
+        return {
+            status: String(rawLegacy?.status || "ok"),
+            reply: rawLegacy?.reply ? String(rawLegacy.reply) : undefined,
+            context_tag: String(rawLegacy?.context_tag || contextTag),
+            messages: Array.isArray(rawLegacy?.messages) ? rawLegacy.messages.map(normalizeMessage) : [],
+            pending_inserted: Array.isArray(rawLegacy?.pending_inserted) ? rawLegacy.pending_inserted.map(normalizeMessage) : [],
+        };
+    }
+    if (!response.ok) {
+        const body = await response.text();
+        lastTrace.responseText = body.slice(0, 1000);
+        throw new Error(`HTTP ${response.status} ${response.statusText}: ${body}`);
+    }
+    const raw = await response.json();
+    const rows: ChatMessage[] = Array.isArray(raw?.messages)
+        ? raw.messages.map(normalizeMessage)
+        : raw?.message
+            ? [normalizeMessage(raw.message)]
+            : [];
+    const pendingRows: ChatMessage[] = Array.isArray(raw?.pending_inserted)
+        ? raw.pending_inserted.map(normalizeMessage)
+        : [];
+    const replyText = typeof raw?.reply === "string"
+        ? raw.reply
+        : rows.find((item) => item.role === "sophia")?.content;
+    return {
+        status: String(raw?.status || "ok"),
+        reply: replyText,
+        context_tag: String(raw?.context_tag || rows[0]?.context_tag || contextTag),
+        messages: rows,
+        pending_inserted: pendingRows,
+    };
+}
 
 export interface ChatMessage {
     id: string;
@@ -94,36 +276,15 @@ function normalizeMessage(raw: any): ChatMessage {
 }
 
 export const chatService = {
-    async sendMessage(text: string, contextTag: string = 'system', linkedNode: string | null = null): Promise<SendMessageResponse> {
-        console.log(`Sending message via API: ${text}`);
+    async sendMessage(text: string, contextTag: string = 'chat', linkedNode: string | null = null): Promise<SendMessageResponse> {
+        console.log(`Sending message via API(${API_BASE}): ${text}`);
         try {
-            const response = await fetch(`${API_BASE}/chat/message`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content: text,
-                    channel: 'General',
-                    context_tag: contextTag,
-                    linked_node: linkedNode,
-                })
-            });
-            
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(errText);
-            }
-            
-            const raw = await response.json();
-            return {
-                status: String(raw?.status || 'ok'),
-                reply: raw?.reply ? String(raw.reply) : undefined,
-                context_tag: String(raw?.context_tag || contextTag),
-                messages: Array.isArray(raw?.messages) ? raw.messages.map(normalizeMessage) : [],
-                pending_inserted: Array.isArray(raw?.pending_inserted) ? raw.pending_inserted.map(normalizeMessage) : [],
-            };
+            return await _sendViaMessagesEndpoint(text, contextTag, linkedNode);
         } catch (error) {
-            console.error('Failed to send message:', error);
-            throw error;
+            const message = _errorMessage(error);
+            _pushOutbox(_createOutboxItem(text, contextTag, linkedNode, message));
+            console.error('Failed to send message:', message);
+            throw new Error(formatChatError(error));
         }
     },
 
@@ -144,13 +305,14 @@ export const chatService = {
         status?: 'normal' | 'pending' | 'escalated' | 'acknowledged' | 'resolved' | 'read';
     }): Promise<ChatMessage> {
         try {
-            const response = await fetch(`${API_BASE}/chat/messages`, {
+            const response = await _fetchWithDetails('/chat/messages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
             if (!response.ok) {
                 const errText = await response.text();
+                lastTrace.responseText = errText.slice(0, 1000);
                 throw new Error(errText);
             }
             const raw = await response.json();
@@ -168,7 +330,7 @@ export const chatService = {
             if (contextTag && contextTag !== 'all') {
                 query.set('context_tag', contextTag);
             }
-            const response = await fetch(`${API_BASE}/chat/history?${query.toString()}`);
+            const response = await _fetchWithDetails(`/chat/history?${query.toString()}`);
             if (!response.ok) return [];
             const raw = await response.json();
             if (!Array.isArray(raw)) return [];
@@ -181,7 +343,7 @@ export const chatService = {
 
     async getContexts(): Promise<Array<{ context_tag: string; count: number }>> {
         try {
-            const response = await fetch(`${API_BASE}/chat/contexts`);
+            const response = await _fetchWithDetails('/chat/contexts');
             if (!response.ok) return [];
             const raw = await response.json();
             if (!Array.isArray(raw)) return [];
@@ -197,7 +359,7 @@ export const chatService = {
 
     async getPending(limit: number = 50): Promise<ChatMessage[]> {
         try {
-            const response = await fetch(`${API_BASE}/chat/pending?limit=${encodeURIComponent(String(limit))}`);
+            const response = await _fetchWithDetails(`/chat/pending?limit=${encodeURIComponent(String(limit))}`);
             if (!response.ok) return [];
             const raw = await response.json();
             if (!Array.isArray(raw)) return [];
@@ -210,7 +372,7 @@ export const chatService = {
 
     async markMessageRead(messageId: string): Promise<ChatMessage | null> {
         try {
-            const response = await fetch(`${API_BASE}/chat/messages/${encodeURIComponent(messageId)}/read`, {
+            const response = await _fetchWithDetails(`/chat/messages/${encodeURIComponent(messageId)}/read`, {
                 method: 'POST',
             });
             if (!response.ok) return null;
@@ -224,7 +386,7 @@ export const chatService = {
 
     async getQuestionPool(): Promise<QuestionPoolItem[]> {
         try {
-            const response = await fetch(`${API_BASE}/chat/questions/pool`);
+            const response = await _fetchWithDetails('/chat/questions/pool');
             if (!response.ok) return [];
             const raw = await response.json();
             if (!Array.isArray(raw)) return [];
@@ -248,7 +410,7 @@ export const chatService = {
 
     async ackQuestion(clusterId: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE}/chat/questions/${encodeURIComponent(clusterId)}/ack`, {
+            const response = await _fetchWithDetails(`/chat/questions/${encodeURIComponent(clusterId)}/ack`, {
                 method: 'POST',
             });
             return response.ok;
@@ -260,7 +422,7 @@ export const chatService = {
 
     async resolveQuestion(clusterId: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE}/chat/questions/${encodeURIComponent(clusterId)}/resolve`, {
+            const response = await _fetchWithDetails(`/chat/questions/${encodeURIComponent(clusterId)}/resolve`, {
                 method: 'POST',
             });
             return response.ok;
@@ -282,7 +444,7 @@ export const chatService = {
         linked_node?: string | null;
     }): Promise<WorkPackageItem | null> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages`, {
+            const response = await _fetchWithDetails('/work/packages', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -298,7 +460,7 @@ export const chatService = {
 
     async getWorkPackages(status: 'READY' | 'IN_PROGRESS' | 'DONE' | 'BLOCKED' | 'FAILED' | 'ALL' = 'READY'): Promise<WorkPackageItem[]> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages?status=${encodeURIComponent(status)}`);
+            const response = await _fetchWithDetails(`/work/packages?status=${encodeURIComponent(status)}`);
             if (!response.ok) return [];
             const raw = await response.json();
             if (!Array.isArray(raw?.items)) return [];
@@ -311,7 +473,7 @@ export const chatService = {
 
     async ackWorkPackage(id: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages/${encodeURIComponent(id)}/ack`, {
+            const response = await _fetchWithDetails(`/work/packages/${encodeURIComponent(id)}/ack`, {
                 method: 'POST',
             });
             return response.ok;
@@ -323,7 +485,7 @@ export const chatService = {
 
     async completeWorkPackage(id: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages/${encodeURIComponent(id)}/complete`, {
+            const response = await _fetchWithDetails(`/work/packages/${encodeURIComponent(id)}/complete`, {
                 method: 'POST',
             });
             return response.ok;
@@ -335,7 +497,7 @@ export const chatService = {
 
     async getWorkPacket(id: string): Promise<{ work_package_id: string; packet: Record<string, unknown>; packet_text: string } | null> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages/${encodeURIComponent(id)}/packet`);
+            const response = await _fetchWithDetails(`/work/packages/${encodeURIComponent(id)}/packet`);
             if (!response.ok) return null;
             const raw = await response.json();
             return {
@@ -360,7 +522,7 @@ export const chatService = {
         },
     ): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE}/work/packages/${encodeURIComponent(id)}/report`, {
+            const response = await _fetchWithDetails(`/work/packages/${encodeURIComponent(id)}/report`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(report),
@@ -369,6 +531,83 @@ export const chatService = {
         } catch (error) {
             console.error('Failed to submit work report:', error);
             return false;
+        }
+    },
+
+    getApiBase(): string {
+        return API_BASE;
+    },
+
+    getLastRequestTrace(): ChatRequestTrace {
+        return { ...lastTrace };
+    },
+
+    formatError(error: unknown): string {
+        return formatChatError(error);
+    },
+
+    getOutbox(): ChatOutboxItem[] {
+        return _readOutbox();
+    },
+
+    async retryOutbox(limit: number = 20): Promise<{ sent: number; failed: number; remaining: number; last_error: string }> {
+        const queue = _readOutbox();
+        if (queue.length === 0) {
+            return { sent: 0, failed: 0, remaining: 0, last_error: "" };
+        }
+        const pending = [...queue];
+        let sent = 0;
+        let failed = 0;
+        let lastError = "";
+        const max = Math.max(1, limit);
+
+        for (let i = 0; i < pending.length && i < max; i += 1) {
+            const item = pending[i];
+            try {
+                await _sendViaMessagesEndpoint(item.text, item.contextTag, item.linkedNode);
+                sent += 1;
+                const idx = queue.findIndex((row) => row.id === item.id);
+                if (idx >= 0) queue.splice(idx, 1);
+            } catch (error) {
+                failed += 1;
+                lastError = formatChatError(error);
+                const idx = queue.findIndex((row) => row.id === item.id);
+                if (idx >= 0) {
+                    queue[idx] = { ...queue[idx], lastError };
+                }
+            }
+        }
+        _writeOutbox(queue);
+        return { sent, failed, remaining: queue.length, last_error: lastError };
+    },
+
+    async diagnoseHealth(): Promise<ChatHealthDiagnostic> {
+        const previous = { ...lastTrace };
+        try {
+            const response = await _fetchWithDetails("/health");
+            const text = await response.text();
+            lastTrace.responseText = text.slice(0, 1000);
+            return {
+                baseURL: API_BASE,
+                lastEndpoint: previous.endpoint || "/health",
+                status: response.status,
+                lastRequestStatus: previous.status,
+                lastRequestError: previous.error,
+                lastResponseText: previous.responseText,
+                healthResponse: text,
+                error: previous.error || "",
+            };
+        } catch (error) {
+            return {
+                baseURL: API_BASE,
+                lastEndpoint: previous.endpoint || "/health",
+                status: lastTrace.status,
+                lastRequestStatus: previous.status,
+                lastRequestError: previous.error,
+                lastResponseText: previous.responseText,
+                healthResponse: "",
+                error: `${previous.error || ""} ${formatChatError(error)}`.trim(),
+            };
         }
     },
 

@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from "react";
-
-const API_BASE = "http://localhost:8090";
+import { API_BASE, apiUrl } from "../lib/apiBase";
 
 export function ReportPage() {
     useEffect(() => {
-        fetch(`${API_BASE}/forest/projects/sophia/canopy/export`, {
+        fetch(apiUrl("/forest/projects/sophia/canopy/export"), {
             method: "POST",
         }).catch((error) => {
             console.error("Failed to render canopy dashboard:", error);

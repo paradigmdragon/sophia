@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 from core.system import SophiaSystem
@@ -8,15 +9,55 @@ from api.sone_router import router as sone_router
 from api.work_router import router as work_router
 from api.forest_router import router as forest_router
 from api.mind_router import router as mind_router
+from api.inactivity_watch_service import InactivityWatcherConfig, InactivityWatcherService
 from core.engine.scheduler import get_scheduler
 import asyncio
 from datetime import datetime
 
+
 app = FastAPI(title="Sophia Bit-Hybrid Engine API", version="0.1.0")
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "timestamp": datetime.now().isoformat()}
+
+# Desktop(WebView) -> local API calls can fail with opaque "Load failed" without CORS.
+# Keep this permissive for local-first development/runtime.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize System (Single Instance)
 system = SophiaSystem(db_path=settings.db_path)
 scheduler = get_scheduler(settings.db_path, poll_interval_seconds=5)
+inactivity_watcher_service = InactivityWatcherService(
+    db_path=settings.db_path,
+    config=InactivityWatcherConfig(
+        enabled=bool(settings.enable_watchers),
+        threshold_days=int(settings.watcher_threshold_days),
+        cooldown_days=int(settings.watcher_cooldown_days),
+        daily_limit=int(settings.watcher_daily_limit),
+    ),
+)
+
+
+def register_watcher_jobs(target_scheduler=None) -> bool:
+    if not settings.enable_watchers:
+        return False
+    scheduler_obj = target_scheduler or scheduler
+    scheduler_obj.register_periodic_job(
+        name="inactivity_watcher",
+        callback=inactivity_watcher_service.run_once,
+        interval_seconds=max(1, int(settings.watcher_interval_seconds)),
+        startup_delay_seconds=max(0, int(settings.watcher_startup_delay_seconds)),
+    )
+    return True
+
 app.include_router(memory_router)
 app.include_router(sone_router)
 app.include_router(work_router)
@@ -62,6 +103,7 @@ async def debug_dashboard():
 
 @app.on_event("startup")
 async def startup_event():
+    register_watcher_jobs()
     scheduler.start_background()
 
 
