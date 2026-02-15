@@ -3,6 +3,12 @@ from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 from core.system import SophiaSystem
 from api.config import settings
+from api.memory_router import router as memory_router
+from api.sone_router import router as sone_router
+from api.work_router import router as work_router
+from api.forest_router import router as forest_router
+from api.mind_router import router as mind_router
+from core.engine.scheduler import get_scheduler
 import asyncio
 from datetime import datetime
 
@@ -10,6 +16,58 @@ app = FastAPI(title="Sophia Bit-Hybrid Engine API", version="0.1.0")
 
 # Initialize System (Single Instance)
 system = SophiaSystem(db_path=settings.db_path)
+scheduler = get_scheduler(settings.db_path, poll_interval_seconds=5)
+app.include_router(memory_router)
+app.include_router(sone_router)
+app.include_router(work_router)
+app.include_router(forest_router)
+app.include_router(mind_router)
+from api.chat_router import router as chat_router
+app.include_router(chat_router)
+
+from fastapi.staticfiles import StaticFiles
+import os
+from pathlib import Path
+
+# Use absolute path resolution
+# Use absolute path resolution
+BASE_DIR = Path(__file__).resolve().parent.parent # Resolve to Sophia/
+from core.engine.constants import FOREST_ROOT
+DASHBOARD_PATH = BASE_DIR / FOREST_ROOT / "project" / "sophia" / "dashboard"
+
+print(f"[API] Server File: {__file__}")
+print(f"[API] Base Dir: {BASE_DIR}")
+print(f"[API] Dashboard Path: {DASHBOARD_PATH}")
+print(f"[API] Index Exists? {(DASHBOARD_PATH / 'index.html').exists()}")
+
+if not DASHBOARD_PATH.exists():
+    print(f"[API] Creating Dashboard directory at {DASHBOARD_PATH}")
+    DASHBOARD_PATH.mkdir(parents=True, exist_ok=True)
+
+# Force mount to surface errors
+import sys
+sys.stderr.write(f"[API] Mounting dashboard from {DASHBOARD_PATH}\n")
+app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_PATH), html=True), name="dashboard")
+
+@app.get("/debug/dashboard")
+async def debug_dashboard():
+    return {
+        "path": str(DASHBOARD_PATH),
+        "exists": DASHBOARD_PATH.exists(),
+        "index_exists": (DASHBOARD_PATH / "index.html").exists(),
+        "files": [f.name for f in DASHBOARD_PATH.glob("*")] if DASHBOARD_PATH.exists() else []
+    }
+
+
+
+@app.on_event("startup")
+async def startup_event():
+    scheduler.start_background()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    scheduler.stop_background()
 
 class IngestRequest(BaseModel):
     ref_uri: str
@@ -110,6 +168,21 @@ async def propose(req: ProposeRequest):
         return {"candidate_ids": candidate_ids}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class MoveRequest(BaseModel):
+    old_path: str
+    new_path: str
+
+@app.post("/fs/move")
+async def fs_move(req: MoveRequest):
+    success = system.move_file(req.old_path, req.new_path)
+    if not success:
+        raise HTTPException(status_code=400, detail="Move failed")
+    return {"status": "ok", "old": req.old_path, "new": req.new_path}
+
+@app.get("/graph/data")
+async def graph_data():
+    return system.get_graph_data()
 
 @app.post("/adopt")
 async def adopt(req: AdoptRequest):

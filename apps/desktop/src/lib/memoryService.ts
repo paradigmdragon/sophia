@@ -1,8 +1,4 @@
-import { readTextFile, exists } from '@tauri-apps/plugin-fs';
-import { Command } from '@tauri-apps/plugin-shell';
-
-const WORKSPACE_ROOT = '/Users/dragonpd/Sophia/sophia_workspace';
-const MEMORY_ROOT = `${WORKSPACE_ROOT}/memory`;
+const API_BASE = 'http://localhost:8090';
 
 export type MemoryNamespace = 'notes' | 'ideas' | 'decisions' | 'actions';
 
@@ -13,88 +9,122 @@ export interface MemoryItem {
     timestamp?: string; // Derived from parsed data if available
 }
 
+export interface SophiaSystemNote {
+    id: string;
+    verse_id?: number;
+    created_at: string;
+    title: string;
+    note_type: string;
+    source_events: string[];
+    summary: string;
+    body_markdown: string;
+    status: string;
+    actionables: Array<Record<string, unknown>>;
+    linked_cluster_id?: string | null;
+    risk_score?: number | null;
+    dedup_key?: string;
+    badge?: string;
+    raw?: Record<string, unknown>;
+}
+
+export interface SophiaNoteGeneratorStatus {
+    last_generated_at: string;
+    generator_status: 'idle' | 'running' | 'failed' | string;
+    last_trigger: string;
+    empty_reasons: string[];
+    last_error: string;
+}
+
+export interface MindItem {
+    id: string;
+    type: 'TASK' | 'QUESTION_CLUSTER' | 'ALERT' | 'FOCUS' | string;
+    title: string;
+    summary_120: string;
+    priority: number;
+    risk_score: number;
+    confidence: number;
+    linked_bits: string[];
+    tags: string[];
+    source_events: string[];
+    status: 'active' | 'parked' | 'done' | string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface MindWorkingLogLine {
+    id: number;
+    line: string;
+    event_type: string;
+    item_id?: string | null;
+    delta_priority: number;
+    created_at?: string;
+}
+
+export interface MindDashboard {
+    focus_items: MindItem[];
+    question_clusters: MindItem[];
+    risk_alerts: MindItem[];
+    working_log: MindWorkingLogLine[];
+    active_tags: string[];
+    items: MindItem[];
+}
+
+async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
+    const response = await fetch(`${API_BASE}${path}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            ...(init?.headers || {}),
+        },
+        ...init,
+    });
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text}`);
+    }
+    return response.json() as Promise<T>;
+}
+
+function toMemoryItem(item: any): MemoryItem {
+    const parsed = item?.parsed && typeof item.parsed === 'object'
+        ? item.parsed
+        : (typeof item?.content === 'string' ? { text: item.content } : {});
+    const raw = typeof item?.content === 'string'
+        ? item.content
+        : JSON.stringify(parsed);
+    const timestamp = item?.created_at || item?.timestamp;
+    const namespace = (item?.namespace || parsed?.__namespace || 'notes') as MemoryNamespace;
+    return { namespace, raw, parsed, timestamp };
+}
+
 export const memoryService = {
     async listMemory(namespace: MemoryNamespace | 'all', limit: number = 50): Promise<MemoryItem[]> {
-        const namespaces: MemoryNamespace[] = namespace === 'all' 
-            ? ['notes', 'ideas', 'decisions', 'actions'] 
+        const namespaces: MemoryNamespace[] = namespace === 'all'
+            ? ['notes', 'ideas', 'decisions', 'actions']
             : [namespace];
 
-        let allItems: MemoryItem[] = [];
+        const responses = await Promise.all(
+            namespaces.map((ns) =>
+                fetchJson<{ items: any[] }>(`/memory/verses?namespace=${encodeURIComponent(ns)}&limit=${limit}`)
+                    .catch((e) => {
+                        console.error(`Failed to fetch memory namespace=${ns}`, e);
+                        return { items: [] };
+                    })
+            )
+        );
 
-        for (const ns of namespaces) {
-            const path = `${MEMORY_ROOT}/${ns}.jsonl`;
-            try {
-                if (await exists(path)) {
-                    const content = await readTextFile(path);
-                    const lines = content.split('\n').filter(line => line.trim() !== '');
-                    
-                    // Parse lines in reverse order (newest first)
-                    const items: MemoryItem[] = lines.reverse().slice(0, limit).map(line => {
-                        let parsed = null;
-                        try {
-                            parsed = JSON.parse(line);
-                        } catch (e) {
-                            // Keep raw if parse fails
-                        }
-
-                        // Try to extract a timestamp if present in common fields
-                        let timestamp = undefined;
-                        if (parsed) {
-                           if (parsed.created_at) timestamp = parsed.created_at;
-                           else if (parsed.timestamp) timestamp = parsed.timestamp;
-                           else if (parsed.timestamps && parsed.timestamps.created_at) timestamp = parsed.timestamps.created_at;
-                        }
-
-                        return {
-                            namespace: ns,
-                            raw: line,
-                            parsed: parsed || {},
-                            timestamp
-                        };
-                    });
-                    
-                    allItems = [...allItems, ...items];
-                }
-            } catch (e) {
-                console.error(`Failed to read memory file: ${path}`, e);
-            }
-        }
-
-        // Re-sort combined list by timestamp if multiple namespaces merged
-        if (namespace === 'all') {
-             allItems.sort((a, b) => {
-                 const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-                 const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-                 return tB - tA;
-             });
-             return allItems.slice(0, limit);
-        }
-
-        return allItems;
+        const allItems = responses.flatMap((res) => (res.items || []).map(toMemoryItem));
+        allItems.sort((a, b) => {
+            const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+            const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+            return tB - tA;
+        });
+        return allItems.slice(0, limit);
     },
 
     async getAvailableDates(namespace: MemoryNamespace): Promise<string[]> {
-        const path = `${MEMORY_ROOT}/${namespace}.jsonl`;
         try {
-            if (!(await exists(path))) return [];
-            const content = await readTextFile(path);
-            const lines = content.split('\n').filter(line => line.trim() !== '');
-            
-            const dates = new Set<string>();
-            lines.forEach(line => {
-                try {
-                    const parsed = JSON.parse(line);
-                    // Check various date fields
-                    let ts = parsed.created_at || parsed.timestamp || (parsed.timestamps && parsed.timestamps.created_at);
-                    if (ts) {
-                        const dateStr = new Date(ts).toISOString().split('T')[0];
-                        dates.add(dateStr);
-                    }
-                } catch (e) {}
-            });
-            
-            // Return sorted descending
-            return Array.from(dates).sort().reverse();
+            const result = await fetchJson<{ dates: string[] }>(`/memory/dates?namespace=${encodeURIComponent(namespace)}`);
+            return Array.isArray(result.dates) ? result.dates : [];
         } catch (e) {
             console.error(`Failed to get dates for ${namespace}`, e);
             return [];
@@ -102,29 +132,70 @@ export const memoryService = {
     },
 
     async listMessagesByDate(namespace: MemoryNamespace, dateStr: string): Promise<MemoryItem[]> {
-        const all = await this.listMemory(namespace, 1000);
-        return all.filter(item => {
-            if (!item.timestamp) return false;
-            const itemDate = new Date(item.timestamp).toISOString().split('T')[0];
-            return itemDate === dateStr;
+        const result = await fetchJson<{ items: any[] }>(
+            `/memory/chapters?date=${encodeURIComponent(dateStr)}&namespace=${encodeURIComponent(namespace)}&limit=2000`
+        );
+        return (result.items || []).map(toMemoryItem);
+    },
+
+    async listSophiaNotesByDate(dateStr: string, includeArchived = false): Promise<SophiaSystemNote[]> {
+        const result = await fetchJson<{ items: SophiaSystemNote[] }>(
+            `/memory/notes?date=${encodeURIComponent(dateStr)}&include_archived=${includeArchived ? 'true' : 'false'}&system_generated_only=true&limit=500`
+        );
+        return Array.isArray(result.items) ? result.items : [];
+    },
+
+    async listSophiaNoteDates(includeArchived = false): Promise<string[]> {
+        const result = await fetchJson<{ dates: string[] }>(
+            `/memory/notes/dates?include_archived=${includeArchived ? 'true' : 'false'}`
+        );
+        return Array.isArray(result.dates) ? result.dates : [];
+    },
+
+    async getSophiaNoteGeneratorStatus(): Promise<SophiaNoteGeneratorStatus> {
+        return fetchJson<SophiaNoteGeneratorStatus>(`/memory/notes/status`);
+    },
+
+    async triggerSophiaNoteGenerateNow(reason = 'manual_refresh'): Promise<{ status: string; created: boolean }> {
+        return fetchJson<{ status: string; created: boolean }>(`/memory/notes/generate`, {
+            method: 'POST',
+            body: JSON.stringify({ reason }),
+        });
+    },
+
+    async getMindDashboard(): Promise<MindDashboard> {
+        return fetchJson<MindDashboard>(`/mind/dashboard`);
+    },
+
+    async adjustMindItem(
+        itemId: string,
+        action: 'pin' | 'boost' | 'park' | 'done' | 'label',
+        label?: string,
+    ): Promise<{ status: string }> {
+        return fetchJson<{ status: string }>(`/mind/items/${encodeURIComponent(itemId)}/${action}`, {
+            method: 'POST',
+            body: JSON.stringify({ label }),
         });
     },
 
     async appendNote(data: { title: string, body: string, tags: string[], date: string }): Promise<void> {
         try {
-            const command = Command.create('run-append-note', [
-                data.title, 
-                data.body, 
-                data.tags.join(','), 
-                data.date
-            ]);
-            
-            const output = await command.execute();
-            if (output.code !== 0) {
-                throw new Error(`Script failed with code ${output.code}: ${output.stderr}`);
-            }
-            
-            console.log("Append note result:", output.stdout);
+            await fetchJson(`/memory/verse`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    namespace: 'notes',
+                    date: data.date,
+                    speaker: 'User',
+                    content: {
+                        title: data.title,
+                        body: data.body,
+                        tags: data.tags,
+                        refs: { date: data.date, source: 'ui' },
+                        v: 'note_v0',
+                        __namespace: 'notes',
+                    },
+                }),
+            });
         } catch (e) {
             console.error("Append note failed", e);
             throw e;

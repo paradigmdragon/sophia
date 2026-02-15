@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sophia Canopy</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+  </script>
+  <style>
+    body { margin: 0; background: #0b1020; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .wrap { padding: 20px; display: grid; gap: 14px; }
+    .card { background: #111827; border: 1px solid #374151; border-radius: 10px; padding: 12px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pill { background: #1f2937; border: 1px solid #4b5563; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+    .title { font-size: 16px; font-weight: 700; margin: 0 0 8px 0; }
+    .sub { color: #9ca3af; font-size: 12px; }
+    .list { font-size: 12px; line-height: 1.5; max-height: 240px; overflow: auto; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <p class="title">Canopy Status</p>
+      <div class="row">
+        <span class="pill">READY: 0</span>
+        <span class="pill">IN_PROGRESS: 0</span>
+        <span class="pill">DONE: 2</span>
+        <span class="pill">BLOCKED: 3</span>
+        <span class="pill">FAILED: 0</span>
+        <span class="pill">UNVERIFIED: 6</span>
+      </div>
+      <p class="sub">상태 계산: DB 기반(read-only) · Forest는 export view</p>
+    </div>
+    <div class="card">
+      <p class="title">Question Queue / Work Queue / Recent Events</p>
+      <div class="mermaid">flowchart TD
+subgraph WorkQueue["Work Queue"]
+wp_10cee24315eb4af4ba50c97d61d58713["S2\n[BLOCKED]"]:::BLOCKED
+wp_cff76fb7e8ff4229ae0211276eb2b67b["S1\n[DONE]"]:::DONE
+wp_c810ebe8cdf04fd49d9425c187dc4af5["Rehearsal S2\n[BLOCKED]"]:::BLOCKED
+wp_df90a9828201480db81954abc99fd5ab["Rehearsal S1\n[DONE]"]:::DONE
+wp_c910e1aaf5234682b4f2c204822fd480["Part4.5 rehearsal package\n[BLOCKED]"]:::BLOCKED
+end
+subgraph QuestionQueue["Question Queue"]
+q_scope_s2["scope_s2\n[UNVERIFIED]"]:::UNVERIFIED
+q_scope_s2b["scope_s2b\n[UNVERIFIED]"]:::UNVERIFIED
+q_dep_s1["dep_s1\n[UNVERIFIED]"]:::UNVERIFIED
+q_dep_s1b["dep_s1b\n[UNVERIFIED]"]:::UNVERIFIED
+q_dependency_missing["dependency_missing\n[UNVERIFIED]"]:::UNVERIFIED
+q_scope_ambiguity["scope_ambiguity\n[UNVERIFIED]"]:::UNVERIFIED
+end
+classDef READY fill:#1e3a8a,stroke:#93c5fd,color:#dbeafe;
+classDef IN_PROGRESS fill:#0f766e,stroke:#5eead4,color:#ccfbf1;
+classDef DONE fill:#14532d,stroke:#86efac,color:#dcfce7;
+classDef BLOCKED fill:#7f1d1d,stroke:#fca5a5,color:#fee2e2;
+classDef FAILED fill:#4c0519,stroke:#f9a8d4,color:#fce7f3;
+classDef UNVERIFIED fill:#78350f,stroke:#fcd34d,color:#fef3c7;</div>
+    </div>
+    <div class="card">
+      <p class="title">Recent Events</p>
+      <div class="list">[
+  {
+    "timestamp": "2026-02-14T21:57:57.444830Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_s2",
+    "summary": "question signal: hit=2 risk=0.84",
+    "payload": {
+      "cluster_id": "scope_s2",
+      "hit_count": 2,
+      "risk_score": 0.84,
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:57:57.474401Z",
+    "event_type": "WORK_PACKAGE_REPORTED",
+    "target": "wp_c810ebe8cdf04fd49d9425c187dc4af5",
+    "summary": "work package event: WORK_PACKAGE_REPORTED",
+    "payload": {
+      "id": "wp_c810ebe8cdf04fd49d9425c187dc4af5",
+      "project": "sophia",
+      "report_status": "BLOCKED",
+      "work_status": "BLOCKED",
+      "signals": 1,
+      "pending_question_messages": [],
+      "reanalysis_ran": false,
+      "canopy_dashboard_path": "/Users/dragonpd/Sophia/forest/project/sophia/dashboard/index.html"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:57:57.493083Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_s3_cluster",
+    "summary": "question signal: hit=1 risk=0.62",
+    "payload": {
+      "cluster_id": "scope_s3_cluster",
+      "hit_count": 1,
+      "risk_score": 0.62,
+      "status": "collecting"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:57:57.517702Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_ambiguity",
+    "summary": "question signal: hit=3 risk=0.82",
+    "payload": {
+      "cluster_id": "scope_ambiguity",
+      "hit_count": 3,
+      "risk_score": 0.82,
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:57:57.534926Z",
+    "event_type": "QUESTION_RESOLVED",
+    "target": "scope_s3_cluster",
+    "summary": "question resolved",
+    "payload": {
+      "project": "sophia",
+      "cluster_id": "scope_s3_cluster",
+      "messages_updated": 0,
+      "question_status": "resolved"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:57:57.549875Z",
+    "event_type": "QUESTION_RESPONSE_ANALYZED",
+    "target": "scope_s3_cluster",
+    "summary": "event: QUESTION_RESPONSE_ANALYZED",
+    "payload": {
+      "project": "sophia",
+      "cluster_id": "scope_s3_cluster",
+      "signals": 1,
+      "source_doc": "question_response_scope_s3_cluster_20260214_215757.md"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.330640Z",
+    "event_type": "PROJECT_INIT",
+    "target": "sophia",
+    "summary": "Forest project layout initialized"
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.348848Z",
+    "event_type": "WORK_PACKAGE_CREATED",
+    "target": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+    "summary": "work package event: WORK_PACKAGE_CREATED",
+    "payload": {
+      "id": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+      "project": "sophia",
+      "kind": "IMPLEMENT",
+      "context_tag": "work",
+      "status": "READY"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.391728Z",
+    "event_type": "QUESTION_READY",
+    "target": "dep_s1b",
+    "summary": "question ready: risk=0.83",
+    "payload": {
+      "cluster_id": "dep_s1b",
+      "hit_count": 1,
+      "risk_score": 0.83
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.411326Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "dep_s1b",
+    "summary": "question signal: hit=1 risk=0.83",
+    "payload": {
+      "cluster_id": "dep_s1b",
+      "hit_count": 1,
+      "risk_score": 0.83,
+      "status": "ready_to_ask"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.428937Z",
+    "event_type": "QUESTION_ASKED",
+    "target": "dep_s1b",
+    "summary": "question asked: count=1",
+    "payload": {
+      "cluster_id": "dep_s1b",
+      "asked_count": 1,
+      "risk_score": 0.83,
+      "message_id": "msg_d1d32474d7634f7a92ed8f04504fddfa"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.450950Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_ambiguity",
+    "summary": "question signal: hit=4 risk=0.82",
+    "payload": {
+      "cluster_id": "scope_ambiguity",
+      "hit_count": 4,
+      "risk_score": 0.82,
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:38.479576Z",
+    "event_type": "WORK_PACKAGE_REPORTED",
+    "target": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+    "summary": "work package event: WORK_PACKAGE_REPORTED",
+    "payload": {
+      "id": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+      "project": "sophia",
+      "report_status": "DONE",
+      "work_status": "DONE",
+      "signals": 1,
+      "pending_question_messages": [
+        "msg_d1d32474d7634f7a92ed8f04504fddfa"
+      ],
+      "reanalysis_ran": true,
+      "canopy_dashboard_path": "/Users/dragonpd/Sophia/forest/project/sophia/dashboard/index.html"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.714412Z",
+    "event_type": "WORK_PACKAGE_CREATED",
+    "target": "wp_10cee24315eb4af4ba50c97d61d58713",
+    "summary": "work package event: WORK_PACKAGE_CREATED",
+    "payload": {
+      "id": "wp_10cee24315eb4af4ba50c97d61d58713",
+      "project": "sophia",
+      "kind": "IMPLEMENT",
+      "context_tag": "work",
+      "status": "READY"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.762385Z",
+    "event_type": "QUESTION_READY",
+    "target": "scope_s2b",
+    "summary": "question ready: risk=0.84",
+    "payload": {
+      "cluster_id": "scope_s2b",
+      "hit_count": 1,
+      "risk_score": 0.84
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.783438Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_s2b",
+    "summary": "question signal: hit=1 risk=0.84",
+    "payload": {
+      "cluster_id": "scope_s2b",
+      "hit_count": 1,
+      "risk_score": 0.84,
+      "status": "ready_to_ask"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.814066Z",
+    "event_type": "QUESTION_ASKED",
+    "target": "scope_s2b",
+    "summary": "question asked: count=1",
+    "payload": {
+      "cluster_id": "scope_s2b",
+      "asked_count": 1,
+      "risk_score": 0.84,
+      "message_id": "msg_07cfda5b8ffc4636a4633580df432aac"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.843255Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_ambiguity",
+    "summary": "question signal: hit=5 risk=0.82",
+    "payload": {
+      "cluster_id": "scope_ambiguity",
+      "hit_count": 5,
+      "risk_score": 0.82,
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.880243Z",
+    "event_type": "WORK_PACKAGE_REPORTED",
+    "target": "wp_10cee24315eb4af4ba50c97d61d58713",
+    "summary": "work package event: WORK_PACKAGE_REPORTED",
+    "payload": {
+      "id": "wp_10cee24315eb4af4ba50c97d61d58713",
+      "project": "sophia",
+      "report_status": "BLOCKED",
+      "work_status": "BLOCKED",
+      "signals": 1,
+      "pending_question_messages": [
+        "msg_07cfda5b8ffc4636a4633580df432aac"
+      ],
+      "reanalysis_ran": true,
+      "canopy_dashboard_path": "/Users/dragonpd/Sophia/forest/project/sophia/dashboard/index.html"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T21:58:40.909031Z",
+    "event_type": "QUESTION_SIGNAL",
+    "target": "scope_s2b",
+    "summary": "question signal: hit=2 risk=0.84",
+    "payload": {
+      "cluster_id": "scope_s2b",
+      "hit_count": 2,
+      "risk_score": 0.84,
+      "status": "pending"
+    }
+  }
+]</div>
+    </div>
+  </div>
+</body>
+</html>
