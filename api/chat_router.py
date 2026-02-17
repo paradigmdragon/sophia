@@ -1,31 +1,37 @@
 from __future__ import annotations
 
+import hmac
+import hashlib
 import json
 import re
+import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import func, inspect as sa_inspect, text
 
 from api.config import settings
 from api.ledger_events import write_lifecycle_event
-from api.sophia_notes import append_system_note
-from core.chat.chat_contract import CHAT_CONTRACT_SCHEMA, make_clarify_contract
-from core.chat.chat_gate import parse_validate_and_gate
+from api.sophia_notes import append_system_note, list_system_notes
+from core.chat.chat_contract import CHAT_CONTRACT_SCHEMA
 from core.chat.user_rules_store import learn_from_clarify_response, match_user_rules
+from core.ethics.gate import EthicsOutcome, GateInput, pre_commit_gate, pre_output_gate
 from core.engine.local_brain import (
-    build_intent_reply as local_build_intent_reply,
     build_question_prompt as local_build_question_prompt,
-    classify_intent as local_classify_intent,
 )
 from core.forest.grove import analyze_to_forest
+from core.llm.generation_meta import attach_generation_meta, build_generation_meta, log_generation_line
 from core.llm_interface import LLMInterface
 from core.memory.schema import ChatTimelineMessage, MindItem, QuestionPool, WorkPackage, create_session_factory
-from sophia_kernel.modules.mind_diary import ingest_trigger_event, maybe_build_daily_diary
+from core.services.question_signal_service import upsert_question_signal as upsert_question_signal_service
+from sophia_kernel.modules.clarify_and_learn import collect_learning_signals
+from sophia_kernel.modules.local_chat_engine import generate_chat_reply
+from sophia_kernel.modules.mind_diary import ingest_trigger_event, maybe_build_daily_diary, mind_query_for_chat
+from sophia_kernel.modules.unconscious_engine import classify_unconscious_intent, render_unconscious_reply
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 session_factory = create_session_factory(settings.db_path)
@@ -86,9 +92,11 @@ class ChatMessagePayload(BaseModel):
 
 
 class AddMessagePayload(BaseModel):
-    role: Literal["user", "sophia"]
-    content: str = Field(min_length=1)
-    context_tag: str = "chat"
+    role: Literal["user", "sophia"] = "user"
+    content: str | None = None
+    message: str | None = None
+    context_tag: str | None = "chat"
+    mode: str | None = None
     importance: float = Field(default=0.5, ge=0.0, le=1.0)
     emotion_signal: str | None = None
     linked_cluster: str | None = None
@@ -241,16 +249,166 @@ def _save_message(
     return row
 
 
-def _classify_intent(content: str) -> str:
-    return local_classify_intent(content)
-
-
-def _build_template_reply(intent: str, seed_text: str) -> str:
-    return local_build_intent_reply(intent, seed_text)
-
-
 def _build_question_prompt(cluster_id: str) -> str:
     return local_build_question_prompt(cluster_id)
+
+
+def _derive_risk_level(text: str) -> Literal["none", "low", "med", "high"]:
+    lowered = text.lower()
+    if any(token in lowered for token in ["rm -rf", "drop table", "truncate", "delete ", "삭제", "파기", "format disk"]):
+        return "high"
+    if any(token in lowered for token in ["latest", "최근", "최신", "today", "오늘"]):
+        return "med"
+    if any(token in lowered for token in ["?", "어떻게", "왜"]):
+        return "low"
+    return "none"
+
+
+def _apply_pre_output_ethics(
+    *,
+    draft_text: str,
+    context_tag: str,
+    generation_meta: dict[str, Any],
+    user_rules: list[dict[str, Any]] | None = None,
+) -> tuple[str, dict[str, Any]]:
+    gate_input = GateInput(
+        draft_text=draft_text,
+        task="reply",
+        mode="chat",
+        risk_level=_derive_risk_level(draft_text),
+        context_refs=[context_tag],
+        capabilities={"web_access": False, "file_access": False, "exec_access": False},
+        generation_meta=generation_meta,
+        user_rules=user_rules or [],
+        commit_allowed=False,
+        commit_allowed_by="none",
+        source="assistant",
+        subject="reply",
+        facet="CANDIDATE",
+    )
+    gate_result = pre_output_gate(gate_input)
+    gate_payload = gate_result.model_dump(mode="json")
+
+    adjusted_text = draft_text
+    if gate_result.outcome == EthicsOutcome.ADJUST and isinstance(gate_result.patch, dict):
+        if gate_result.patch.get("kind") == "rewrite":
+            candidate = str(gate_result.patch.get("content", "")).strip()
+            if candidate:
+                adjusted_text = candidate
+    elif gate_result.outcome == EthicsOutcome.PENDING:
+        adjusted_text = "확인 불가: 필요한 입력을 먼저 확인해 주세요."
+    elif gate_result.outcome == EthicsOutcome.BLOCK:
+        adjusted_text = "요청은 현재 정책상 즉시 처리할 수 없습니다."
+
+    # pre_output_gate must not emit FIX by contract.
+    if gate_payload.get("outcome") == EthicsOutcome.FIX.value:
+        gate_payload["outcome"] = EthicsOutcome.PENDING.value
+        gate_payload["reason_codes"] = ["INSUFFICIENT_EVIDENCE"]
+        adjusted_text = "확인 불가: 필요한 입력을 먼저 확인해 주세요."
+    return adjusted_text, gate_payload
+
+
+def _run_pre_commit_ethics(
+    *,
+    draft_text: str,
+    context_refs: list[str],
+    generation_meta: dict[str, Any],
+    source: Literal["user", "assistant", "system"],
+    subject: Literal["reply", "action", "rule", "summary", "decision"],
+) -> dict[str, Any]:
+    gate_input = GateInput(
+        draft_text=draft_text,
+        task="commit",
+        mode="json",
+        risk_level=_derive_risk_level(draft_text),
+        context_refs=context_refs,
+        capabilities={"file_access": True},
+        generation_meta=generation_meta,
+        commit_allowed=True,
+        commit_allowed_by="policy",
+        source=source,
+        subject=subject,
+        facet="CANDIDATE",
+    )
+    gate_result = pre_commit_gate(gate_input)
+    gate_payload = gate_result.model_dump(mode="json")
+    if gate_result.outcome != EthicsOutcome.FIX or gate_result.commit_meta is None:
+        reason = ",".join(gate_result.reason_codes or ["UNKNOWN"])
+        raise HTTPException(status_code=409, detail=f"pre_commit_gate_blocked:{reason}")
+    return gate_payload
+
+
+def _request_generation_meta(
+    request: Request,
+    *,
+    provider: str,
+    model: str,
+    route: str = "local",
+    latency_ms: int = 0,
+    trace_id: str | None = None,
+    shortcuts_signature_valid: bool | None = None,
+) -> dict[str, Any]:
+    return build_generation_meta(
+        {
+            "provider": provider,
+            "model": model,
+            "route": route,
+            "capabilities": {
+                "web_access": False,
+                "file_access": False,
+                "exec_access": False,
+                "device_actions": False,
+            },
+            "latency_ms": latency_ms,
+            "trace_id": trace_id,
+            "user_agent": request.headers.get("user-agent", ""),
+            "headers": dict(request.headers),
+            "shortcuts_signature_valid": shortcuts_signature_valid,
+            "shortcuts_status": settings.shortcuts_integration_status,
+        }
+    )
+
+
+def _request_trace_id(request: Request) -> str:
+    for header in ("x-trace-id", "x-request-id"):
+        value = (request.headers.get(header) or "").strip()
+        if value:
+            safe = re.sub(r"[^A-Za-z0-9_.:-]+", "-", value).strip("-")
+            if safe:
+                return safe[:128]
+    return f"req_{uuid4().hex}"
+
+
+def _is_shortcuts_request(request: Request) -> bool:
+    ua = request.headers.get("user-agent", "").lower()
+    source = request.headers.get("x-sophia-source", "").lower()
+    if source in {"shortcuts", "siri_shortcuts", "apple_shortcuts"}:
+        return True
+    return "shortcuts" in ua or "siri" in ua
+
+
+async def _verify_shortcuts_signature(request: Request) -> bool | None:
+    if not _is_shortcuts_request(request):
+        return None
+    provided = request.headers.get("x-sophia-shortcut-signature", "").strip().lower()
+    timestamp = request.headers.get("x-sophia-timestamp", "").strip()
+    secret = (settings.shortcuts_secret or "").strip()
+    if not provided or not secret:
+        return False
+    body = await request.body()
+    expected_legacy = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest().lower()
+    if hmac.compare_digest(provided, expected_legacy):
+        return True
+
+    # v1.1 preferred format:
+    # HMAC_SHA256("{method}\n{path}\n{timestamp}\n{sha256(body)}", SHORTCUT_SECRET)
+    if timestamp:
+        body_hash = hashlib.sha256(body).hexdigest().lower()
+        signing_string = "\n".join([request.method.upper(), request.url.path, timestamp, body_hash])
+        expected_v11 = hmac.new(secret.encode("utf-8"), signing_string.encode("utf-8"), hashlib.sha256).hexdigest().lower()
+        if hmac.compare_digest(provided, expected_v11):
+            return True
+    return False
 
 
 def _shorten_text(value: str, *, max_chars: int = 180) -> str:
@@ -354,7 +512,7 @@ def _build_bitmap_summary(session) -> dict[str, Any]:
     return {"candidates": candidates, "anchors": anchors}
 
 
-def build_chat_context(context_tag: str, session, payload: AddMessagePayload) -> dict[str, Any]:
+def build_chat_context(context_tag: str, session, payload: AddMessagePayload, user_text: str) -> dict[str, Any]:
     recent_rows = (
         session.query(ChatTimelineMessage)
         .filter(ChatTimelineMessage.context_tag == context_tag)
@@ -390,8 +548,9 @@ def build_chat_context(context_tag: str, session, payload: AddMessagePayload) ->
         for row in mind_rows
     ]
 
-    user_rules = match_user_rules(session, payload.content.strip(), limit=5)
+    user_rules = match_user_rules(session, user_text.strip(), limit=5)
     bitmap = _build_bitmap_summary(session)
+    memory_lookup = mind_query_for_chat(session, user_text=user_text.strip(), context_tag=context_tag)
 
     return {
         "context_tag": context_tag,
@@ -399,8 +558,80 @@ def build_chat_context(context_tag: str, session, payload: AddMessagePayload) ->
         "linked_cluster": payload.linked_cluster,
         "recent_messages": recent,
         "mind_top": mind,
+        "memory_lookup": memory_lookup,
         "user_rules": user_rules,
         "bitmap": bitmap,
+    }
+
+
+def _build_history_digest(session, *, context_tag: str, limit: int = 20) -> str:
+    rows = (
+        session.query(ChatTimelineMessage)
+        .filter(ChatTimelineMessage.context_tag == context_tag)
+        .order_by(ChatTimelineMessage.created_at.desc(), ChatTimelineMessage.id.desc())
+        .limit(limit)
+        .all()
+    )
+    lines: list[str] = []
+    for row in reversed(rows):
+        role = "U" if row.role == "user" else "S"
+        lines.append(f"{role}:{_shorten_text(row.content, max_chars=60)}")
+    return " | ".join(lines)
+
+
+def _build_work_status_snapshot(session) -> dict[str, Any]:
+    rows = (
+        session.query(WorkPackage.status, func.count(WorkPackage.id))
+        .group_by(WorkPackage.status)
+        .all()
+    )
+    by_status = {str(status or "").upper(): int(count or 0) for status, count in rows}
+    ready_count = by_status.get("READY", 0)
+    in_progress_count = by_status.get("IN_PROGRESS", 0)
+    recent_work = (
+        session.query(WorkPackage)
+        .order_by(WorkPackage.updated_at.desc(), WorkPackage.created_at.desc(), WorkPackage.id.desc())
+        .first()
+    )
+    recent_work_title = str(recent_work.title or "").strip() if recent_work is not None else ""
+    today = _utc_now().date().isoformat()
+    notes_today = list_system_notes(db=session, date=today, limit=50)
+    if notes_today:
+        notes_status = f"생성 {len(notes_today)}건"
+    else:
+        notes_status = "생성 없음"
+    return {
+        "ready_count": ready_count,
+        "in_progress_count": in_progress_count,
+        "recent_work_title": recent_work_title,
+        "notes_status": notes_status,
+    }
+
+
+def _try_unconscious_reply(session, *, context_tag: str, user_text: str) -> dict[str, Any] | None:
+    history_digest = _build_history_digest(session, context_tag=context_tag, limit=20)
+    signal = classify_unconscious_intent(user_text, history_digest)
+    if signal is None:
+        return None
+
+    pattern_id = str(signal.get("pattern_id", "")).strip().upper()
+    confidence = float(signal.get("confidence", 0.0) or 0.0)
+    params = signal.get("params") if isinstance(signal.get("params"), dict) else {}
+    params = dict(params)
+    if pattern_id == "WORK_STATUS_QUERY":
+        params.update(_build_work_status_snapshot(session))
+    reply_text = render_unconscious_reply(pattern_id, params, persona_level=0)
+    kind = "CLARIFY" if pattern_id == "UNKNOWN_BUT_ACTIONABLE" else "ANSWER"
+
+    return {
+        "pattern_id": pattern_id,
+        "confidence": confidence,
+        "params": params,
+        "text": reply_text,
+        "kind": kind,
+        "sources": [{"type": "mind", "ref": f"unconscious:{pattern_id.lower()}"}],
+        "history_digest": history_digest,
+        "persona_level": 0,
     }
 
 
@@ -498,34 +729,6 @@ def _enqueue_task_plan(session, *, contract: dict[str, Any], context_tag: str, l
     return package_id
 
 
-def _normalize_evidence(
-    *,
-    snippet: str | None,
-    source: str | None,
-    timestamp: str | None = None,
-) -> dict[str, str]:
-    return {
-        "snippet": (snippet or "").strip()[:400],
-        "source": (source or "").strip()[:200],
-        "timestamp": (timestamp or _to_iso(_utc_now())).strip(),
-    }
-
-
-def _dedupe_evidence(items: list[dict[str, str]], max_items: int = 50) -> list[dict[str, str]]:
-    seen: set[str] = set()
-    result: list[dict[str, str]] = []
-    for item in reversed(items):
-        key = f"{item.get('snippet','')}|{item.get('source','')}|{item.get('timestamp','')}"
-        if key in seen:
-            continue
-        seen.add(key)
-        result.append(item)
-        if len(result) >= max_items:
-            break
-    result.reverse()
-    return result
-
-
 def _extract_question_signals(content: str) -> list[dict[str, Any]]:
     text = content.strip().lower()
     signals: list[dict[str, Any]] = []
@@ -585,6 +788,31 @@ def _enqueue_question_if_ready(session, pool: QuestionPool) -> ChatTimelineMessa
     return message
 
 
+def _on_question_ready(session, pool: QuestionPool) -> None:
+    ingest_trigger_event(
+        session,
+        event_type="QUESTION_READY",
+        payload={
+            "cluster_id": pool.cluster_id,
+            "hit_count": int(pool.hit_count or 0),
+            "risk_score": float(pool.risk_score or 0.0),
+        },
+    )
+    diary_payload = maybe_build_daily_diary(session)
+    if diary_payload is not None:
+        append_system_note(
+            db=session,
+            note_type=str(diary_payload["note_type"]),
+            source_events=list(diary_payload["source_events"]),
+            summary=str(diary_payload["summary"]),
+            body_markdown=str(diary_payload["body_markdown"]),
+            status=str(diary_payload["status"]),
+            actionables=list(diary_payload["actionables"]),
+            badge=str(diary_payload["badge"]),
+            dedup_key=str(diary_payload["dedup_key"]),
+        )
+
+
 def _upsert_question_signal(
     *,
     session,
@@ -596,101 +824,19 @@ def _upsert_question_signal(
     evidence_timestamp: str | None = None,
     linked_node: str | None = None,
 ) -> tuple[QuestionPool, ChatTimelineMessage | None]:
-    row = session.query(QuestionPool).filter(QuestionPool.cluster_id == cluster_id).one_or_none()
-    now = _utc_now()
-    if row is None:
-        row = QuestionPool(
-            cluster_id=cluster_id,
-            description=description,
-            hit_count=0,
-            risk_score=0.0,
-            evidence=[],
-            linked_nodes=[],
-            status="collecting",
-            last_triggered_at=now,
-            asked_count=0,
-        )
-        session.add(row)
-        session.flush()
-
-    if row.status == "resolved":
-        row.hit_count = 0
-        row.risk_score = 0.0
-        row.evidence = []
-        row.status = "collecting"
-
-    row.hit_count = int(row.hit_count or 0) + 1
-    row.risk_score = max(float(row.risk_score or 0.0), float(risk_score))
-    row.description = description
-    row.last_triggered_at = now
-
-    evidence = list(row.evidence or [])
-    evidence.append(
-        _normalize_evidence(
-            snippet=snippet,
-            source=source,
-            timestamp=evidence_timestamp,
-        )
+    return upsert_question_signal_service(
+        session=session,
+        cluster_id=cluster_id,
+        description=description,
+        risk_score=risk_score,
+        snippet=snippet,
+        source=source,
+        evidence_timestamp=evidence_timestamp,
+        linked_node=linked_node,
+        write_event=write_lifecycle_event,
+        on_question_ready=_on_question_ready,
+        enqueue_if_ready=_enqueue_question_if_ready,
     )
-    row.evidence = _dedupe_evidence(evidence)
-
-    linked_nodes = list(row.linked_nodes or [])
-    if linked_node and linked_node not in linked_nodes:
-        linked_nodes.append(linked_node)
-    row.linked_nodes = linked_nodes
-
-    threshold_met = row.hit_count >= 3 or float(row.risk_score) >= 0.8
-    previous_status = str(row.status or "collecting")
-    if threshold_met and previous_status == "collecting":
-        row.status = "ready_to_ask"
-        write_lifecycle_event(
-            "QUESTION_READY",
-            {
-                "cluster_id": row.cluster_id,
-                "hit_count": int(row.hit_count or 0),
-                "risk_score": float(row.risk_score or 0.0),
-            },
-        )
-        ingest_trigger_event(
-            session,
-            event_type="QUESTION_READY",
-            payload={
-                "cluster_id": row.cluster_id,
-                "hit_count": int(row.hit_count or 0),
-                "risk_score": float(row.risk_score or 0.0),
-            },
-        )
-        diary_payload = maybe_build_daily_diary(session)
-        if diary_payload is not None:
-            append_system_note(
-                db=session,
-                note_type=str(diary_payload["note_type"]),
-                source_events=list(diary_payload["source_events"]),
-                summary=str(diary_payload["summary"]),
-                body_markdown=str(diary_payload["body_markdown"]),
-                status=str(diary_payload["status"]),
-                actionables=list(diary_payload["actionables"]),
-                badge=str(diary_payload["badge"]),
-                dedup_key=str(diary_payload["dedup_key"]),
-            )
-    elif not threshold_met and previous_status not in {"pending", "acknowledged", "resolved"}:
-        row.status = "collecting"
-
-    session.add(row)
-    session.flush()
-
-    write_lifecycle_event(
-        "QUESTION_SIGNAL",
-        {
-            "cluster_id": row.cluster_id,
-            "hit_count": int(row.hit_count or 0),
-            "risk_score": float(row.risk_score or 0.0),
-            "status": row.status,
-        },
-    )
-
-    pending = _enqueue_question_if_ready(session, row)
-    return row, pending
 
 
 def _ensure_legacy_backfill(session) -> None:
@@ -756,14 +902,16 @@ def _ensure_legacy_backfill(session) -> None:
 
 
 @router.post("/message")
-async def send_message(payload: ChatMessagePayload):
+async def send_message(payload: ChatMessagePayload, request: Request):
     session = session_factory()
     try:
         _ensure_legacy_backfill(session)
+        shortcuts_signature_valid = await _verify_shortcuts_signature(request)
+        request_trace_id = _request_trace_id(request)
 
-        print("CTX_IN:", payload.context_tag)
+        print("CTX_IN:", payload.context_tag, "trace_id=", request_trace_id)
         context_tag = _normalize_context_tag(payload.context_tag or "chat")
-        print("CTX_SAVED:", context_tag)
+        print("CTX_SAVED:", context_tag, "trace_id=", request_trace_id)
         if context_tag == "system":
             raise HTTPException(status_code=400, detail="context_tag 'system' is reserved for internal events")
         user_message = _save_message(
@@ -792,24 +940,93 @@ async def send_message(payload: ChatMessagePayload):
             if pending:
                 pending_messages.append(pending)
 
-        intent = _classify_intent(payload.content)
-        reply_text = _build_template_reply(intent, payload.content)
+        payload_like = AddMessagePayload(
+            role="user",
+            content=payload.content,
+            context_tag=context_tag,
+            linked_node=payload.linked_node,
+        )
+        chat_context = build_chat_context(context_tag, session, payload_like, payload.content)
+        reply_bundle = generate_chat_reply(
+            user_text=payload.content.strip(),
+            context=chat_context,
+            llm_call=_call_local_llm_contract,
+        )
+        reply_text = str(reply_bundle.get("text", "")).strip()
+        memory_hits = list(reply_bundle.get("memory_hits", []))[:5]
+        memory_used = bool(reply_bundle.get("memory_used", False))
+        generation_meta = _request_generation_meta(
+            request,
+            provider="mock",
+            model="local_brain_template",
+            route="local",
+            latency_ms=0,
+            trace_id=request_trace_id,
+            shortcuts_signature_valid=shortcuts_signature_valid,
+        )
+        reply_text, output_ethics = _apply_pre_output_ethics(
+            draft_text=reply_text,
+            context_tag=context_tag,
+            generation_meta=generation_meta,
+            user_rules=match_user_rules(session, payload.content.strip(), limit=5),
+        )
+        log_generation_line(generation_meta)
         sophia_message = _save_message(
             session=session,
             role="sophia",
             content=reply_text,
             context_tag=context_tag,
             importance=_calc_importance(reply_text),
+            meta=attach_generation_meta(
+                {
+                    "ethics": output_ethics,
+                    "kind": reply_bundle.get("kind", "ANSWER"),
+                    "needs": reply_bundle.get("needs"),
+                    "sources": reply_bundle.get("sources", []),
+                    "confidence_model": reply_bundle.get("confidence_model", 0.0),
+                    "fallback_applied": bool(reply_bundle.get("fallback_applied", False)),
+                    "fallback_reason": reply_bundle.get("fallback_reason", ""),
+                    "persona_stage": reply_bundle.get("persona_stage", "early"),
+                    "memory_hits": memory_hits,
+                    "memory_used": memory_used,
+                },
+                generation_meta,
+            ),
             status="normal",
         )
 
+        commit_ethics = _run_pre_commit_ethics(
+            draft_text="\n".join([payload.content.strip(), reply_text]),
+            context_refs=[context_tag, user_message.id, sophia_message.id],
+            generation_meta=generation_meta,
+            source="assistant",
+            subject="reply",
+        )
+        write_lifecycle_event(
+            "ETHICS_FIX_COMMITTED",
+            {
+                "project": "sophia",
+                "endpoint": "/chat/message",
+                "task": "chat.reply",
+                "trace_id": generation_meta.get("trace_id", request_trace_id),
+                "provider_final": "local",
+                "fallback_applied": False,
+                "gate_reason": ",".join(commit_ethics.get("reason_codes", [])),
+                "generation": generation_meta,
+                "ethics": commit_ethics,
+            },
+            skill_id="ethics.gate",
+        )
         session.commit()
         return {
             "status": "ok",
             "reply": reply_text,
             "context_tag": context_tag,
+            "trace_id": generation_meta.get("trace_id", request_trace_id),
             "messages": [_serialize_message(user_message), _serialize_message(sophia_message)],
             "pending_inserted": [_serialize_message(m) for m in pending_messages],
+            "memory_hits": memory_hits,
+            "memory_used": memory_used,
         }
     except HTTPException:
         session.rollback()
@@ -822,19 +1039,26 @@ async def send_message(payload: ChatMessagePayload):
 
 
 @router.post("/messages")
-async def add_message(payload: AddMessagePayload):
+async def add_message(payload: AddMessagePayload, request: Request):
     session = session_factory()
     try:
         _ensure_legacy_backfill(session)
-        print("CTX_IN:", payload.context_tag)
-        context_tag = _normalize_context_tag(payload.context_tag or "chat")
-        print("CTX_SAVED:", context_tag)
+        shortcuts_signature_valid = await _verify_shortcuts_signature(request)
+        request_trace_id = _request_trace_id(request)
+        input_text = (payload.content if payload.content is not None else payload.message) or ""
+        content_text = str(input_text).strip()
+        if not content_text:
+            raise HTTPException(status_code=400, detail="content is required")
+        incoming_context = payload.context_tag if payload.context_tag is not None else payload.mode
+        print("CTX_IN:", incoming_context, "trace_id=", request_trace_id)
+        context_tag = _normalize_context_tag(incoming_context or "chat")
+        print("CTX_SAVED:", context_tag, "trace_id=", request_trace_id)
         if payload.role == "user" and context_tag == "system":
             raise HTTPException(status_code=400, detail="context_tag 'system' is reserved for internal events")
         row = _save_message(
             session=session,
             role=payload.role,
-            content=payload.content.strip(),
+            content=content_text,
             context_tag=context_tag,
             importance=float(payload.importance),
             emotion_signal=payload.emotion_signal,
@@ -850,60 +1074,211 @@ async def add_message(payload: AddMessagePayload):
                 learned_rule = learn_from_clarify_response(
                     session,
                     clarify_meta=latest_clarify.meta if isinstance(latest_clarify.meta, dict) else {},
-                    user_text=payload.content.strip(),
+                    user_text=content_text,
                 )
                 if learned_rule is not None:
                     latest_clarify.status = "resolved"
                     session.add(latest_clarify)
 
+            learning_signals = collect_learning_signals(
+                session,
+                context_tag=context_tag,
+                user_text=content_text,
+                learned_rule=learned_rule,
+            )
+            if learning_signals.term_mapping is not None:
+                ingest_trigger_event(
+                    session,
+                    event_type="TERM_MAPPING",
+                    payload=learning_signals.term_mapping,
+                )
+            if learning_signals.topic_seen is not None:
+                ingest_trigger_event(
+                    session,
+                    event_type="TOPIC_SEEN",
+                    payload=learning_signals.topic_seen,
+                )
+            if learning_signals.user_preference is not None:
+                ingest_trigger_event(
+                    session,
+                    event_type="USER_PREFERENCE",
+                    payload=learning_signals.user_preference,
+                )
+
         reply_message: ChatTimelineMessage | None = None
         task_plan_work_id: str | None = None
         llm_gate: dict[str, Any] | None = None
+        memory_hits: list[str] = []
+        memory_used = False
         if _should_auto_reply(payload.role, context_tag):
-            chat_context = build_chat_context(context_tag, session, payload)
-            raw_contract = _call_local_llm_contract(payload.content.strip(), chat_context)
-            contract, gate = parse_validate_and_gate(raw_contract, context=chat_context)
-            llm_gate = gate
-            reply_text = str(contract.get("text", "")).strip()
-            reply_kind = str(contract.get("kind", "CLARIFY")).upper()
-            reply_status = "pending" if reply_kind == "CLARIFY" else "normal"
-            if reply_kind == "TASK_PLAN":
-                task_plan_work_id = _enqueue_task_plan(
-                    session,
-                    contract=contract,
-                    context_tag=context_tag,
-                    linked_node=payload.linked_node,
-                )
-            reply_meta: dict[str, Any] = {
-                "schema": contract.get("schema"),
-                "kind": reply_kind,
-                "needs": contract.get("needs"),
-                "task_plan": contract.get("task_plan"),
-                "sources": contract.get("sources"),
-                "confidence_model": contract.get("confidence_model"),
-                "gate_score": gate.get("gate_score"),
-                "evidence_scope": gate.get("evidence_scope"),
-                "gate_reason": gate.get("reason", ""),
-                "fallback_applied": bool(gate.get("fallback_applied", False)),
-            }
-            if task_plan_work_id:
-                reply_meta["work_package_id"] = task_plan_work_id
-            reply_message = _save_message(
-                session=session,
-                role="sophia",
-                content=reply_text,
+            unconscious = _try_unconscious_reply(
+                session,
                 context_tag=context_tag,
-                importance=_calc_importance(reply_text),
-                emotion_signal=reply_kind.lower(),
-                meta=reply_meta,
-                status=reply_status,
+                user_text=content_text,
             )
+            if unconscious is not None:
+                reply_kind = str(unconscious.get("kind", "ANSWER")).upper()
+                reply_text = str(unconscious.get("text", "")).strip()
+                confidence = float(unconscious.get("confidence", 0.0) or 0.0)
+                pattern_id = str(unconscious.get("pattern_id", "UNKNOWN")).strip().upper()
+                llm_gate = {
+                    "pass": True,
+                    "reason": "unconscious_hit",
+                    "gate_score": confidence,
+                    "evidence_scope": "narrow",
+                    "schema_errors": [],
+                    "fallback_applied": False,
+                }
+                generation_meta = _request_generation_meta(
+                    request,
+                    provider="rule",
+                    model="unconscious_v0",
+                    route="local",
+                    latency_ms=0,
+                    trace_id=request_trace_id,
+                    shortcuts_signature_valid=shortcuts_signature_valid,
+                )
+                reply_text, output_ethics = _apply_pre_output_ethics(
+                    draft_text=reply_text,
+                    context_tag=context_tag,
+                    generation_meta=generation_meta,
+                    user_rules=match_user_rules(session, content_text, limit=5),
+                )
+                reply_status = "pending" if reply_kind == "CLARIFY" else "normal"
+                reply_meta = attach_generation_meta(
+                    {
+                        "schema": CHAT_CONTRACT_SCHEMA.get("title", "chat_contract.v0.1"),
+                        "kind": reply_kind,
+                        "needs": {"type": "meaning", "options": []} if reply_kind == "CLARIFY" else None,
+                        "task_plan": None,
+                        "sources": unconscious.get("sources", []),
+                        "confidence_model": confidence,
+                        "gate_score": llm_gate.get("gate_score"),
+                        "evidence_scope": llm_gate.get("evidence_scope"),
+                        "gate_reason": llm_gate.get("reason", ""),
+                        "fallback_applied": False,
+                        "fallback_reason": "",
+                        "persona_stage": "early",
+                        "call_user": "주인님",
+                        "memory_hits": [],
+                        "memory_used": False,
+                        "unconscious": {
+                            "pattern_id": pattern_id,
+                            "confidence": confidence,
+                            "persona_level": int(unconscious.get("persona_level", 0) or 0),
+                        },
+                        "ethics": output_ethics,
+                    },
+                    generation_meta,
+                )
+                log_generation_line(generation_meta)
+                reply_message = _save_message(
+                    session=session,
+                    role="sophia",
+                    content=reply_text,
+                    context_tag=context_tag,
+                    importance=_calc_importance(reply_text),
+                    emotion_signal=reply_kind.lower(),
+                    meta=reply_meta,
+                    status=reply_status,
+                )
+                ingest_trigger_event(
+                    session,
+                    event_type="UNCONSCIOUS_HIT",
+                    payload={
+                        "pattern_id": pattern_id,
+                        "confidence": confidence,
+                        "context_tag": context_tag,
+                        "summary": _shorten_text(reply_text, max_chars=120),
+                    },
+                )
+                ingest_trigger_event(
+                    session,
+                    event_type="UNCONSCIOUS_PATTERN_SEEN",
+                    payload={
+                        "pattern_id": pattern_id,
+                        "day": _utc_now().date().isoformat(),
+                        "count": 1,
+                    },
+                )
+            else:
+                chat_context = build_chat_context(context_tag, session, payload, content_text)
+                llm_started = time.perf_counter()
+                reply_bundle = generate_chat_reply(
+                    user_text=content_text,
+                    context=chat_context,
+                    llm_call=_call_local_llm_contract,
+                )
+                latency_ms = int((time.perf_counter() - llm_started) * 1000)
+                llm_gate = reply_bundle.get("gate", {}) if isinstance(reply_bundle.get("gate"), dict) else {}
+                reply_text = str(reply_bundle.get("text", "")).strip()
+                reply_kind = str(reply_bundle.get("kind", "CLARIFY")).upper()
+                memory_hits = list(reply_bundle.get("memory_hits", []))[:5]
+                memory_used = bool(reply_bundle.get("memory_used", False))
+                generation_meta = _request_generation_meta(
+                    request,
+                    provider="ollama",
+                    model="unknown",
+                    route="local",
+                    latency_ms=latency_ms,
+                    trace_id=request_trace_id,
+                    shortcuts_signature_valid=shortcuts_signature_valid,
+                )
+                reply_text, output_ethics = _apply_pre_output_ethics(
+                    draft_text=reply_text,
+                    context_tag=context_tag,
+                    generation_meta=generation_meta,
+                    user_rules=chat_context.get("user_rules", []) if isinstance(chat_context, dict) else [],
+                )
+                reply_status = "pending" if reply_kind == "CLARIFY" else "normal"
+                if reply_kind == "TASK_PLAN":
+                    task_plan_work_id = _enqueue_task_plan(
+                        session,
+                        contract={
+                            "text": reply_text,
+                            "task_plan": reply_bundle.get("task_plan"),
+                        },
+                        context_tag=context_tag,
+                        linked_node=payload.linked_node,
+                    )
+                reply_meta = {
+                    "schema": CHAT_CONTRACT_SCHEMA.get("title", "chat_contract.v0.1"),
+                    "kind": reply_kind,
+                    "needs": reply_bundle.get("needs"),
+                    "task_plan": reply_bundle.get("task_plan"),
+                    "sources": reply_bundle.get("sources"),
+                    "confidence_model": reply_bundle.get("confidence_model"),
+                    "gate_score": llm_gate.get("gate_score"),
+                    "evidence_scope": llm_gate.get("evidence_scope"),
+                    "gate_reason": llm_gate.get("reason", ""),
+                    "fallback_applied": bool(reply_bundle.get("fallback_applied", False)),
+                    "fallback_reason": reply_bundle.get("fallback_reason", ""),
+                    "persona_stage": reply_bundle.get("persona_stage", "early"),
+                    "call_user": reply_bundle.get("call_user", "주인님"),
+                    "memory_hits": memory_hits,
+                    "memory_used": memory_used,
+                    "ethics": output_ethics,
+                }
+                if task_plan_work_id:
+                    reply_meta["work_package_id"] = task_plan_work_id
+                reply_meta = attach_generation_meta(reply_meta, generation_meta)
+                log_generation_line(generation_meta)
+                reply_message = _save_message(
+                    session=session,
+                    role="sophia",
+                    content=reply_text,
+                    context_tag=context_tag,
+                    importance=_calc_importance(reply_text),
+                    emotion_signal=reply_kind.lower(),
+                    meta=reply_meta,
+                    status=reply_status,
+                )
 
         if payload.role == "user" and payload.linked_cluster:
             analysis = analyze_to_forest(
                 project_name="sophia",
                 doc_name=f"question_response_{payload.linked_cluster}_{_utc_now().strftime('%Y%m%d_%H%M%S')}.md",
-                content=payload.content.strip(),
+                content=content_text,
                 target=payload.linked_node or payload.linked_cluster,
                 change=f"question response: {payload.linked_cluster}",
                 scope="",
@@ -915,13 +1290,13 @@ async def add_message(payload: AddMessagePayload):
                     cluster_id=str(signal["cluster_id"]),
                     description=str(signal["description"]),
                     risk_score=float(signal["risk_score"]),
-                    snippet=payload.content.strip()[:200],
+                    snippet=content_text[:200],
                     source=f"question.response:{payload.linked_cluster}",
                     evidence_timestamp=_to_iso(_utc_now()),
                     linked_node=payload.linked_node,
                 )
 
-            lowered = payload.content.strip().lower()
+            lowered = content_text.lower()
             if any(token in lowered for token in ["확정", "결정", "resolved", "완료", "정의", "명시"]):
                 qrow = session.query(QuestionPool).filter(QuestionPool.cluster_id == payload.linked_cluster).one_or_none()
                 if qrow is not None:
@@ -978,8 +1353,46 @@ async def add_message(payload: AddMessagePayload):
                     default=0.0,
                 ),
                 badge="QUESTION_READY",
-                dedup_key=f"question_response:{payload.linked_cluster}:{payload.content.strip()}",
+                dedup_key=f"question_response:{payload.linked_cluster}:{content_text}",
             )
+        commit_text_parts = [content_text]
+        context_refs = [context_tag, row.id]
+        if reply_message is not None:
+            commit_text_parts.append(reply_message.content)
+            context_refs.append(reply_message.id)
+            commit_generation_meta = (reply_message.meta or {}).get("generation") if isinstance(reply_message.meta, dict) else None
+        else:
+            commit_generation_meta = _request_generation_meta(
+                request,
+                provider="mock",
+                model="chat_timeline_append",
+                route="local",
+                latency_ms=0,
+                trace_id=request_trace_id,
+                shortcuts_signature_valid=shortcuts_signature_valid,
+            )
+        commit_ethics = _run_pre_commit_ethics(
+            draft_text="\n".join(commit_text_parts),
+            context_refs=context_refs,
+            generation_meta=commit_generation_meta,
+            source="assistant" if reply_message is not None else "user",
+            subject="reply" if reply_message is not None else "action",
+        )
+        write_lifecycle_event(
+            "ETHICS_FIX_COMMITTED",
+            {
+                "project": "sophia",
+                "endpoint": "/chat/messages",
+                "task": "chat.timeline_append",
+                "trace_id": commit_generation_meta.get("trace_id", request_trace_id),
+                "provider_final": "local",
+                "fallback_applied": False,
+                "gate_reason": ",".join(commit_ethics.get("reason_codes", [])),
+                "generation": commit_generation_meta,
+                "ethics": commit_ethics,
+            },
+            skill_id="ethics.gate",
+        )
         session.commit()
 
         if learned_rule is not None:
@@ -1015,10 +1428,13 @@ async def add_message(payload: AddMessagePayload):
             "message": _serialize_message(row),
             "messages": messages,
             "context_tag": context_tag,
+            "trace_id": (commit_generation_meta or {}).get("trace_id", request_trace_id),
             "reply_skipped": bool(payload.role == "user" and context_tag == "system"),
             "gate": llm_gate or {},
             "task_plan_work_id": task_plan_work_id,
             "learned_rule": learned_rule,
+            "memory_hits": memory_hits,
+            "memory_used": memory_used,
         }
     except HTTPException:
         session.rollback()
