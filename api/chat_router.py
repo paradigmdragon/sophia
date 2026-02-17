@@ -1087,18 +1087,21 @@ async def add_message(payload: AddMessagePayload, request: Request):
                 learned_rule=learned_rule,
             )
             if learning_signals.term_mapping is not None:
+                learning_signals.term_mapping["trace_id"] = request_trace_id
                 ingest_trigger_event(
                     session,
                     event_type="TERM_MAPPING",
                     payload=learning_signals.term_mapping,
                 )
             if learning_signals.topic_seen is not None:
+                learning_signals.topic_seen["trace_id"] = request_trace_id
                 ingest_trigger_event(
                     session,
                     event_type="TOPIC_SEEN",
                     payload=learning_signals.topic_seen,
                 )
             if learning_signals.user_preference is not None:
+                learning_signals.user_preference["trace_id"] = request_trace_id
                 ingest_trigger_event(
                     session,
                     event_type="USER_PREFERENCE",
@@ -1190,6 +1193,7 @@ async def add_message(payload: AddMessagePayload, request: Request):
                         "confidence": confidence,
                         "context_tag": context_tag,
                         "summary": _shorten_text(reply_text, max_chars=120),
+                        "trace_id": request_trace_id,
                     },
                 )
                 ingest_trigger_event(
@@ -1199,6 +1203,7 @@ async def add_message(payload: AddMessagePayload, request: Request):
                         "pattern_id": pattern_id,
                         "day": _utc_now().date().isoformat(),
                         "count": 1,
+                        "trace_id": request_trace_id,
                     },
                 )
             else:
