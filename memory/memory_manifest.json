@@ -623,6 +623,24 @@
       ],
       "created_at": "2026-02-13T01:33:41.106276",
       "updated_at": "2026-02-13T01:33:41.106280"
+    },
+    "p_f1be670c": {
+      "patch_id": "p_f1be670c",
+      "target_episode_id": "ep_20260208_3469",
+      "engine": "sophia",
+      "type": "reasoning",
+      "issue_code": "EPI-00",
+      "thin_summary": "안녕하세요, 무엇을 도와드릴까요?",
+      "status": "pending",
+      "options": [
+        {
+          "id": "opt_1",
+          "semantic": "greeting",
+          "label": "인사"
+        }
+      ],
+      "created_at": "2026-02-14T23:36:28.780655",
+      "updated_at": "2026-02-14T23:36:28.780658"
     }
   },
   "episode_decisions": []

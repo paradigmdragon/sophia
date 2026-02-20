@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "generation_meta.schema.json",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "provider",
+    "model",
+    "route",
+    "capabilities",
+    "latency_ms",
+    "tokens_in",
+    "tokens_out",
+    "trace_id",
+    "created_at"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "enum": ["ollama", "openai", "apple", "apple_shortcuts", "mock", "unknown"]
+    },
+    "model": {"type": "string", "minLength": 1},
+    "route": {
+      "type": "string",
+      "enum": ["local", "server", "os", "proxy"]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["web_access", "file_access", "exec_access", "device_actions"],
+      "properties": {
+        "web_access": {"type": "boolean"},
+        "file_access": {"type": "boolean"},
+        "exec_access": {"type": "boolean"},
+        "device_actions": {"type": "boolean"}
+      }
+    },
+    "latency_ms": {"type": "integer", "minimum": 0},
+    "tokens_in": {"type": ["integer", "null"], "minimum": 0},
+    "tokens_out": {"type": ["integer", "null"], "minimum": 0},
+    "trace_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "shortcuts_request": {"type": "boolean"},
+    "shortcuts_signature_valid": {"type": ["boolean", "null"]},
+    "shortcuts_status": {"type": "string", "enum": ["UNVERIFIED", "VERIFIED"]},
+    "integration": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "apple": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "shortcuts": {"type": "string", "enum": ["UNVERIFIED", "VERIFIED"]}
+          }
+        }
+      }
+    }
+  }
+}

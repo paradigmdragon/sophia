@@ -1,0 +1,83 @@
+{
+  "id": "external.execute",
+  "version": "0.1.0",
+  "entrypoint": "external.execute",
+  "scope": "engine",
+  "capabilities": ["external.run"],
+  "verification": {
+    "mode": "strict",
+    "rules": [
+      "input_schema_required",
+      "output_schema_required",
+      "work_id_must_match",
+      "json_only_output"
+    ]
+  },
+  "rollback": {
+    "strategy": "status_only",
+    "on_failure": "mark_blocked"
+  },
+  "limits": {
+    "timeout_seconds": 120,
+    "max_payload_kb": 256,
+    "max_retries": 1
+  },
+  "security": {
+    "workspace_root": "/Users/dragonpd/Sophia/sophia_workspace",
+    "deny_absolute_paths": true,
+    "deny_env_access": true,
+    "deny_network": true
+  },
+  "inputs_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["engine", "work_id", "payload", "expected_return_schema"],
+    "properties": {
+      "engine": { "type": "string", "enum": ["codex", "antigravity"] },
+      "work_id": { "type": "string", "minLength": 1 },
+      "payload": { "type": "string", "minLength": 1, "maxLength": 262144 },
+      "expected_return_schema": { "type": "string", "minLength": 1 }
+    }
+  },
+  "outputs_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["work_id", "status", "changes", "signals", "summary"],
+    "properties": {
+      "work_id": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["DONE", "BLOCKED", "FAILED"] },
+      "changes": { "type": "array", "items": { "type": "string" } },
+      "signals": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cluster_id", "hit", "risk", "evidence"],
+          "properties": {
+            "cluster_id": { "type": "string" },
+            "hit": { "type": "integer", "minimum": 1 },
+            "risk": { "type": "number", "minimum": 0, "maximum": 1 },
+            "evidence": { "type": "string" }
+          }
+        }
+      },
+      "summary": { "type": "string", "minLength": 1 }
+    }
+  },
+  "audit": {
+    "required_fields": [
+      "run_id",
+      "work_id",
+      "engine",
+      "inputs_hash",
+      "outputs_hash",
+      "status",
+      "duration_ms"
+    ],
+    "events": [
+      "EXTERNAL_EXECUTE_STARTED",
+      "EXTERNAL_EXECUTE_COMPLETED",
+      "EXTERNAL_EXECUTE_FAILED"
+    ]
+  }
+}

@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
-from sqlalchemy import func, inspect as sa_inspect, text
+from sqlalchemy import func
 
 from api.config import settings
 from api.ledger_events import write_lifecycle_event
@@ -27,6 +27,7 @@ from core.forest.grove import analyze_to_forest
 from core.llm.generation_meta import attach_generation_meta, build_generation_meta, log_generation_line
 from core.llm_interface import LLMInterface
 from core.memory.schema import ChatTimelineMessage, MindItem, QuestionPool, WorkPackage, create_session_factory
+from core.services.bitmap_summary_service import build_bitmap_summary
 from core.services.question_signal_service import upsert_question_signal as upsert_question_signal_service
 from sophia_kernel.modules.clarify_and_learn import collect_learning_signals
 from sophia_kernel.modules.local_chat_engine import generate_chat_reply
@@ -441,75 +442,7 @@ def _is_recent(value: Any, *, days: int = 7) -> bool:
 
 
 def _build_bitmap_summary(session) -> dict[str, Any]:
-    bind = session.get_bind()
-    if bind is None:
-        return {"candidates": [], "anchors": []}
-
-    try:
-        inspector = sa_inspect(bind)
-    except Exception:
-        return {"candidates": [], "anchors": []}
-
-    candidates: list[dict[str, Any]] = []
-    anchors: list[dict[str, Any]] = []
-    try:
-        if inspector.has_table("candidates"):
-            rows = session.execute(
-                text(
-                    """
-                    SELECT candidate_id, note_thin, confidence, proposed_at
-                    FROM candidates
-                    ORDER BY proposed_at DESC
-                    LIMIT 20
-                    """
-                )
-            ).fetchall()
-            for row in rows:
-                proposed_at = row[3]
-                if proposed_at is not None and not _is_recent(proposed_at, days=7):
-                    continue
-                parsed_proposed_at = _parse_iso_dt(proposed_at)
-                candidates.append(
-                    {
-                        "id": str(row[0]),
-                        "note": _shorten_text(str(row[1] or ""), max_chars=120),
-                        "confidence": int(row[2] or 0),
-                        "proposed_at": _to_iso(parsed_proposed_at) if parsed_proposed_at else "",
-                    }
-                )
-                if len(candidates) >= 5:
-                    break
-
-        if inspector.has_table("backbones"):
-            rows = session.execute(
-                text(
-                    """
-                    SELECT backbone_id, combined_bits, role, adopted_at
-                    FROM backbones
-                    ORDER BY adopted_at DESC
-                    LIMIT 20
-                    """
-                )
-            ).fetchall()
-            for row in rows:
-                adopted_at = row[3]
-                if adopted_at is not None and not _is_recent(adopted_at, days=7):
-                    continue
-                parsed_adopted_at = _parse_iso_dt(adopted_at)
-                anchors.append(
-                    {
-                        "id": str(row[0]),
-                        "bits": int(row[1] or 0),
-                        "role": str(row[2] or ""),
-                        "adopted_at": _to_iso(parsed_adopted_at) if parsed_adopted_at else "",
-                    }
-                )
-                if len(anchors) >= 5:
-                    break
-    except Exception:
-        return {"candidates": [], "anchors": []}
-
-    return {"candidates": candidates, "anchors": anchors}
+    return build_bitmap_summary(session=session, days=7, limit=5)
 
 
 def build_chat_context(context_tag: str, session, payload: AddMessagePayload, user_text: str) -> dict[str, Any]:
@@ -1498,6 +1431,39 @@ async def list_contexts():
             .all()
         )
         return [{"context_tag": context_tag, "count": int(count)} for context_tag, count in rows]
+    finally:
+        session.close()
+
+
+@router.get("/state")
+async def get_chat_state():
+    session = session_factory()
+    try:
+        _ensure_legacy_backfill(session)
+        total_messages = int(session.query(func.count(ChatTimelineMessage.id)).scalar() or 0)
+        pending_messages = int(
+            session.query(func.count(ChatTimelineMessage.id))
+            .filter(
+                ChatTimelineMessage.role == "sophia",
+                ChatTimelineMessage.status == "pending",
+            )
+            .scalar()
+            or 0
+        )
+        by_context_rows = (
+            session.query(ChatTimelineMessage.context_tag, func.count(ChatTimelineMessage.id))
+            .group_by(ChatTimelineMessage.context_tag)
+            .order_by(func.count(ChatTimelineMessage.id).desc(), ChatTimelineMessage.context_tag.asc())
+            .all()
+        )
+        by_context = {str(context_tag): int(count or 0) for context_tag, count in by_context_rows}
+        return {
+            "status": "ok",
+            "total_messages": total_messages,
+            "pending_messages": pending_messages,
+            "contexts": by_context,
+            "bitmap": _build_bitmap_summary(session),
+        }
     finally:
         session.close()
 

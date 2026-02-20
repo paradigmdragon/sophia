@@ -1,0 +1,47 @@
+{
+  "project": "Sophia",
+  "version": "0.1.0",
+  "nodes": [
+    {
+      "id": "root",
+      "type": "project",
+      "label": "Sophia Project",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": "feat.core.engine",
+      "type": "feature",
+      "label": "Core Engine",
+      "parent": "root",
+      "status": "DONE"
+    },
+    {
+      "id": "feat.memory.layer",
+      "type": "feature",
+      "label": "Memory Layer",
+      "parent": "root",
+      "status": "DONE"
+    },
+    {
+      "id": "feat.epidora",
+      "type": "feature",
+      "label": "Epidora Validator",
+      "parent": "root",
+      "status": "DONE"
+    },
+    {
+      "id": "feat.sone.automation",
+      "type": "feature",
+      "label": "SonE Automation",
+      "parent": "root",
+      "status": "DONE"
+    },
+    {
+      "id": "feat.infra.observer",
+      "type": "feature",
+      "label": "Project Observer",
+      "parent": "root",
+      "status": "IN_PROGRESS"
+    }
+  ]
+}

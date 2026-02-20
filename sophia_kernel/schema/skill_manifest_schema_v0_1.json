@@ -55,7 +55,8 @@
           "memory.write",
           "media.read",
           "asr.transcribe",
-          "audit.append"
+          "audit.append",
+          "external.run"
         ]
       }
     },

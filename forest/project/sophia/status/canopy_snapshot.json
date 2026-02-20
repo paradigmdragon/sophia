@@ -1,0 +1,5208 @@
+{
+  "project": "sophia",
+  "generated_at": "2026-02-20T05:33:14.767413Z",
+  "view": "focus",
+  "status_summary": {
+    "READY": 10,
+    "IN_PROGRESS": 1,
+    "DONE": 10,
+    "BLOCKED": 0,
+    "FAILED": 0,
+    "UNVERIFIED": 7
+  },
+  "risk": {
+    "threshold": 0.8,
+    "max_risk_score": 0.86,
+    "unverified_count": 7,
+    "clusters": [
+      {
+        "cluster_id": "requirement_conflict",
+        "risk_score": 0.86,
+        "hit_count": 12,
+        "linked_nodes": [
+          "spec-module"
+        ]
+      },
+      {
+        "cluster_id": "scope_s2",
+        "risk_score": 0.84,
+        "hit_count": 2,
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "cluster_id": "scope_s2b",
+        "risk_score": 0.84,
+        "hit_count": 2,
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "cluster_id": "dep_s1",
+        "risk_score": 0.83,
+        "hit_count": 1,
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "cluster_id": "dep_s1b",
+        "risk_score": 0.83,
+        "hit_count": 1,
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "cluster_id": "dependency_missing",
+        "risk_score": 0.83,
+        "hit_count": 1,
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "cluster_id": "scope_ambiguity",
+        "risk_score": 0.82,
+        "hit_count": 13,
+        "linked_nodes": [
+          "forest:canopy",
+          "spec-module"
+        ]
+      }
+    ]
+  },
+  "module_overview": [
+    {
+      "module": "forest",
+      "label": "소피아 숲",
+      "work_total": 18,
+      "ready": 8,
+      "in_progress": 0,
+      "done": 10,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 56,
+      "pending_questions": 6,
+      "max_risk_score": 0.84,
+      "last_updated_at": "2026-02-20T03:27:15.570559Z",
+      "progress_pct": 42,
+      "bitmap_pressure": 0,
+      "importance": 100
+    },
+    {
+      "module": "editor",
+      "label": "에디터",
+      "work_total": 0,
+      "ready": 0,
+      "in_progress": 0,
+      "done": 0,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 0,
+      "pending_questions": 2,
+      "max_risk_score": 0.86,
+      "last_updated_at": "",
+      "progress_pct": 0,
+      "bitmap_pressure": 0,
+      "importance": 86
+    },
+    {
+      "module": "chat",
+      "label": "채팅",
+      "work_total": 0,
+      "ready": 0,
+      "in_progress": 0,
+      "done": 0,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 0,
+      "pending_questions": 0,
+      "max_risk_score": 0.0,
+      "last_updated_at": "",
+      "progress_pct": 0,
+      "bitmap_pressure": 0,
+      "importance": 40
+    },
+    {
+      "module": "core",
+      "label": "코어",
+      "work_total": 3,
+      "ready": 2,
+      "in_progress": 1,
+      "done": 0,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 0,
+      "pending_questions": 0,
+      "max_risk_score": 0.0,
+      "last_updated_at": "2026-02-19T17:46:11.134026Z",
+      "progress_pct": 0,
+      "bitmap_pressure": 0,
+      "importance": 40
+    },
+    {
+      "module": "note",
+      "label": "소피아 노트",
+      "work_total": 0,
+      "ready": 0,
+      "in_progress": 0,
+      "done": 0,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 0,
+      "pending_questions": 0,
+      "max_risk_score": 0.0,
+      "last_updated_at": "",
+      "progress_pct": 0,
+      "bitmap_pressure": 0,
+      "importance": 40
+    },
+    {
+      "module": "subtitle",
+      "label": "자막 편집",
+      "work_total": 0,
+      "ready": 0,
+      "in_progress": 0,
+      "done": 0,
+      "blocked": 0,
+      "failed": 0,
+      "dev_progress_pct": 0,
+      "pending_questions": 0,
+      "max_risk_score": 0.0,
+      "last_updated_at": "",
+      "progress_pct": 0,
+      "bitmap_pressure": 0,
+      "importance": 40
+    }
+  ],
+  "system_inventory": [
+    {
+      "id": "editor_pipeline",
+      "category": "EDITOR",
+      "feature": "에디터/명세 분석 연계",
+      "module": "editor",
+      "status": "BLOCKED",
+      "progress_pct": 60,
+      "risk_score": 0.86,
+      "question_pressure": 4,
+      "updated_at": "2026-02-17T15:29:10.353513Z",
+      "description": "에디터 입력과 SonE/Grove 분석 경로",
+      "files": [
+        "apps/desktop/src/pages/EditorPage.tsx",
+        "api/sone_router.py",
+        "core/forest/grove.py"
+      ],
+      "existing_files": [
+        "apps/desktop/src/pages/EditorPage.tsx",
+        "api/sone_router.py",
+        "core/forest/grove.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "forest_canopy",
+      "category": "FOREST CORE",
+      "feature": "Canopy 관제/현황판",
+      "module": "forest",
+      "status": "BLOCKED",
+      "progress_pct": 69,
+      "risk_score": 0.84,
+      "question_pressure": 12,
+      "updated_at": "2026-02-20T05:28:38.128946Z",
+      "description": "숲 현황판 데이터 생성과 데스크탑 시각화",
+      "files": [
+        "core/forest/canopy.py",
+        "api/forest_router.py",
+        "apps/desktop/src/pages/ReportPage.tsx",
+        "apps/desktop/src/pages/report/DetailPanel.tsx"
+      ],
+      "existing_files": [
+        "core/forest/canopy.py",
+        "api/forest_router.py",
+        "apps/desktop/src/pages/ReportPage.tsx",
+        "apps/desktop/src/pages/report/DetailPanel.tsx"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "forest_sync",
+      "category": "FOREST CORE",
+      "feature": "Roadmap/Status 동기화 루프",
+      "module": "forest",
+      "status": "BLOCKED",
+      "progress_pct": 69,
+      "risk_score": 0.84,
+      "question_pressure": 12,
+      "updated_at": "2026-02-20T05:26:52.332760Z",
+      "description": "status/sync + roadmap/sync + loop 스크립트 기반 동기화",
+      "files": [
+        "core/services/forest_status_service.py",
+        "core/services/forest_roadmap_sync_service.py",
+        "scripts/sync_forest_loop.py",
+        "api/forest_router.py"
+      ],
+      "existing_files": [
+        "core/services/forest_status_service.py",
+        "core/services/forest_roadmap_sync_service.py",
+        "scripts/sync_forest_loop.py",
+        "api/forest_router.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "apple_shortcuts",
+      "category": "APPLE",
+      "feature": "Shortcuts/Bridge 연계",
+      "module": "chat",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.8,
+      "question_pressure": 1,
+      "updated_at": "2026-02-17T04:14:26.526525Z",
+      "description": "generation meta + shortcuts 브릿지 문서/경로",
+      "files": [
+        "docs/apple/shortcuts_bridge_v0_1.md",
+        "docs/apple/apple_intelligence_integration_ssot_v0_1.md",
+        "core/llm/generation_meta.py",
+        "api/chat_router.py"
+      ],
+      "existing_files": [
+        "docs/apple/shortcuts_bridge_v0_1.md",
+        "docs/apple/apple_intelligence_integration_ssot_v0_1.md",
+        "core/llm/generation_meta.py",
+        "api/chat_router.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "chat_engine",
+      "category": "CHAT",
+      "feature": "채팅 응답/게이트 파이프라인",
+      "module": "chat",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.8,
+      "question_pressure": 1,
+      "updated_at": "2026-02-17T04:14:26.526525Z",
+      "description": "chat_router + local_chat_engine + contract/gate",
+      "files": [
+        "api/chat_router.py",
+        "core/chat/local_chat_engine.py",
+        "core/chat/chat_contract.py",
+        "core/chat/chat_gate.py",
+        "apps/desktop/src/pages/ChatPage.tsx"
+      ],
+      "existing_files": [
+        "api/chat_router.py",
+        "core/chat/local_chat_engine.py",
+        "core/chat/chat_contract.py",
+        "core/chat/chat_gate.py",
+        "apps/desktop/src/pages/ChatPage.tsx"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "ai_pipeline",
+      "category": "AI",
+      "feature": "AI contract/gate 라우팅",
+      "module": "core",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.0,
+      "question_pressure": 0,
+      "updated_at": "2026-02-17T04:04:23.433545Z",
+      "description": "ai_router + providers + contracts",
+      "files": [
+        "api/ai_router.py",
+        "core/ai/ai_router.py",
+        "core/ai/gate.py",
+        "core/ai/contracts/ingest_contract.py",
+        "core/ai/providers/ollama_provider.py"
+      ],
+      "existing_files": [
+        "api/ai_router.py",
+        "core/ai/ai_router.py",
+        "core/ai/gate.py",
+        "core/ai/contracts/ingest_contract.py",
+        "core/ai/providers/ollama_provider.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "bitmap_pipeline",
+      "category": "BITMAP",
+      "feature": "Bitmap 저장/검증 파이프라인",
+      "module": "core",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.0,
+      "question_pressure": 0,
+      "updated_at": "2026-02-17T06:03:37.683583Z",
+      "description": "요약/감사/validator + canopy 상태 반영",
+      "files": [
+        "core/services/bitmap_summary_service.py",
+        "core/services/bitmap_audit_service.py",
+        "core/engine/bitmap_validator.py",
+        "api/mind_router.py"
+      ],
+      "existing_files": [
+        "core/services/bitmap_summary_service.py",
+        "core/services/bitmap_audit_service.py",
+        "core/engine/bitmap_validator.py",
+        "api/mind_router.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "work_lifecycle",
+      "category": "WORK",
+      "feature": "Work package 수명주기",
+      "module": "core",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.0,
+      "question_pressure": 0,
+      "updated_at": "2026-02-18T19:50:28.807292Z",
+      "description": "work 생성/진행/완료 + focus 정책",
+      "files": [
+        "api/work_router.py",
+        "core/services/focus_policy_service.py",
+        "core/memory/schema.py"
+      ],
+      "existing_files": [
+        "api/work_router.py",
+        "core/services/focus_policy_service.py",
+        "core/memory/schema.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "note_pipeline",
+      "category": "NOTES",
+      "feature": "소피아 노트/리플렉션",
+      "module": "note",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.0,
+      "question_pressure": 0,
+      "updated_at": "2026-02-15T01:46:41.775975Z",
+      "description": "노트 페이지 + 반영 스크립트",
+      "files": [
+        "apps/desktop/src/pages/SophiaNotePage.tsx",
+        "api/sophia_notes.py",
+        "scripts/daily_reflect.py",
+        "scripts/daily_brief.py"
+      ],
+      "existing_files": [
+        "apps/desktop/src/pages/SophiaNotePage.tsx",
+        "api/sophia_notes.py",
+        "scripts/daily_reflect.py",
+        "scripts/daily_brief.py"
+      ],
+      "missing_files": []
+    },
+    {
+      "id": "subtitle_pipeline",
+      "category": "SUBTITLE",
+      "feature": "자막 파이프라인",
+      "module": "subtitle",
+      "status": "IN_PROGRESS",
+      "progress_pct": 60,
+      "risk_score": 0.0,
+      "question_pressure": 0,
+      "updated_at": "2026-02-08T14:06:49.384352Z",
+      "description": "Hearing UI + ASR/refine 파이프라인",
+      "files": [
+        "apps/desktop/src/pages/HearingPage.tsx",
+        "core/app/pipeline.py",
+        "core/app/asr/whisper_engine.py",
+        "core/app/refine/refiner.py"
+      ],
+      "existing_files": [
+        "apps/desktop/src/pages/HearingPage.tsx",
+        "core/app/pipeline.py",
+        "core/app/asr/whisper_engine.py",
+        "core/app/refine/refiner.py"
+      ],
+      "missing_files": []
+    }
+  ],
+  "roadmap": {
+    "in_progress": [
+      {
+        "id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+        "title": "Bitmap 저장/검증 파이프라인 정합성 점검",
+        "status": "IN_PROGRESS",
+        "module": "core",
+        "module_label": "코어",
+        "kind": "MIGRATE",
+        "context_tag": "work",
+        "linked_node": "forest:bitmap",
+        "linked_risk": 0.0,
+        "priority_score": 75,
+        "acceptance_criteria": [
+          "bitmap 저장 경로 점검",
+          "validator 실패 이벤트 반영",
+          "forest status 영향 분석"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T00:09:42.934485Z",
+        "updated_at": "2026-02-18T03:46:11.841019Z",
+        "completed_at": ""
+      }
+    ],
+    "pending": [
+      {
+        "id": "wp_2b9abe559ff54060919f46d3c92c131d",
+        "title": "[SYS] 에디터/명세 분석 연계",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:editor_pipeline",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: 에디터/명세 분석 연계",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.86 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.129024Z",
+        "updated_at": "2026-02-19T17:46:11.129025Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_f4bd546d7fc04b799274285c1f28954d",
+        "title": "[SYS] AI contract/gate 라우팅",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:ai_pipeline",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: AI contract/gate 라우팅",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.84 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.131068Z",
+        "updated_at": "2026-02-19T17:46:11.131070Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_e61eb5af0e6347b5ab5055adcdea17a1",
+        "title": "[SYS] Bitmap 저장/검증 파이프라인",
+        "status": "READY",
+        "module": "core",
+        "module_label": "코어",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:bitmap_pipeline",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: Bitmap 저장/검증 파이프라인",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.84 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.131551Z",
+        "updated_at": "2026-02-19T17:46:11.131552Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_3845232792924806bd3181482d04d4b2",
+        "title": "[SYS] Canopy 관제/현황판",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:forest_canopy",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: Canopy 관제/현황판",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.84 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.132017Z",
+        "updated_at": "2026-02-19T17:46:11.132018Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_6fc5601201584c22bd66cf757c8effa2",
+        "title": "[SYS] Roadmap/Status 동기화 루프",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:forest_sync",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: Roadmap/Status 동기화 루프",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.84 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.132455Z",
+        "updated_at": "2026-02-19T17:46:11.132456Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_c491008148c84f2691559679e2a17460",
+        "title": "[SYS] Work package 수명주기",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:work_lifecycle",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: Work package 수명주기",
+          "현재 상태 BLOCKED 해소",
+          "리스크 0.84 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.133071Z",
+        "updated_at": "2026-02-19T17:46:11.133072Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_9ceece22a9ae4ff0916c6b43f9afef2f",
+        "title": "[SYS] Shortcuts/Bridge 연계",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:apple_shortcuts",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: Shortcuts/Bridge 연계",
+          "현재 상태 IN_PROGRESS 해소",
+          "리스크 0.80 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.133504Z",
+        "updated_at": "2026-02-19T17:46:11.133505Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_ec03ed6a31984b2bbe58cd0375b46063",
+        "title": "[SYS] 채팅 응답/게이트 파이프라인",
+        "status": "READY",
+        "module": "core",
+        "module_label": "코어",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:chat_engine",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: 채팅 응답/게이트 파이프라인",
+          "현재 상태 IN_PROGRESS 해소",
+          "리스크 0.80 원인 제거",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-19T17:46:11.134026Z",
+        "updated_at": "2026-02-19T17:46:11.134026Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_34613f357c8d44a6bc53d4a6851f4c76",
+        "title": "[SYS] 소피아 노트/리플렉션",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:note_pipeline",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: 소피아 노트/리플렉션",
+          "현재 상태 IN_PROGRESS 해소",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-20T03:27:15.569606Z",
+        "updated_at": "2026-02-20T03:27:15.569606Z",
+        "completed_at": ""
+      },
+      {
+        "id": "wp_3f71758079b2490dae7ad4f737e9768a",
+        "title": "[SYS] 자막 파이프라인",
+        "status": "READY",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "system:subtitle_pipeline",
+        "linked_risk": 0.0,
+        "priority_score": 60,
+        "acceptance_criteria": [
+          "시스템 기능 정합성 확인: 자막 파이프라인",
+          "현재 상태 IN_PROGRESS 해소",
+          "완료 보고 JSON 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-20T03:27:15.570556Z",
+        "updated_at": "2026-02-20T03:27:15.570559Z",
+        "completed_at": ""
+      }
+    ],
+    "done_recent": [
+      {
+        "id": "wp_25a4530e96764f31a6ad21e5ea3b153b",
+        "title": "Roadmap 자동 동기화 기준 강화",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:roadmap",
+        "linked_risk": 0.0,
+        "priority_score": 20,
+        "acceptance_criteria": [
+          "record policy 검증",
+          "roadmap journal 카테고리 정합성 확인",
+          "sync 이력 표시 개선"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T00:09:35.600070Z",
+        "updated_at": "2026-02-18T03:46:11.841019Z",
+        "completed_at": "2026-02-18T03:46:11.841019Z"
+      },
+      {
+        "id": "wp_sone_verify_loop_v1",
+        "title": "SonE 검증 루프 점검",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:analysis",
+        "linked_risk": 0.0,
+        "priority_score": 20,
+        "acceptance_criteria": [
+          "focus view 반영",
+          "상태/계획 표시 확인"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T02:17:20.743371Z",
+        "updated_at": "2026-02-18T03:41:11.953715Z",
+        "completed_at": "2026-02-18T03:41:11.953715Z"
+      },
+      {
+        "id": "wp_status_sync_auto_v1",
+        "title": "status sync 자동 점검",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:status",
+        "linked_risk": 0.0,
+        "priority_score": 20,
+        "acceptance_criteria": [
+          "focus view 반영",
+          "상태/계획 표시 확인"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T02:17:20.743371Z",
+        "updated_at": "2026-02-18T03:39:25.501089Z",
+        "completed_at": "2026-02-18T03:39:25.501089Z"
+      },
+      {
+        "id": "wp_focus_tree_min_v1",
+        "title": "Focus 트리 최소화 정리",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "focus view 반영",
+          "상태/계획 표시 확인"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T02:17:20.743371Z",
+        "updated_at": "2026-02-18T03:39:25.501089Z",
+        "completed_at": "2026-02-18T03:39:25.501089Z"
+      },
+      {
+        "id": "wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "title": "Focus View 계획/진행/완료 분리 고도화",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "READY/IN_PROGRESS/DONE 구간 표시",
+          "작업 상태 배지 통일",
+          "사용자 혼동 제거 문구 반영"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-18T00:09:15.932108Z",
+        "updated_at": "2026-02-18T03:37:49.523423Z",
+        "completed_at": "2026-02-18T03:37:49.523423Z"
+      },
+      {
+        "id": "wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "title": "Rehearsal S2",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "canopy 점검",
+          "report 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-14T21:57:57.247688Z",
+        "updated_at": "2026-02-17T23:35:46.527358Z",
+        "completed_at": "2026-02-17T23:35:46.527353Z"
+      },
+      {
+        "id": "wp_10cee24315eb4af4ba50c97d61d58713",
+        "title": "S2",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "S2"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-14T21:58:40.709460Z",
+        "updated_at": "2026-02-17T23:35:46.397882Z",
+        "completed_at": "2026-02-17T23:35:46.397877Z"
+      },
+      {
+        "id": "wp_c910e1aaf5234682b4f2c204822fd480",
+        "title": "Part4.5 rehearsal package",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "canopy data 정확성 검증",
+          "report 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-14T21:55:50.118147Z",
+        "updated_at": "2026-02-17T23:35:46.246448Z",
+        "completed_at": "2026-02-17T23:35:46.246439Z"
+      },
+      {
+        "id": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "title": "S1",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "S1"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-14T21:58:38.337191Z",
+        "updated_at": "2026-02-14T21:58:38Z",
+        "completed_at": "2026-02-14T21:58:38.389015Z"
+      },
+      {
+        "id": "wp_df90a9828201480db81954abc99fd5ab",
+        "title": "Rehearsal S1",
+        "status": "DONE",
+        "module": "forest",
+        "module_label": "소피아 숲",
+        "kind": "IMPLEMENT",
+        "context_tag": "work",
+        "linked_node": "forest:canopy",
+        "linked_risk": 0.84,
+        "priority_score": 41,
+        "acceptance_criteria": [
+          "canopy 점검",
+          "report 제출"
+        ],
+        "project": "sophia",
+        "created_at": "2026-02-14T21:57:54.843922Z",
+        "updated_at": "2026-02-14T21:57:55Z",
+        "completed_at": "2026-02-14T21:57:54.897494Z"
+      }
+    ],
+    "total_work": 21,
+    "remaining_work": 18,
+    "eta_hint": "최근 7일 완료 10건 기준, 약 8일 예상",
+    "eta_days": 8,
+    "done_last_7d": 10,
+    "in_progress_count": 1,
+    "blocked_count": 0
+  },
+  "sone_summary": {
+    "source_doc": ".md",
+    "generated_at": "2026-02-18T03:59:46.314834Z",
+    "validation_stage": "heuristic_v0_1",
+    "validation_state": "needs_review",
+    "validation_next_action": "누락 슬롯 1건 보완 후 Grove 분석 재실행",
+    "freshness_minutes": 2973,
+    "reason_catalog_version": "sone_reason_v0_1",
+    "missing_slots": [
+      {
+        "target": "spec-module",
+        "status": "missing_success_condition",
+        "evidence": ".md",
+        "reason_code": "SONE_SUCCESS_CONDITION_MISSING",
+        "reason_description": "성공 조건(success_condition)이 명시되지 않았습니다."
+      }
+    ],
+    "missing_slot_count": 1,
+    "impact_targets": [],
+    "impact_count": 0,
+    "risk_cluster_count": 2,
+    "max_risk_score": 0.86,
+    "risk_reasons": [
+      {
+        "cluster_id": "requirement_conflict",
+        "description": "요구사항 충돌 가능성",
+        "risk_score": 0.86,
+        "reason_code": "SONE_REQUIREMENT_CONFLICT",
+        "reason_description": "요구사항 충돌 가능성이 감지되었습니다.",
+        "category": "conflict",
+        "evidence": "conflict keyword detected"
+      },
+      {
+        "cluster_id": "scope_ambiguity",
+        "description": "범위 불명확",
+        "risk_score": 0.82,
+        "reason_code": "SONE_SCOPE_MISSING",
+        "reason_description": "설계 범위(scope)가 명시되지 않았습니다.",
+        "category": "missing_slot",
+        "evidence": "slot.scope is empty"
+      }
+    ],
+    "dependency": {
+      "node_count": 1,
+      "edge_count": 0
+    }
+  },
+  "bitmap_health": {
+    "window_days": 7,
+    "candidate_count_7d": 0,
+    "pending_count": 0,
+    "adoption_rate": 0.0,
+    "invalid_count_7d": 0,
+    "conflict_mark_count_7d": 0,
+    "duplicate_combined_groups": 0,
+    "duplicate_backbone_rows": 0
+  },
+  "progress_sync": {
+    "status": "synced",
+    "version": "forest_progress_v0.1",
+    "project": "sophia",
+    "synced_at": "2026-02-20T05:33:14.767623Z",
+    "canopy_generated_at": "2026-02-20T05:33:14.767413Z",
+    "summary": {
+      "work_total": 21,
+      "remaining_work": 18,
+      "done_last_7d": 10,
+      "eta_days": 8,
+      "eta_hint": "최근 7일 완료 10건 기준, 약 8일 예상",
+      "status_counts": {
+        "READY": 10,
+        "IN_PROGRESS": 1,
+        "DONE": 10,
+        "BLOCKED": 0,
+        "FAILED": 0,
+        "UNVERIFIED": 7
+      },
+      "risk": {
+        "max_risk_score": 0.86,
+        "unverified_count": 7
+      },
+      "sone": {
+        "missing_slot_count": 1,
+        "impact_count": 0,
+        "risk_cluster_count": 2,
+        "source_doc": ".md"
+      },
+      "bitmap": {
+        "candidate_count_7d": 0,
+        "pending_count": 0,
+        "adoption_rate": 0.0,
+        "invalid_count_7d": 0,
+        "conflict_mark_count_7d": 0,
+        "duplicate_combined_groups": 0
+      },
+      "systems": {
+        "total": 10,
+        "status_counts": {
+          "READY": 0,
+          "IN_PROGRESS": 7,
+          "DONE": 0,
+          "BLOCKED": 3,
+          "FAILED": 0
+        }
+      }
+    },
+    "work": {
+      "done_recent": [
+        {
+          "id": "wp_25a4530e96764f31a6ad21e5ea3b153b",
+          "title": "Roadmap 자동 동기화 기준 강화",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 20,
+          "updated_at": "2026-02-18T03:46:11.841019Z"
+        },
+        {
+          "id": "wp_sone_verify_loop_v1",
+          "title": "SonE 검증 루프 점검",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 20,
+          "updated_at": "2026-02-18T03:41:11.953715Z"
+        },
+        {
+          "id": "wp_status_sync_auto_v1",
+          "title": "status sync 자동 점검",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 20,
+          "updated_at": "2026-02-18T03:39:25.501089Z"
+        },
+        {
+          "id": "wp_focus_tree_min_v1",
+          "title": "Focus 트리 최소화 정리",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 41,
+          "updated_at": "2026-02-18T03:39:25.501089Z"
+        },
+        {
+          "id": "wp_c93f14bc5cdd42df9fa37968f1e6a417",
+          "title": "Focus View 계획/진행/완료 분리 고도화",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 41,
+          "updated_at": "2026-02-18T03:37:49.523423Z"
+        },
+        {
+          "id": "wp_c810ebe8cdf04fd49d9425c187dc4af5",
+          "title": "Rehearsal S2",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 41,
+          "updated_at": "2026-02-17T23:35:46.527358Z"
+        },
+        {
+          "id": "wp_10cee24315eb4af4ba50c97d61d58713",
+          "title": "S2",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 41,
+          "updated_at": "2026-02-17T23:35:46.397882Z"
+        },
+        {
+          "id": "wp_c910e1aaf5234682b4f2c204822fd480",
+          "title": "Part4.5 rehearsal package",
+          "status": "DONE",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 41,
+          "updated_at": "2026-02-17T23:35:46.246448Z"
+        }
+      ],
+      "in_progress": [
+        {
+          "id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+          "title": "Bitmap 저장/검증 파이프라인 정합성 점검",
+          "status": "IN_PROGRESS",
+          "module": "core",
+          "module_label": "코어",
+          "priority_score": 75,
+          "updated_at": "2026-02-18T03:46:11.841019Z"
+        }
+      ],
+      "pending": [
+        {
+          "id": "wp_2b9abe559ff54060919f46d3c92c131d",
+          "title": "[SYS] 에디터/명세 분석 연계",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.129025Z"
+        },
+        {
+          "id": "wp_f4bd546d7fc04b799274285c1f28954d",
+          "title": "[SYS] AI contract/gate 라우팅",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.131070Z"
+        },
+        {
+          "id": "wp_e61eb5af0e6347b5ab5055adcdea17a1",
+          "title": "[SYS] Bitmap 저장/검증 파이프라인",
+          "status": "READY",
+          "module": "core",
+          "module_label": "코어",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.131552Z"
+        },
+        {
+          "id": "wp_3845232792924806bd3181482d04d4b2",
+          "title": "[SYS] Canopy 관제/현황판",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.132018Z"
+        },
+        {
+          "id": "wp_6fc5601201584c22bd66cf757c8effa2",
+          "title": "[SYS] Roadmap/Status 동기화 루프",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.132456Z"
+        },
+        {
+          "id": "wp_c491008148c84f2691559679e2a17460",
+          "title": "[SYS] Work package 수명주기",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.133072Z"
+        },
+        {
+          "id": "wp_9ceece22a9ae4ff0916c6b43f9afef2f",
+          "title": "[SYS] Shortcuts/Bridge 연계",
+          "status": "READY",
+          "module": "forest",
+          "module_label": "소피아 숲",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.133505Z"
+        },
+        {
+          "id": "wp_ec03ed6a31984b2bbe58cd0375b46063",
+          "title": "[SYS] 채팅 응답/게이트 파이프라인",
+          "status": "READY",
+          "module": "core",
+          "module_label": "코어",
+          "priority_score": 60,
+          "updated_at": "2026-02-19T17:46:11.134026Z"
+        }
+      ]
+    },
+    "systems": {
+      "rows": [
+        {
+          "id": "editor_pipeline",
+          "category": "EDITOR",
+          "feature": "에디터/명세 분석 연계",
+          "status": "BLOCKED",
+          "progress_pct": 60,
+          "risk_score": 0.86,
+          "updated_at": "2026-02-17T15:29:10.353513Z"
+        },
+        {
+          "id": "forest_canopy",
+          "category": "FOREST CORE",
+          "feature": "Canopy 관제/현황판",
+          "status": "BLOCKED",
+          "progress_pct": 69,
+          "risk_score": 0.84,
+          "updated_at": "2026-02-20T05:28:38.128946Z"
+        },
+        {
+          "id": "forest_sync",
+          "category": "FOREST CORE",
+          "feature": "Roadmap/Status 동기화 루프",
+          "status": "BLOCKED",
+          "progress_pct": 69,
+          "risk_score": 0.84,
+          "updated_at": "2026-02-20T05:26:52.332760Z"
+        },
+        {
+          "id": "apple_shortcuts",
+          "category": "APPLE",
+          "feature": "Shortcuts/Bridge 연계",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.8,
+          "updated_at": "2026-02-17T04:14:26.526525Z"
+        },
+        {
+          "id": "chat_engine",
+          "category": "CHAT",
+          "feature": "채팅 응답/게이트 파이프라인",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.8,
+          "updated_at": "2026-02-17T04:14:26.526525Z"
+        },
+        {
+          "id": "ai_pipeline",
+          "category": "AI",
+          "feature": "AI contract/gate 라우팅",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.0,
+          "updated_at": "2026-02-17T04:04:23.433545Z"
+        },
+        {
+          "id": "bitmap_pipeline",
+          "category": "BITMAP",
+          "feature": "Bitmap 저장/검증 파이프라인",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.0,
+          "updated_at": "2026-02-17T06:03:37.683583Z"
+        },
+        {
+          "id": "work_lifecycle",
+          "category": "WORK",
+          "feature": "Work package 수명주기",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.0,
+          "updated_at": "2026-02-18T19:50:28.807292Z"
+        },
+        {
+          "id": "note_pipeline",
+          "category": "NOTES",
+          "feature": "소피아 노트/리플렉션",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.0,
+          "updated_at": "2026-02-15T01:46:41.775975Z"
+        },
+        {
+          "id": "subtitle_pipeline",
+          "category": "SUBTITLE",
+          "feature": "자막 파이프라인",
+          "status": "IN_PROGRESS",
+          "progress_pct": 60,
+          "risk_score": 0.0,
+          "updated_at": "2026-02-08T14:06:49.384352Z"
+        }
+      ]
+    },
+    "next_actions": [
+      {
+        "priority": "P0",
+        "title": "질문 클러스터 정리: requirement_conflict",
+        "reason": "risk 0.86",
+        "source": "question"
+      },
+      {
+        "priority": "P0",
+        "title": "질문 클러스터 정리: scope_s2",
+        "reason": "risk 0.84",
+        "source": "question"
+      },
+      {
+        "priority": "P0",
+        "title": "질문 클러스터 정리: scope_s2b",
+        "reason": "risk 0.84",
+        "source": "question"
+      },
+      {
+        "priority": "P1",
+        "title": "[SYS] 에디터/명세 분석 연계",
+        "reason": "대기 작업 우선순위 결정",
+        "source": "work"
+      },
+      {
+        "priority": "P1",
+        "title": "[SYS] AI contract/gate 라우팅",
+        "reason": "대기 작업 우선순위 결정",
+        "source": "work"
+      },
+      {
+        "priority": "P1",
+        "title": "[SYS] Bitmap 저장/검증 파이프라인",
+        "reason": "대기 작업 우선순위 결정",
+        "source": "work"
+      },
+      {
+        "priority": "P1",
+        "title": "[SYS] Canopy 관제/현황판",
+        "reason": "대기 작업 우선순위 결정",
+        "source": "work"
+      },
+      {
+        "priority": "P1",
+        "title": "[SYS] Roadmap/Status 동기화 루프",
+        "reason": "대기 작업 우선순위 결정",
+        "source": "work"
+      }
+    ],
+    "recent_events": [
+      {
+        "timestamp": "2026-02-20T04:55:18.525094Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:18.525282Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:18.561585Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:18.844870Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:18.845075Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:18.939415Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.113634Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.113859Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.231022Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.369455Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.369638Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.451784Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.715876Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.716053Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:26.808958Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:27.013611Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:27.013825Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      },
+      {
+        "timestamp": "2026-02-20T04:55:27.100139Z",
+        "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+        "target": "sophia",
+        "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+      },
+      {
+        "timestamp": "2026-02-20T05:06:54.285625Z",
+        "event_type": "STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "project progress snapshot synced"
+      },
+      {
+        "timestamp": "2026-02-20T05:06:54.285847Z",
+        "event_type": "FOREST_STATUS_SYNCED",
+        "target": "sophia",
+        "summary": "event: FOREST_STATUS_SYNCED"
+      }
+    ]
+  },
+  "focus": {
+    "focus_mode": true,
+    "current_mission_id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+    "current_mission": {
+      "id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+      "title": "Bitmap 저장/검증 파이프라인 정합성 점검",
+      "status": "IN_PROGRESS",
+      "module": "core",
+      "module_label": "코어",
+      "kind": "MIGRATE",
+      "context_tag": "work",
+      "linked_node": "forest:bitmap",
+      "linked_risk": 0.0,
+      "priority_score": 75,
+      "acceptance_criteria": [
+        "bitmap 저장 경로 점검",
+        "validator 실패 이벤트 반영",
+        "forest status 영향 분석"
+      ],
+      "project": "sophia",
+      "created_at": "2026-02-18T00:09:42.934485Z",
+      "updated_at": "2026-02-18T03:46:11.841019Z",
+      "completed_at": ""
+    },
+    "next_action": {
+      "text": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+      "type": "work_step",
+      "ref": "wp_0a662b3de9974dc5b254bcde8369d85a"
+    },
+    "focus_lock": {
+      "level": "soft",
+      "reason": "WIP_LIMIT_REACHED:1/1",
+      "wip_limit": 1
+    },
+    "active_mission_ids": [
+      "wp_0a662b3de9974dc5b254bcde8369d85a"
+    ],
+    "frozen_ideas": {
+      "count": 0,
+      "top": []
+    },
+    "journey": {
+      "last_footprint": "진행상태 동기화 완료",
+      "next_step": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+      "streak_days": 1
+    },
+    "metrics": {
+      "wip_active_count": 1,
+      "reentry_minutes": 0
+    },
+    "sone": {
+      "validation_state": "needs_review",
+      "missing_slot_count": 1,
+      "next_action": "누락 슬롯 1건 보완 후 Grove 분석 재실행",
+      "freshness_minutes": 2973
+    },
+    "human_summary": {
+      "now_problem": "SonE 검증 누락 슬롯 1건이 있습니다.",
+      "now_building": "Bitmap 저장/검증 파이프라인 정합성 점검 (진행중)",
+      "next_decision": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검"
+    },
+    "bitmap_pipeline": {
+      "status": "healthy",
+      "window_days": 7,
+      "reasons": [],
+      "next_action": "bitmap 파이프라인 이상 없음",
+      "action_type": "bitmap_ok",
+      "action_ref": "bitmap",
+      "metrics": {
+        "candidate_count_7d": 0,
+        "pending_count": 0,
+        "invalid_count_7d": 0,
+        "conflict_mark_count_7d": 0,
+        "duplicate_backbone_rows": 0,
+        "adoption_rate": 0.0
+      }
+    }
+  },
+  "focus_mode": true,
+  "current_mission_id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+  "next_action": {
+    "text": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+    "type": "work_step",
+    "ref": "wp_0a662b3de9974dc5b254bcde8369d85a"
+  },
+  "focus_lock": {
+    "level": "soft",
+    "reason": "WIP_LIMIT_REACHED:1/1",
+    "wip_limit": 1
+  },
+  "frozen_ideas": {
+    "count": 0,
+    "top": []
+  },
+  "journey": {
+    "last_footprint": "진행상태 동기화 완료",
+    "next_step": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+    "streak_days": 1
+  },
+  "metrics": {
+    "wip_active_count": 1,
+    "reentry_minutes": 0
+  },
+  "human_view": {
+    "summary_cards": [
+      {
+        "key": "problem",
+        "title": "지금 문제",
+        "text": "SonE 검증 누락 슬롯 1건이 있습니다.",
+        "severity": "warning"
+      },
+      {
+        "key": "building",
+        "title": "지금 만드는 것",
+        "text": "Bitmap 저장/검증 파이프라인 정합성 점검 (진행중)",
+        "severity": "info"
+      },
+      {
+        "key": "decision",
+        "title": "다음 결정",
+        "text": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+        "severity": "action"
+      },
+      {
+        "key": "bitmap",
+        "title": "Bitmap 상태",
+        "text": "bitmap 파이프라인 이상 없음",
+        "severity": "ok"
+      }
+    ],
+    "quick_lists": {
+      "pending_top": [
+        {
+          "id": "wp_2b9abe559ff54060919f46d3c92c131d",
+          "title": "[SYS] 에디터/명세 분석 연계",
+          "status": "READY"
+        },
+        {
+          "id": "wp_f4bd546d7fc04b799274285c1f28954d",
+          "title": "[SYS] AI contract/gate 라우팅",
+          "status": "READY"
+        },
+        {
+          "id": "wp_e61eb5af0e6347b5ab5055adcdea17a1",
+          "title": "[SYS] Bitmap 저장/검증 파이프라인",
+          "status": "READY"
+        }
+      ],
+      "risk_top": [
+        {
+          "cluster_id": "requirement_conflict",
+          "risk_score": 0.86
+        },
+        {
+          "cluster_id": "scope_s2",
+          "risk_score": 0.84
+        },
+        {
+          "cluster_id": "scope_s2b",
+          "risk_score": 0.84
+        }
+      ],
+      "recent_top": [
+        {
+          "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+          "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+        },
+        {
+          "event_type": "FOREST_STATUS_SYNCED",
+          "summary": "event: FOREST_STATUS_SYNCED"
+        },
+        {
+          "event_type": "STATUS_SYNCED",
+          "summary": "project progress snapshot synced"
+        },
+        {
+          "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+          "summary": "event: FOREST_ROADMAP_LIVE_RECORDED"
+        },
+        {
+          "event_type": "FOREST_STATUS_SYNCED",
+          "summary": "event: FOREST_STATUS_SYNCED"
+        },
+        {
+          "event_type": "STATUS_SYNCED",
+          "summary": "project progress snapshot synced"
+        }
+      ],
+      "recorded_top": [
+        {
+          "id": "roadmap_000102",
+          "title": "Parallel lane/spec workflow foundation",
+          "summary": "Added owner/lane/scope/spec workflow fields and spec review request flow for multi-agent handoff.",
+          "category": "SYSTEM_CHANGE",
+          "recorded_at": "2026-02-20T04:15:04Z"
+        },
+        {
+          "id": "sha256:f3621f257b7c2bec36e286cf99c0caefefa586adad8678fdc37e3c1f7ff1f16a",
+          "title": "Header/sidebar duplicate cleanup and project-menu split",
+          "summary": "Simplified top header selection output, removed root-duplicate forest module row, and separated project management/source-add sections at project folder bottom.",
+          "category": "SYSTEM_CHANGE",
+          "recorded_at": "2026-02-20T03:40:02.851004Z"
+        },
+        {
+          "id": "sha256:d5cd765314139d6aa6ba7af2108d3da7732057222ef244357683816cd0ac1886",
+          "title": "Optimistic work status TTL and cleanup",
+          "summary": "Added TTL-based optimistic status expiration and automatic cleanup when canopy/server status matches.",
+          "category": "SYSTEM_CHANGE",
+          "recorded_at": "2026-02-20T03:31:47.755111Z"
+        },
+        {
+          "id": "sha256:7260bc1133d6f0a319e9ce50f757c75ebc6afd54c84a7db55fc98882a8eee83f",
+          "title": "Top3 work actions optimistic status update",
+          "summary": "Applied optimistic IN_PROGRESS/DONE overlay after ACK/complete clicks and auto-cleaned overlay on canopy sync parity.",
+          "category": "SYSTEM_CHANGE",
+          "recorded_at": "2026-02-20T03:28:03.420863Z"
+        },
+        {
+          "id": "sha256:2d91b551c0cdb836044271762357ee2154b17ef994d766ea5a3704f5a18836c6",
+          "title": "[forest] status sync",
+          "summary": "remaining_work=18 blocked=0 unverified=7",
+          "category": "SYSTEM_CHANGE",
+          "recorded_at": "2026-02-20T03:27:15.893522Z"
+        }
+      ]
+    },
+    "roadmap_now": {
+      "remaining_work": 18,
+      "high_risk_count": 7,
+      "current_mission_id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+      "next_action": "Bitmap 저장/검증 파이프라인 정합성 점검: bitmap 저장 경로 점검",
+      "bitmap_pipeline_status": "healthy",
+      "phase": "5",
+      "phase_step": "5.1"
+    }
+  },
+  "roadmap_journal": {
+    "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl",
+    "total": 102,
+    "entries": [
+      {
+        "id": "roadmap_000102",
+        "recorded_at": "2026-02-20T04:15:04Z",
+        "timestamp": "2026-02-20T04:15:04Z",
+        "title": "Parallel lane/spec workflow foundation",
+        "summary": "Added owner/lane/scope/spec workflow fields and spec review request flow for multi-agent handoff.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "",
+        "source": "manual",
+        "files": [
+          "core/forest/canopy.py",
+          "api/forest_router.py",
+          "core/services/forest_roadmap_sync_service.py",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "Docs/forest_agent_handoff.md"
+        ],
+        "tags": [
+          "phase:5",
+          "phase_step:5.1",
+          "parallel",
+          "spec",
+          "handoff",
+          "owner:codex",
+          "lane:codex",
+          "scope:forest"
+        ],
+        "spec_refs": [
+          "Docs/forest_agent_handoff.md"
+        ],
+        "phase": "5",
+        "phase_step": "5.1",
+        "phase_title": "병렬작업 분할 + 명세서 중심 운영",
+        "owner": "codex",
+        "lane": "codex",
+        "scope": "forest",
+        "review_state": "applied",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:f3621f257b7c2bec36e286cf99c0caefefa586adad8678fdc37e3c1f7ff1f16a",
+        "recorded_at": "2026-02-20T03:40:02.851004Z",
+        "timestamp": "2026-02-20T03:40:02.851004Z",
+        "title": "Header/sidebar duplicate cleanup and project-menu split",
+        "summary": "Simplified top header selection output, removed root-duplicate forest module row, and separated project management/source-add sections at project folder bottom.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "Docs/forest_phase_tracker.md",
+          "Docs/forest_agent_handoff.md"
+        ],
+        "tags": [
+          "phase:4",
+          "phase_step:4.20",
+          "layout",
+          "sidebar",
+          "source-add"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.20",
+        "phase_title": "Top3 실행/동기화 UX 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:d5cd765314139d6aa6ba7af2108d3da7732057222ef244357683816cd0ac1886",
+        "recorded_at": "2026-02-20T03:31:47.755111Z",
+        "timestamp": "2026-02-20T03:31:47.755111Z",
+        "title": "Optimistic work status TTL and cleanup",
+        "summary": "Added TTL-based optimistic status expiration and automatic cleanup when canopy/server status matches.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "phase:4",
+          "phase_step:4.19",
+          "top3",
+          "optimistic-ttl"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.19",
+        "phase_title": "Top3 실행/동기화 UX 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:7260bc1133d6f0a319e9ce50f757c75ebc6afd54c84a7db55fc98882a8eee83f",
+        "recorded_at": "2026-02-20T03:28:03.420863Z",
+        "timestamp": "2026-02-20T03:28:03.420863Z",
+        "title": "Top3 work actions optimistic status update",
+        "summary": "Applied optimistic IN_PROGRESS/DONE overlay after ACK/complete clicks and auto-cleaned overlay on canopy sync parity.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "phase:4",
+          "phase_step:4.18",
+          "top3",
+          "optimistic-ui"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.18",
+        "phase_title": "Top3 실행/동기화 UX 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:2d91b551c0cdb836044271762357ee2154b17ef994d766ea5a3704f5a18836c6",
+        "recorded_at": "2026-02-20T03:27:15.893522Z",
+        "timestamp": "2026-02-20T03:27:15.893522Z",
+        "title": "[forest] status sync",
+        "summary": "remaining_work=18 blocked=0 unverified=7",
+        "category": "SYSTEM_CHANGE",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "status-sync",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:2cc2d9eab53299be2fdaf86eb94c7c156a6fd5526ddb69a9d83e639776aabc72",
+        "recorded_at": "2026-02-20T03:27:15.662510Z",
+        "timestamp": "2026-02-20T03:27:15.662510Z",
+        "title": "[forest] 시스템 인벤토리 작업 시드",
+        "summary": "created=2 skipped=8 limit=8",
+        "category": "FEATURE_ADD",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "work",
+          "inventory",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:92f200801c73fed5e8de137f6718a3a2f3e2c58f75a608fe9fe246441eb180cf",
+        "recorded_at": "2026-02-20T03:17:38.524660Z",
+        "timestamp": "2026-02-20T03:17:38.524660Z",
+        "title": "실행 직후 선택 동기화 + 최근결정 카드",
+        "summary": "Top3 액션 실행 시 대상 선택을 먼저 동기화하고 상세 패널에 최근결정 카드를 추가해 실행 결과를 즉시 표시.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "selection-sync",
+          "recent-decision",
+          "phase:4",
+          "phase_step:4.17"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.17",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:b2aa4039f0d238c448b9d4a2b02e204c47375a1e586170136054e6970115a97f",
+        "recorded_at": "2026-02-20T03:13:38.514701Z",
+        "timestamp": "2026-02-20T03:13:38.514701Z",
+        "title": "Top3 질문 항목 즉시 작업화",
+        "summary": "Top3 질문 항목에 작업 생성 버튼을 추가하고 cluster 기준으로 work generate를 직접 실행하도록 연결.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "question",
+          "work-generate",
+          "phase:4",
+          "phase_step:4.16"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.16",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:c9b80b1f49e5704187dcbe7624593933643468dbf387688ff8ea35eddda826a1",
+        "recorded_at": "2026-02-20T03:11:12.789156Z",
+        "timestamp": "2026-02-20T03:11:12.789156Z",
+        "title": "ACK/완료 실행 이력 sync history 반영",
+        "summary": "Top3 ACK/완료 실행 시 진행중/완료/실패 상태를 sync history에 즉시 기록해 실행 추적 가시성을 강화.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "ack",
+          "complete",
+          "sync-history",
+          "phase:4",
+          "phase_step:4.15"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.15",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:818b4f96ac5baeb31f3debc8bad9976511055e842575f7ae7bb5da184d6a99a6",
+        "recorded_at": "2026-02-20T03:09:47.952830Z",
+        "timestamp": "2026-02-20T03:09:47.952830Z",
+        "title": "Top3 액션 중복실행 방지",
+        "summary": "Top3 ACK/완료 실행 중 동일 work 버튼을 잠그고 처리중 라벨을 노출해 중복 트리거를 방지.",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "busy-lock",
+          "phase:4",
+          "phase_step:4.14"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.14",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:1f4ca1d22fa57affb58c5d74ffe799e74699b7317dacb29229c1eda4994db932",
+        "recorded_at": "2026-02-20T03:07:46.352851Z",
+        "timestamp": "2026-02-20T03:07:46.352851Z",
+        "title": "Top3 즉시 실행 액션 연결",
+        "summary": "Top3 작업 항목에서 ACK/완료 버튼으로 work 상태 전이를 직접 실행하도록 연결하고 질문/동기화 항목은 점프 동작만 유지.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "ack",
+          "complete",
+          "phase:4",
+          "phase_step:4.13"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.13",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:8f5c68be180fa47d9c5e38e2c35a0f6f297c5f3a09402981601c1acf0c8acbdc",
+        "recorded_at": "2026-02-20T02:45:40.482142Z",
+        "timestamp": "2026-02-20T02:45:40.482142Z",
+        "title": "Top3 sync fallback 보강",
+        "summary": "Top3 실행 후보가 부족할 때 progress_sync.next_actions를 fallback으로 포함해 실행 제안 공백을 줄임.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "sync",
+          "phase:4",
+          "phase_step:4.12"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.12",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:b24447996f1ffcbc664704febe85ad966940deeb082fe7aa7b2a796d9bbc647d",
+        "recorded_at": "2026-02-20T02:43:46.965883Z",
+        "timestamp": "2026-02-20T02:43:46.965883Z",
+        "title": "Top3 질문 큐 보강",
+        "summary": "Top3 실행 카드 후보가 부족할 때 질문 큐(READY_TO_ASK/PENDING/COLLECTING)를 자동 포함하고 클릭 시 cluster 상세로 점프하도록 개선.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "question-queue",
+          "phase:4",
+          "phase_step:4.11"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.11",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:c78cbb6c2f77ce2024cf47d4ea769f610015c87fd37564ebae17aae66977803f",
+        "recorded_at": "2026-02-20T02:42:09.948201Z",
+        "timestamp": "2026-02-20T02:42:09.948201Z",
+        "title": "Top3 전역 우선순위 정렬",
+        "summary": "DetailPanel Top3 실행 후보를 선택 모듈 기준에서 visible 전체 작업 기준으로 전환해 전역 우선순위 왜곡을 제거.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/ReportPage.tsx",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "top3",
+          "priority",
+          "phase:4",
+          "phase_step:4.10"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.10",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:ece3768c3e1532650fb1ddf2e33be0a723b5bfcbce33aa6c11c26411a9f6a285",
+        "recorded_at": "2026-02-20T02:38:56.813237Z",
+        "timestamp": "2026-02-20T02:38:56.813237Z",
+        "title": "Focus 실행 우선순위 Top3 카드",
+        "summary": "Detail panel에 즉시 실행 Top3 카드를 추가하고 상태 우선순위(BLOCKED/FAILED/IN_PROGRESS/READY) 기반으로 정렬 후 클릭 점프를 지원.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "Docs/forest_phase_tracker.md"
+        ],
+        "tags": [
+          "focus",
+          "detail",
+          "top3",
+          "phase:4",
+          "phase_step:4.9"
+        ],
+        "spec_refs": [],
+        "phase": "4",
+        "phase_step": "4.9",
+        "phase_title": "Focus/Freeze/Journey 정책 강제",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:55939227173045cc60e429190ec2734e0fb9e76cdf0388f5f4b9f7ecc79f51a1",
+        "recorded_at": "2026-02-20T02:21:49.278882Z",
+        "timestamp": "2026-02-20T02:21:49.278882Z",
+        "title": "Interactive relation list from topology",
+        "summary": "Added minimal interactive graph section using topology edges as clickable relation rows to jump to work/question/module.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "phase:3",
+          "phase_step:3.3",
+          "topology",
+          "interaction"
+        ],
+        "spec_refs": [],
+        "phase": "3",
+        "phase_step": "3.3",
+        "phase_title": "운영 루프 가속",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:d7a4646a566dfe70396883e62be6a602fc2b07fbe8c9c64cbae357e6f7366375",
+        "recorded_at": "2026-02-20T02:17:05.274432Z",
+        "timestamp": "2026-02-20T02:17:05.274432Z",
+        "title": "Canopy diff card for status changes",
+        "summary": "Added snapshot diff card showing status count deltas and max risk delta between sync snapshots.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "phase:3",
+          "phase_step:3.2",
+          "canopy",
+          "diff"
+        ],
+        "spec_refs": [],
+        "phase": "3",
+        "phase_step": "3.2",
+        "phase_title": "운영 루프 가속",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:cabfff3dd8fc92f089cabd820b4f1f1935cb05fa8e01676dfce3298e1aed387e",
+        "recorded_at": "2026-02-20T02:05:47.504540Z",
+        "timestamp": "2026-02-20T02:05:47.504540Z",
+        "title": "Selection breadcrumb header",
+        "summary": "상단 헤더에 선택 breadcrumb(소피아 > 프로젝트 > 모듈 > 작업/질문)를 고정 표시해 현재 위치를 즉시 파악할 수 있도록 개선함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "breadcrumb",
+          "selection"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.10",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:f9880815810ccafb0a71d0d679cf2f31f3f1976608c31f76de50a32b9c422f41",
+        "recorded_at": "2026-02-20T01:17:03.131585Z",
+        "timestamp": "2026-02-20T01:17:03.131585Z",
+        "title": "Reverse sync from detail grid to explorer",
+        "summary": "우측 표에서 작업/질문/모듈 행 클릭 시 좌측 트리 선택 상태도 동기화되도록 연결해 양방향 탐색 일관성을 확보함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "reverse_sync",
+          "explorer"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.9",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:69d69d94949ad2f03b8a44862e1c4b6fc6736d3d6a63116cc0fb35474eceac9b",
+        "recorded_at": "2026-02-20T01:13:48.660269Z",
+        "timestamp": "2026-02-20T01:13:48.660269Z",
+        "title": "Selection source header in detail panel",
+        "summary": "우측 상세 패널 상단에 현재 선택 소스(작업/질문/모듈/기본)를 고정 표시해, 어떤 기준으로 보고 있는지 즉시 파악 가능하도록 개선함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "selection_source",
+          "detail_header"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.8",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:7af912d8d02dbb5c1459eac2025dca3868be04f02885aa071a299db2288d0636",
+        "recorded_at": "2026-02-20T01:11:22.691580Z",
+        "timestamp": "2026-02-20T01:11:22.691580Z",
+        "title": "Auto-scroll selected detail row",
+        "summary": "좌측 빠른 접근/선택 동기화 시 우측 데이터 그리드가 선택 행으로 자동 스크롤되도록 개선해 즉시 해당 항목을 확인할 수 있게 함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "selection_sync",
+          "auto_scroll"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.7",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:9c8a3ce8cce16d4502bfa70baf43aa822a00cad5a4f1a5cfca28c37a4d105edb",
+        "recorded_at": "2026-02-20T01:07:51.591855Z",
+        "timestamp": "2026-02-20T01:07:51.591855Z",
+        "title": "Detail selection auto-sync with explorer",
+        "summary": "좌측에서 프로젝트/모듈/작업/질문 선택 시 우측 그리드 선택행이 자동 동기화되도록 개선해 클릭 중복을 줄이고 상세 파악 속도를 높임.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "selection_sync",
+          "detail"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.6",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:8b3bf8c3b092015e6e7198e41b775d218860b8b36bb37b63f25e739b7e1581ae",
+        "recorded_at": "2026-02-20T01:05:56.609453Z",
+        "timestamp": "2026-02-20T01:05:56.609453Z",
+        "title": "Detail grid priority ordering",
+        "summary": "우측 데이터 그리드를 현재 미션 우선, 진행중/문제 우선, 리스크 높은 순으로 정렬하도록 개선해 핵심 항목이 상단에 먼저 보이게 함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "grid",
+          "priority"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.5",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:4f7cd5c7584cfb1554fc7992fec8c232b4e20aaafc5fc9c9f98434441cbf7eb1",
+        "recorded_at": "2026-02-20T00:32:11.195734Z",
+        "timestamp": "2026-02-20T00:32:11.195734Z",
+        "title": "Phase quick selector chips",
+        "summary": "상세 패널에 phase_step 빠른 선택 칩을 추가해 필터 전환 속도를 개선하고 기록 밀도를 한눈에 선택할 수 있게 함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "phase_filter",
+          "ux"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.4",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:097f1a12589e035ab30d5f8ff0e19f1e0d66789bebe1ce27037c5c052172af13",
+        "recorded_at": "2026-02-20T00:30:14.558045Z",
+        "timestamp": "2026-02-20T00:30:14.558045Z",
+        "title": "Audit trail aligned with phase filter",
+        "summary": "phase 필터 적용 시 Audit Trail도 동일 phase_step 기준 로드맵 기록으로 전환되도록 개선하여 화면 일관성을 강화함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "audit",
+          "phase_filter"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.3",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:96d51a3c3c2ca362fd8be658e6a067000f2207b097ce17855e538ff428504451",
+        "recorded_at": "2026-02-20T00:27:27.835698Z",
+        "timestamp": "2026-02-20T00:27:27.835698Z",
+        "title": "Detail table phase-step filtering",
+        "summary": "우측 데이터 그리드가 선택된 phase_step을 직접 반영하도록 수정해, 배지 클릭 시 테이블이 해당 phase 기록 중심으로 즉시 좁혀지게 개선함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "phase_filter",
+          "detail_table"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.2",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:a2fc01e021e24b45fa5eb842cc0c414363351c10407d168159d01f700ed1c6e8",
+        "recorded_at": "2026-02-20T00:22:18.917564Z",
+        "timestamp": "2026-02-20T00:22:18.917564Z",
+        "title": "Phase filter indicator in Explorer tree",
+        "summary": "좌측 Finder Tree에 현재 적용된 phase 필터 배너와 해제 버튼을 추가해 필터 상태를 즉시 확인 가능하도록 개선함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "phase_filter",
+          "explorer"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7.1",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:62b7a3bd23987ae157dc73d395e9e33e2b4c0c5b7b6c9355d96abbff370e6af2",
+        "recorded_at": "2026-02-20T00:20:55.168508Z",
+        "timestamp": "2026-02-20T00:20:55.168508Z",
+        "title": "Phase step filter + init recovery guide",
+        "summary": "Explorer에서 phase_step 배지 클릭 시 구현 계획을 phase 기준으로 필터링하고 초기화 경고 패널에 복구 가이드를 추가함.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "phase_step",
+          "init_warning"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.7",
+        "phase_title": "Forest 운영 가시성 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:99e92ce58c79a283db89fb7288ce34b8268aec66763ce6ca36d9e46e30da3fe3",
+        "recorded_at": "2026-02-19T20:50:01.817948Z",
+        "timestamp": "2026-02-19T20:50:01.817948Z",
+        "title": "프로젝트 행 phase_step/경고상세 표시",
+        "summary": "프로젝트 목록 응답에 current_phase_step을 포함하고 좌측 프로젝트 행에 phase 배지 및 초기화 경고 상세 토글을 추가해 init 상태 확인성을 개선.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "api/forest_router.py",
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "apps/desktop/src/pages/report/types.ts"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "project-row",
+          "phase:2",
+          "phase_step:2.6"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.6",
+        "phase_title": "Execution",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:b49d622c2b533fa222871e2a409f33426152789787bcd449a7df0749817c0780",
+        "recorded_at": "2026-02-19T18:58:10.332981Z",
+        "timestamp": "2026-02-19T18:58:10.332981Z",
+        "title": "프로젝트 초기화 시드 배지 표시",
+        "summary": "프로젝트 생성 직후 init 응답(inventory_seed/bootstrap/status_sync)을 컨트롤러 상태로 저장하고 좌측 프로젝트 행에 seed/sync 배지로 표시하도록 반영.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "init",
+          "seed-badge",
+          "phase:2",
+          "phase_step:2.5"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.5",
+        "phase_title": "Execution",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:3961249f6f1eba70c2d23f11225f9dc4cbbc8eaf0276af20eec69a8218584b48",
+        "recorded_at": "2026-02-19T18:54:57.121265Z",
+        "timestamp": "2026-02-19T18:54:57.121265Z",
+        "title": "프로젝트 생성 직후 시드 결과 표시 개선",
+        "summary": "forest init 응답의 inventory_seed/bootstrap/status_sync를 UI 메시지와 동기화 히스토리에 반영해 초기화 직후 진행상황을 즉시 확인하도록 개선.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/useReportController.ts"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "init",
+          "seed",
+          "phase:2",
+          "phase_step:2.4"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.4",
+        "phase_title": "Execution",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:3b90738749be4f689a76a3ab3f87cf8dcc046a7aef708539f1e377dc14bb4c7a",
+        "recorded_at": "2026-02-19T17:53:30.318312Z",
+        "timestamp": "2026-02-19T17:53:30.318312Z",
+        "title": "프로젝트 초기화 시 구현항목 자동 시드",
+        "summary": "/projects/init 단계에서 system_inventory 기반 work package 자동 시드를 수행하도록 반영. seed endpoint는 공통 로직으로 정리했고 관련 API 테스트 25건 회귀 통과.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "api/forest_router.py",
+          "tests/api/test_forest_router.py"
+        ],
+        "tags": [
+          "forest",
+          "init",
+          "inventory-seed",
+          "phase:2",
+          "phase_step:2.3"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.3",
+        "phase_title": "Execution",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:f41781104fbb1e3d47f627221d22291315095cebc1ce0ad7400ed44bce9dbdc4",
+        "recorded_at": "2026-02-19T17:47:42.838055Z",
+        "timestamp": "2026-02-19T17:47:42.838055Z",
+        "title": "Inventory→Work 자동 생성 경로 활성화",
+        "summary": "system_inventory 기반으로 READY work package 자동 생성 엔드포인트와 UI 버튼 경로를 연결하고 runtime에서 8건 생성 검증 완료.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "api/forest_router.py",
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "tests/api/test_forest_router.py"
+        ],
+        "tags": [
+          "forest",
+          "inventory",
+          "work",
+          "phase:2",
+          "phase_step:2.2"
+        ],
+        "spec_refs": [],
+        "phase": "2",
+        "phase_step": "2.2",
+        "phase_title": "Execution",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:196ac69e4ec94f2d03741d8fd80d2102745f13cccd255fe5c45062e3505595d0",
+        "recorded_at": "2026-02-19T17:47:27.552899Z",
+        "timestamp": "2026-02-19T17:47:27.552899Z",
+        "title": "[forest] status sync",
+        "summary": "remaining_work=16 blocked=0 unverified=7",
+        "category": "SYSTEM_CHANGE",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "status-sync",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:b0b98b460a0e113781de63a493182c9ac7dfb75e0d3398df30e2bcffd0a23ee7",
+        "recorded_at": "2026-02-19T17:46:11.169016Z",
+        "timestamp": "2026-02-19T17:46:11.169016Z",
+        "title": "[forest] 시스템 인벤토리 작업 시드",
+        "summary": "created=8 skipped=0 limit=8",
+        "category": "FEATURE_ADD",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "work",
+          "inventory",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "roadmap_000067",
+        "recorded_at": "2026-02-19T15:36:22Z",
+        "timestamp": "2026-02-19T15:36:22Z",
+        "title": "Bitmap action-highlight + pinned log integration",
+        "summary": "ADOPT/REJECT 발생 시 대상 work 노드를 그래프에서 강조하고, 관련 로그 상단에 bitmap 액션을 고정 노출. 자동추천 점수에 모듈 컨텍스트를 추가해 오탐을 줄임.",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "bitmap",
+          "graph",
+          "phase:1",
+          "phase_step:1.6.4"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.6.4",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "roadmap_000066",
+        "recorded_at": "2026-02-18T20:13:29Z",
+        "timestamp": "2026-02-18T20:13:29Z",
+        "title": "Graph work-node click now drives real work context",
+        "summary": "그래프에서 work 노드 클릭 시 controller.selectWork를 호출해 실제 선택 작업 컨텍스트를 동기화하고 bitmap 자동추천 컨텍스트와 일치시킴.",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "graph",
+          "bitmap",
+          "phase:1",
+          "phase_step:1.6.3"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.6.3",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "roadmap_000065",
+        "recorded_at": "2026-02-18T20:11:56Z",
+        "timestamp": "2026-02-18T20:11:56Z",
+        "title": "Bitmap candidate auto-suggest + inspector action feedback",
+        "summary": "선택 work/question 컨텍스트 기반으로 PENDING bitmap 후보를 자동 추천/선택하고, Inspector에 큐 카운트 및 최근 ADOPT/REJECT 액션을 즉시 반영.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "bitmap",
+          "phase:1",
+          "phase_step:1.6.2",
+          "inspector"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.6.2",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "roadmap_000064",
+        "recorded_at": "2026-02-18T20:06:26Z",
+        "timestamp": "2026-02-18T20:06:26Z",
+        "title": "Desktop build verification after bitmap loop wiring",
+        "summary": "apps/desktop npm run build 통과로 신규 props 연결 및 타입 안정성 검증 완료.",
+        "category": "SYSTEM_CHANGE",
+        "type": "SYSTEM_CHANGE",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "bitmap",
+          "phase:1",
+          "phase_step:1.6.1",
+          "build"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.6.1",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "roadmap_000063",
+        "recorded_at": "2026-02-18T20:06:26Z",
+        "timestamp": "2026-02-18T20:06:26Z",
+        "title": "Bitmap decision action loop wired into DetailPanel",
+        "summary": "DetailPanel에서 selected bitmap candidate를 바로 채택/반려하고 timeline을 확인하는 액션 루프를 ReportPage controller와 직접 연결.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "bitmap",
+          "phase:1",
+          "phase_step:1.6",
+          "ui-loop"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.6",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:6abdf39611ab4761e51c264a72df7caf61fda1aaabc8df48eba6c4efd5c5c258",
+        "recorded_at": "2026-02-18T19:58:48.513951Z",
+        "timestamp": "2026-02-18T19:58:48.513951Z",
+        "title": "Bitmap focus next_action runtime verification",
+        "summary": "Runtime verified bitmap warning routes focus next_action to bitmap_adoption_tune with ADOPTION_RATE ref.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "core/forest/canopy.py",
+          "tests/api/test_canopy_phase_a.py"
+        ],
+        "tags": [
+          "bitmap",
+          "runtime",
+          "phase:1",
+          "phase_step:1.5.1"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.5.1",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:01c7ca275ec4596e5b347c72506c996fb6cb5ac88d662405cd9b26619f45110b",
+        "recorded_at": "2026-02-18T19:54:45.402683Z",
+        "timestamp": "2026-02-18T19:54:45.402683Z",
+        "title": "Bitmap pipeline action routing hardening",
+        "summary": "Critical/warning bitmap signals now drive focus next_action when mission is bitmap or empty. Added concrete action phrases and action_type/action_ref metadata.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "core/forest/canopy.py",
+          "tests/api/test_canopy_phase_a.py"
+        ],
+        "tags": [
+          "bitmap",
+          "focus",
+          "phase:1",
+          "phase_step:1.5"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.5",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:0ca099f71ea8a2550dcd9e2b5e85d173ef06822614ab91dfe3938cde4d6b0a44",
+        "recorded_at": "2026-02-18T19:51:13.180091Z",
+        "timestamp": "2026-02-18T19:51:13.180091Z",
+        "title": "Fix DB path normalization for bitmap pipeline scripts",
+        "summary": "Handled malformed sqlite path inputs (e.g. sqlite:/sophia.db) to prevent script-side DB open failures. Added core normalization tests.",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "core/memory/schema.py",
+          "tests/core/test_db_path_normalize.py"
+        ],
+        "tags": [
+          "bitmap",
+          "db-path",
+          "phase:1",
+          "phase_step:1.4"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.4",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:f4f3272248e20d251acba73e2db1f15db3ec2fa072a23917c713a3654b8a8204",
+        "recorded_at": "2026-02-18T19:48:32.844522Z",
+        "timestamp": "2026-02-18T19:48:32.844522Z",
+        "title": "Forest handoff readiness automation + report",
+        "summary": "Added check_forest_handoff.py and generated handoff readiness report for cross-IDE takeover.",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "scripts/check_forest_handoff.py",
+          "Docs/reports/sophia_forest_handoff_readiness_2026-02-18.md"
+        ],
+        "tags": [
+          "handoff",
+          "automation",
+          "phase:1",
+          "phase_step:1.3"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.3",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:630ce0f3b72cda1c4fc1e9d6e5f5d5af071045db4cb3e66086fd68985122509f",
+        "recorded_at": "2026-02-18T19:44:58.322923Z",
+        "timestamp": "2026-02-18T19:44:58.322923Z",
+        "title": "Handoff readiness check + roadmap timestamp compatibility",
+        "summary": "forest core tests passed (25), canopy phase tests passed (12), server contract ok. Added roadmap_journal recorded_at/timestamp compatibility for cross-IDE parsers.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "core/forest/canopy.py",
+          "apps/desktop/src/pages/report/types.ts"
+        ],
+        "tags": [
+          "handoff",
+          "forest",
+          "phase:1",
+          "phase_step:1.2"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.2",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:8710490c52735467b686235c0cfbbd3067e5758e1c3271705769d9d10bb2bae8",
+        "recorded_at": "2026-02-18T19:38:47.095858Z",
+        "timestamp": "2026-02-18T19:38:47.095858Z",
+        "title": "Phase metadata runtime validation",
+        "summary": "verified canopy/data returns current_phase and roadmap entries include phase fields.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "api/forest_router.py",
+          "core/forest/canopy.py"
+        ],
+        "tags": [
+          "manual",
+          "phase:1",
+          "phase_step:1.1",
+          "forest"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.1",
+        "phase_title": "Forest 항법/현황판 고도화",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:96c3ed2c0db35256699e3dbb3dd1cab68ce8c9cb3be174185167e5ccd483d98a",
+        "recorded_at": "2026-02-18T19:18:40.873664Z",
+        "timestamp": "2026-02-18T19:18:40.873664Z",
+        "title": "Phase tracker wiring (Phase 1.1)",
+        "summary": "roadmap record payload and canopy journal now include phase/phase_step metadata; detail panel shows current phase and phase aggregates.",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "api/forest_router.py",
+          "core/forest/canopy.py",
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "manual",
+          "phase:1",
+          "phase_step:1.1",
+          "forest"
+        ],
+        "spec_refs": [],
+        "phase": "1",
+        "phase_step": "1.1",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:3a6c401ed13a65428ed5787eb72e411c9034bf2e70ddfbffbd48912cb1b89f12",
+        "recorded_at": "2026-02-18T07:15:28.309066Z",
+        "timestamp": "2026-02-18T07:15:28.309066Z",
+        "title": "Graph layout compaction and edge attachment correction",
+        "summary": "reduced canvas/spacing, hidden duplicate root-module visual, tightened clustered layout, and corrected root-to-children edge routing",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "graph",
+          "layout",
+          "compaction"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:91155e92ece86af75744c51ed6aab399c50e17a8e53ccdea32f9dc6b78ebdc23",
+        "recorded_at": "2026-02-18T07:02:20.189208Z",
+        "timestamp": "2026-02-18T07:02:20.189208Z",
+        "title": "Graph connector alignment and canvas scope fix",
+        "summary": "increased map height, grid-cluster layout for modules/tasks, orthogonal edge routing, removed duplicate completion text, added objective status chips",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "graph",
+          "edge",
+          "overview"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:fd18b3d288684ce3fdb8a58141e91f0389fa0a715f7769ac5444fa756f1a86cf",
+        "recorded_at": "2026-02-18T06:44:57.714672Z",
+        "timestamp": "2026-02-18T06:44:57.714672Z",
+        "title": "Graph node compaction and color-only kind cues",
+        "summary": "removed MODULE/TASK text tags, separated title/progress lines, tightened node spacing and clustered task layout",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "graph",
+          "layout",
+          "ux"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:1e483c4e7823b5c1f12952958c4ed86de0101e023f22c495cee21ce7ce49b29c",
+        "recorded_at": "2026-02-18T06:39:24.965266Z",
+        "timestamp": "2026-02-18T06:39:24.965266Z",
+        "title": "Graph density and text hierarchy optimization",
+        "summary": "reduced node spacing, compact widths, status badges, and text overflow fixes on canopy graph nodes",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "graph",
+          "layout",
+          "typography"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:e6200a41571e0112f667c0ce746cbae3e9b0aeb4bd42a7fe8fd6a7b5ef7b7fdc",
+        "recorded_at": "2026-02-18T06:22:02.815586Z",
+        "timestamp": "2026-02-18T06:22:02.815586Z",
+        "title": "Graph node text minimalization and wrapping fix",
+        "summary": "node cards now show only type/name/progress and wrap safely without overflow",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "graph",
+          "readability"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:1218fb68a3ee39463561aa06adbb10f97353b36ee9ab4177cf9bc32ad496a90c",
+        "recorded_at": "2026-02-18T06:14:31.190378Z",
+        "timestamp": "2026-02-18T06:14:31.190378Z",
+        "title": "Graph map detail panel real-data binding",
+        "summary": "right panel switched from list-like deck to root-module-work graph with node click inspector",
+        "category": "SYSTEM_CHANGE",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [
+          "apps/desktop/src/pages/report/DetailPanel.tsx",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "graph",
+          "inspector"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:c0719124e7c46b0d0296d1fa89ecb5cbc354e80a41532d1279e4d59963187638",
+        "recorded_at": "2026-02-18T05:21:28.765508Z",
+        "timestamp": "2026-02-18T05:21:28.765508Z",
+        "title": "interactive map node -> live detail deck binding",
+        "summary": "우측 상태맵 노드 클릭 시 하단 데크가 실제 노드 데이터(설명/리스크/로그/액션)로 즉시 전환되도록 연동",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [],
+        "tags": [
+          "forest",
+          "detail-panel",
+          "interaction"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:e1f7c02723d56efbe807eae909ff07867e5b787f26408d7327c2f39fd8340b70",
+        "recorded_at": "2026-02-18T05:14:24.094195Z",
+        "timestamp": "2026-02-18T05:14:24.094195Z",
+        "title": "detail panel map overlap fix + human log labels",
+        "summary": "우측 상태맵 좌표/높이 고정으로 겹침 방지, 시스템 로그를 사용자 친화 문장으로 변환",
+        "category": "PROBLEM_FIX",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [],
+        "tags": [
+          "forest",
+          "detail-panel",
+          "layout-fix"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "sha256:fcce925b84442d18df420150b3ba4794d2fa277fd83fa28aabaec86816bfec2c",
+        "recorded_at": "2026-02-18T04:08:05.452454Z",
+        "timestamp": "2026-02-18T04:08:05.452454Z",
+        "title": "detail panel reference design applied (status map + action deck)",
+        "summary": "우측 상태정보 창을 상단 상태맵/하단 데크(설명·리스크·로그·액션) 구조로 재설계",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [],
+        "tags": [
+          "forest",
+          "detail-panel",
+          "design-reference"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:5f513520e3818030a91e99900522d1db2b3043ecbace1c3a983a1646031975eb",
+        "recorded_at": "2026-02-18T04:01:53.534660Z",
+        "timestamp": "2026-02-18T04:01:53.534660Z",
+        "title": "source material apply flow + detail panel redesign",
+        "summary": "선택/오늘 파일 적용 상태 피드백, 파일존재 검사, 우측 상세 HUD 리디자인 반영",
+        "category": "FEATURE_ADD",
+        "type": "FOCUS_SNAPSHOT",
+        "category_reason": "hint",
+        "source": "manual",
+        "files": [],
+        "tags": [
+          "forest",
+          "ui",
+          "source"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:fb76e58258148ad9a1fd642aea104ca6e4be8d3375278dc0930c9475c1a8e699",
+        "recorded_at": "",
+        "timestamp": "",
+        "title": "[forest] status sync",
+        "summary": "remaining_work=8 blocked=0 unverified=7",
+        "category": "SYSTEM_CHANGE",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "status-sync",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      },
+      {
+        "id": "sha256:414bd6adad62c95f5ec1b144c2c05183cdae1ad35c9f1c6f35f1781319771f5e",
+        "recorded_at": "2026-02-18T03:51:24.775619Z",
+        "timestamp": "2026-02-18T03:51:24.775619Z",
+        "title": "forest sidebar simplified + source material add menu",
+        "summary": "모듈 헤더는 개발 진행률만 표시하고 모듈 폴더에 소스자료 추가(업로드/에디터 파일 선택) 액션을 통합",
+        "category": "FEATURE_ADD",
+        "type": "SYNC_CHANGE",
+        "category_reason": "hint",
+        "source": "sync",
+        "files": [
+          "apps/desktop/src/pages/report/ExplorerPanel.tsx",
+          "apps/desktop/src/pages/report/useReportController.ts",
+          "apps/desktop/src/pages/ReportPage.tsx"
+        ],
+        "tags": [
+          "forest",
+          "ui",
+          "source-input"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "codex",
+        "lane": "unassigned",
+        "scope": "forest",
+        "review_state": "unknown",
+        "status": "READY"
+      },
+      {
+        "id": "sha256:2d58fbf0fc020ff2b067545bd32ae16eca540dcc613f07d1e1253d05f63a77d4",
+        "recorded_at": "",
+        "timestamp": "",
+        "title": "[forest] status sync",
+        "summary": "remaining_work=7 blocked=0 unverified=6",
+        "category": "SYSTEM_CHANGE",
+        "type": "LIVE_EVENT",
+        "category_reason": "hint",
+        "source": "system",
+        "files": [],
+        "tags": [
+          "forest",
+          "status-sync",
+          "live"
+        ],
+        "spec_refs": [],
+        "phase": "",
+        "phase_step": "",
+        "phase_title": "",
+        "owner": "unknown",
+        "lane": "unassigned",
+        "scope": "project",
+        "review_state": "unknown",
+        "status": "IN_PROGRESS"
+      }
+    ],
+    "last_recorded_at": "2026-02-20T04:15:04Z",
+    "category_counts": {
+      "FEATURE_ADD": 26,
+      "PROBLEM_FIX": 18,
+      "SYSTEM_CHANGE": 58
+    },
+    "phase_counts": {
+      "1": 12,
+      "2": 16,
+      "3": 2,
+      "4": 12,
+      "5": 1
+    },
+    "current_phase": "5",
+    "current_phase_step": "5.1"
+  },
+  "question_queue": [
+    {
+      "cluster_id": "requirement_conflict",
+      "description": "요구사항 충돌 가능성",
+      "status": "ready_to_ask",
+      "risk_score": 0.86,
+      "hit_count": 12,
+      "linked_nodes": [
+        "spec-module"
+      ],
+      "updated_at": "2026-02-18T03:59:46Z"
+    },
+    {
+      "cluster_id": "scope_s2",
+      "description": "IDE signal: scope_s2",
+      "status": "acknowledged",
+      "risk_score": 0.84,
+      "hit_count": 2,
+      "linked_nodes": [
+        "forest:canopy"
+      ],
+      "updated_at": "2026-02-15T03:37:15Z"
+    },
+    {
+      "cluster_id": "scope_s2b",
+      "description": "IDE signal: scope_s2b",
+      "status": "acknowledged",
+      "risk_score": 0.84,
+      "hit_count": 2,
+      "linked_nodes": [
+        "forest:canopy"
+      ],
+      "updated_at": "2026-02-15T03:37:16Z"
+    },
+    {
+      "cluster_id": "dep_s1",
+      "description": "IDE signal: dep_s1",
+      "status": "acknowledged",
+      "risk_score": 0.83,
+      "hit_count": 1,
+      "linked_nodes": [
+        "forest:canopy"
+      ],
+      "updated_at": "2026-02-15T03:37:18Z"
+    },
+    {
+      "cluster_id": "dep_s1b",
+      "description": "IDE signal: dep_s1b",
+      "status": "acknowledged",
+      "risk_score": 0.83,
+      "hit_count": 1,
+      "linked_nodes": [
+        "forest:canopy"
+      ],
+      "updated_at": "2026-02-15T03:37:19Z"
+    },
+    {
+      "cluster_id": "dependency_missing",
+      "description": "IDE signal: dependency_missing",
+      "status": "acknowledged",
+      "risk_score": 0.83,
+      "hit_count": 1,
+      "linked_nodes": [
+        "forest:canopy"
+      ],
+      "updated_at": "2026-02-15T03:37:17Z"
+    },
+    {
+      "cluster_id": "scope_ambiguity",
+      "description": "범위 불명확",
+      "status": "ready_to_ask",
+      "risk_score": 0.82,
+      "hit_count": 13,
+      "linked_nodes": [
+        "forest:canopy",
+        "spec-module"
+      ],
+      "updated_at": "2026-02-18T03:59:46Z"
+    },
+    {
+      "cluster_id": "scope_s3_cluster",
+      "description": "범위 불명확",
+      "status": "resolved",
+      "risk_score": 0.62,
+      "hit_count": 1,
+      "linked_nodes": [],
+      "updated_at": "2026-02-14T21:57:57Z"
+    },
+    {
+      "cluster_id": "scope_s3b",
+      "description": "범위 불명확",
+      "status": "resolved",
+      "risk_score": 0.6,
+      "hit_count": 1,
+      "linked_nodes": [],
+      "updated_at": "2026-02-14T21:58:40Z"
+    }
+  ],
+  "topology": {
+    "nodes": [
+      {
+        "id": "module:forest",
+        "type": "module",
+        "label": "소피아 숲\\n42%",
+        "status": "MODULE"
+      },
+      {
+        "id": "module:editor",
+        "type": "module",
+        "label": "에디터\\n0%",
+        "status": "MODULE"
+      },
+      {
+        "id": "module:chat",
+        "type": "module",
+        "label": "채팅\\n0%",
+        "status": "MODULE"
+      },
+      {
+        "id": "module:core",
+        "type": "module",
+        "label": "코어\\n0%",
+        "status": "MODULE"
+      },
+      {
+        "id": "module:note",
+        "type": "module",
+        "label": "소피아 노트\\n0%",
+        "status": "MODULE"
+      },
+      {
+        "id": "module:subtitle",
+        "type": "module",
+        "label": "자막 편집\\n0%",
+        "status": "MODULE"
+      },
+      {
+        "id": "work:wp_2b9abe559ff54060919f46d3c92c131d",
+        "type": "work",
+        "label": "[SYS] 에디터/명세 분석 연계\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:editor_pipeline"
+      },
+      {
+        "id": "work:wp_f4bd546d7fc04b799274285c1f28954d",
+        "type": "work",
+        "label": "[SYS] AI contract/gate 라우팅\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:ai_pipeline"
+      },
+      {
+        "id": "work:wp_e61eb5af0e6347b5ab5055adcdea17a1",
+        "type": "work",
+        "label": "[SYS] Bitmap 저장/검증 파이프라인\\n[READY]",
+        "status": "READY",
+        "module": "core",
+        "linked_node": "system:bitmap_pipeline"
+      },
+      {
+        "id": "work:wp_3845232792924806bd3181482d04d4b2",
+        "type": "work",
+        "label": "[SYS] Canopy 관제/현황판\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:forest_canopy"
+      },
+      {
+        "id": "work:wp_6fc5601201584c22bd66cf757c8effa2",
+        "type": "work",
+        "label": "[SYS] Roadmap/Status 동기화 루프\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:forest_sync"
+      },
+      {
+        "id": "work:wp_c491008148c84f2691559679e2a17460",
+        "type": "work",
+        "label": "[SYS] Work package 수명주기\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:work_lifecycle"
+      },
+      {
+        "id": "work:wp_9ceece22a9ae4ff0916c6b43f9afef2f",
+        "type": "work",
+        "label": "[SYS] Shortcuts/Bridge 연계\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:apple_shortcuts"
+      },
+      {
+        "id": "work:wp_ec03ed6a31984b2bbe58cd0375b46063",
+        "type": "work",
+        "label": "[SYS] 채팅 응답/게이트 파이프라인\\n[READY]",
+        "status": "READY",
+        "module": "core",
+        "linked_node": "system:chat_engine"
+      },
+      {
+        "id": "work:wp_34613f357c8d44a6bc53d4a6851f4c76",
+        "type": "work",
+        "label": "[SYS] 소피아 노트/리플렉션\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:note_pipeline"
+      },
+      {
+        "id": "work:wp_3f71758079b2490dae7ad4f737e9768a",
+        "type": "work",
+        "label": "[SYS] 자막 파이프라인\\n[READY]",
+        "status": "READY",
+        "module": "forest",
+        "linked_node": "system:subtitle_pipeline"
+      },
+      {
+        "id": "work:wp_0a662b3de9974dc5b254bcde8369d85a",
+        "type": "work",
+        "label": "Bitmap 저장/검증 파이프라인 정합성 점검\\n[IN_PROGRESS]",
+        "status": "IN_PROGRESS",
+        "module": "core",
+        "linked_node": "forest:bitmap"
+      },
+      {
+        "id": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "type": "work",
+        "label": "Rehearsal S1\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "type": "work",
+        "label": "S1\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "type": "work",
+        "label": "Part4.5 rehearsal package\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "type": "work",
+        "label": "S2\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "type": "work",
+        "label": "Rehearsal S2\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "type": "work",
+        "label": "Focus View 계획/진행/완료 분리 고도화\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_focus_tree_min_v1",
+        "type": "work",
+        "label": "Focus 트리 최소화 정리\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:canopy"
+      },
+      {
+        "id": "work:wp_status_sync_auto_v1",
+        "type": "work",
+        "label": "status sync 자동 점검\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:status"
+      },
+      {
+        "id": "work:wp_sone_verify_loop_v1",
+        "type": "work",
+        "label": "SonE 검증 루프 점검\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:analysis"
+      },
+      {
+        "id": "work:wp_25a4530e96764f31a6ad21e5ea3b153b",
+        "type": "work",
+        "label": "Roadmap 자동 동기화 기준 강화\\n[DONE]",
+        "status": "DONE",
+        "module": "forest",
+        "linked_node": "forest:roadmap"
+      },
+      {
+        "id": "question:requirement_conflict",
+        "type": "question",
+        "label": "requirement_conflict\\n[risk 0.86]",
+        "status": "UNVERIFIED",
+        "linked_nodes": [
+          "spec-module"
+        ]
+      },
+      {
+        "id": "question:scope_s2",
+        "type": "question",
+        "label": "scope_s2\\n[risk 0.84]",
+        "status": "ACKNOWLEDGED",
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "id": "question:scope_s2b",
+        "type": "question",
+        "label": "scope_s2b\\n[risk 0.84]",
+        "status": "ACKNOWLEDGED",
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "id": "question:dep_s1",
+        "type": "question",
+        "label": "dep_s1\\n[risk 0.83]",
+        "status": "ACKNOWLEDGED",
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "id": "question:dep_s1b",
+        "type": "question",
+        "label": "dep_s1b\\n[risk 0.83]",
+        "status": "ACKNOWLEDGED",
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "id": "question:dependency_missing",
+        "type": "question",
+        "label": "dependency_missing\\n[risk 0.83]",
+        "status": "ACKNOWLEDGED",
+        "linked_nodes": [
+          "forest:canopy"
+        ]
+      },
+      {
+        "id": "question:scope_ambiguity",
+        "type": "question",
+        "label": "scope_ambiguity\\n[risk 0.82]",
+        "status": "UNVERIFIED",
+        "linked_nodes": [
+          "forest:canopy",
+          "spec-module"
+        ]
+      },
+      {
+        "id": "question:scope_s3_cluster",
+        "type": "question",
+        "label": "scope_s3_cluster\\n[risk 0.62]",
+        "status": "RESOLVED",
+        "linked_nodes": []
+      },
+      {
+        "id": "question:scope_s3b",
+        "type": "question",
+        "label": "scope_s3b\\n[risk 0.60]",
+        "status": "RESOLVED",
+        "linked_nodes": []
+      }
+    ],
+    "edges": [
+      {
+        "from": "module:forest",
+        "to": "work:wp_2b9abe559ff54060919f46d3c92c131d"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_f4bd546d7fc04b799274285c1f28954d"
+      },
+      {
+        "from": "module:core",
+        "to": "work:wp_e61eb5af0e6347b5ab5055adcdea17a1"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_3845232792924806bd3181482d04d4b2"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_6fc5601201584c22bd66cf757c8effa2"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_c491008148c84f2691559679e2a17460"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_9ceece22a9ae4ff0916c6b43f9afef2f"
+      },
+      {
+        "from": "module:core",
+        "to": "work:wp_ec03ed6a31984b2bbe58cd0375b46063"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_34613f357c8d44a6bc53d4a6851f4c76"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_3f71758079b2490dae7ad4f737e9768a"
+      },
+      {
+        "from": "module:core",
+        "to": "work:wp_0a662b3de9974dc5b254bcde8369d85a"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_df90a9828201480db81954abc99fd5ab"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_c910e1aaf5234682b4f2c204822fd480"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_10cee24315eb4af4ba50c97d61d58713"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_focus_tree_min_v1"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_status_sync_auto_v1"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_sone_verify_loop_v1"
+      },
+      {
+        "from": "module:forest",
+        "to": "work:wp_25a4530e96764f31a6ad21e5ea3b153b"
+      },
+      {
+        "from": "module:forest",
+        "to": "question:requirement_conflict"
+      },
+      {
+        "from": "module:core",
+        "to": "question:requirement_conflict"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_df90a9828201480db81954abc99fd5ab",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_cff76fb7e8ff4229ae0211276eb2b67b",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_c910e1aaf5234682b4f2c204822fd480",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_10cee24315eb4af4ba50c97d61d58713",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_c810ebe8cdf04fd49d9425c187dc4af5",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_c93f14bc5cdd42df9fa37968f1e6a417",
+        "to": "question:scope_ambiguity"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:scope_s2"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:scope_s2b"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:dep_s1"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:dep_s1b"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:dependency_missing"
+      },
+      {
+        "from": "work:wp_focus_tree_min_v1",
+        "to": "question:scope_ambiguity"
+      }
+    ]
+  },
+  "recent_events": [
+    {
+      "timestamp": "",
+      "event_type": "PROPOSE",
+      "target": "ep_fd0104cd",
+      "summary": "bitmap propose count=1 source=cli",
+      "payload": {
+        "count": 1,
+        "source": "cli"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:12.723721Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:12.884739Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:12.884987Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:12.969012Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.122501Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.122726Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.205836Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.374459Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.374699Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.458417Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.634758Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.634960Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.720551Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.892739Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.892959Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:13.975857Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.134351Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.134589Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.220234Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.350701Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.350887Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.434400Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.611254Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.611466Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.696197Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.879234Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.879438Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:09:14.966760Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:53:18.601702Z",
+      "event_type": "INACTIVITY_CHECKED",
+      "target": "system",
+      "summary": "event: INACTIVITY_CHECKED",
+      "payload": {
+        "rule_id": "INACTIVITY_7D",
+        "user_id": "default",
+        "triggered": false,
+        "reason": "threshold_not_met",
+        "next_eligible_at": "2026-02-27T04:09:14.877791Z",
+        "days_inactive": 0.03
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.525094Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.525282Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.561585Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.844870Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.845075Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:18.939415Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.113634Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.113859Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.231022Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.369455Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.369638Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.451784Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.715876Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.716053Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:26.808958Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:27.013611Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:27.013825Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T04:55:27.100139Z",
+      "event_type": "FOREST_ROADMAP_LIVE_RECORDED",
+      "target": "sophia",
+      "summary": "event: FOREST_ROADMAP_LIVE_RECORDED",
+      "payload": {
+        "project": "sophia",
+        "title": "[forest] status sync",
+        "category": "SYSTEM_CHANGE",
+        "recorded": 0,
+        "skipped": 1,
+        "path": "/Users/dragonpd/Sophia/forest/project/sophia/status/roadmap_journal.jsonl"
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T05:06:54.285625Z",
+      "event_type": "STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "project progress snapshot synced",
+      "payload": {
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "export_canopy": true
+      },
+      "level": "info"
+    },
+    {
+      "timestamp": "2026-02-20T05:06:54.285847Z",
+      "event_type": "FOREST_STATUS_SYNCED",
+      "target": "sophia",
+      "summary": "event: FOREST_STATUS_SYNCED",
+      "payload": {
+        "project": "sophia",
+        "remaining_work": 18,
+        "blocked": 0,
+        "unverified": 7,
+        "snapshot_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_snapshot.json",
+        "roadmap_path": "/Users/dragonpd/Sophia/forest/project/sophia/status/progress_roadmap.md",
+        "export_canopy": true
+      },
+      "level": "info"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "wp_3f71758079b2490dae7ad4f737e9768a",
+      "type": "work",
+      "label": "[SYS] 자막 파이프라인",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:subtitle_pipeline",
+      "updated_at": "2026-02-20T03:27:15.570559Z"
+    },
+    {
+      "id": "wp_34613f357c8d44a6bc53d4a6851f4c76",
+      "type": "work",
+      "label": "[SYS] 소피아 노트/리플렉션",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:note_pipeline",
+      "updated_at": "2026-02-20T03:27:15.569606Z"
+    },
+    {
+      "id": "wp_ec03ed6a31984b2bbe58cd0375b46063",
+      "type": "work",
+      "label": "[SYS] 채팅 응답/게이트 파이프라인",
+      "status": "READY",
+      "module": "core",
+      "module_label": "코어",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:chat_engine",
+      "updated_at": "2026-02-19T17:46:11.134026Z"
+    },
+    {
+      "id": "wp_9ceece22a9ae4ff0916c6b43f9afef2f",
+      "type": "work",
+      "label": "[SYS] Shortcuts/Bridge 연계",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:apple_shortcuts",
+      "updated_at": "2026-02-19T17:46:11.133505Z"
+    },
+    {
+      "id": "wp_c491008148c84f2691559679e2a17460",
+      "type": "work",
+      "label": "[SYS] Work package 수명주기",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:work_lifecycle",
+      "updated_at": "2026-02-19T17:46:11.133072Z"
+    },
+    {
+      "id": "wp_6fc5601201584c22bd66cf757c8effa2",
+      "type": "work",
+      "label": "[SYS] Roadmap/Status 동기화 루프",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:forest_sync",
+      "updated_at": "2026-02-19T17:46:11.132456Z"
+    },
+    {
+      "id": "wp_3845232792924806bd3181482d04d4b2",
+      "type": "work",
+      "label": "[SYS] Canopy 관제/현황판",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:forest_canopy",
+      "updated_at": "2026-02-19T17:46:11.132018Z"
+    },
+    {
+      "id": "wp_e61eb5af0e6347b5ab5055adcdea17a1",
+      "type": "work",
+      "label": "[SYS] Bitmap 저장/검증 파이프라인",
+      "status": "READY",
+      "module": "core",
+      "module_label": "코어",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:bitmap_pipeline",
+      "updated_at": "2026-02-19T17:46:11.131552Z"
+    },
+    {
+      "id": "wp_f4bd546d7fc04b799274285c1f28954d",
+      "type": "work",
+      "label": "[SYS] AI contract/gate 라우팅",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:ai_pipeline",
+      "updated_at": "2026-02-19T17:46:11.131070Z"
+    },
+    {
+      "id": "wp_2b9abe559ff54060919f46d3c92c131d",
+      "type": "work",
+      "label": "[SYS] 에디터/명세 분석 연계",
+      "status": "READY",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 60,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "system:editor_pipeline",
+      "updated_at": "2026-02-19T17:46:11.129025Z"
+    },
+    {
+      "id": "wp_25a4530e96764f31a6ad21e5ea3b153b",
+      "type": "work",
+      "label": "Roadmap 자동 동기화 기준 강화",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 20,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "forest:roadmap",
+      "updated_at": "2026-02-18T03:46:11.841019Z"
+    },
+    {
+      "id": "wp_0a662b3de9974dc5b254bcde8369d85a",
+      "type": "work",
+      "label": "Bitmap 저장/검증 파이프라인 정합성 점검",
+      "status": "IN_PROGRESS",
+      "module": "core",
+      "module_label": "코어",
+      "kind": "MIGRATE",
+      "priority_score": 75,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "forest:bitmap",
+      "updated_at": "2026-02-18T03:46:11.841019Z"
+    },
+    {
+      "id": "wp_sone_verify_loop_v1",
+      "type": "work",
+      "label": "SonE 검증 루프 점검",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 20,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "forest:analysis",
+      "updated_at": "2026-02-18T03:41:11.953715Z"
+    },
+    {
+      "id": "wp_status_sync_auto_v1",
+      "type": "work",
+      "label": "status sync 자동 점검",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 20,
+      "linked_risk": 0.0,
+      "context_tag": "work",
+      "linked_node": "forest:status",
+      "updated_at": "2026-02-18T03:39:25.501089Z"
+    },
+    {
+      "id": "wp_focus_tree_min_v1",
+      "type": "work",
+      "label": "Focus 트리 최소화 정리",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-18T03:39:25.501089Z"
+    },
+    {
+      "id": "wp_c93f14bc5cdd42df9fa37968f1e6a417",
+      "type": "work",
+      "label": "Focus View 계획/진행/완료 분리 고도화",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-18T03:37:49.523423Z"
+    },
+    {
+      "id": "wp_c810ebe8cdf04fd49d9425c187dc4af5",
+      "type": "work",
+      "label": "Rehearsal S2",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-17T23:35:46.527358Z"
+    },
+    {
+      "id": "wp_10cee24315eb4af4ba50c97d61d58713",
+      "type": "work",
+      "label": "S2",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-17T23:35:46.397882Z"
+    },
+    {
+      "id": "wp_c910e1aaf5234682b4f2c204822fd480",
+      "type": "work",
+      "label": "Part4.5 rehearsal package",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-17T23:35:46.246448Z"
+    },
+    {
+      "id": "wp_cff76fb7e8ff4229ae0211276eb2b67b",
+      "type": "work",
+      "label": "S1",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-14T21:58:38Z"
+    },
+    {
+      "id": "wp_df90a9828201480db81954abc99fd5ab",
+      "type": "work",
+      "label": "Rehearsal S1",
+      "status": "DONE",
+      "module": "forest",
+      "module_label": "소피아 숲",
+      "kind": "IMPLEMENT",
+      "priority_score": 41,
+      "linked_risk": 0.84,
+      "context_tag": "work",
+      "linked_node": "forest:canopy",
+      "updated_at": "2026-02-14T21:57:55Z"
+    },
+    {
+      "id": "q_requirement_conflict",
+      "type": "question",
+      "label": "requirement_conflict",
+      "status": "UNVERIFIED",
+      "risk_score": 0.86,
+      "hit_count": 12
+    },
+    {
+      "id": "q_scope_s2",
+      "type": "question",
+      "label": "scope_s2",
+      "status": "ACKNOWLEDGED",
+      "risk_score": 0.84,
+      "hit_count": 2
+    },
+    {
+      "id": "q_scope_s2b",
+      "type": "question",
+      "label": "scope_s2b",
+      "status": "ACKNOWLEDGED",
+      "risk_score": 0.84,
+      "hit_count": 2
+    },
+    {
+      "id": "q_dep_s1",
+      "type": "question",
+      "label": "dep_s1",
+      "status": "ACKNOWLEDGED",
+      "risk_score": 0.83,
+      "hit_count": 1
+    },
+    {
+      "id": "q_dep_s1b",
+      "type": "question",
+      "label": "dep_s1b",
+      "status": "ACKNOWLEDGED",
+      "risk_score": 0.83,
+      "hit_count": 1
+    },
+    {
+      "id": "q_dependency_missing",
+      "type": "question",
+      "label": "dependency_missing",
+      "status": "ACKNOWLEDGED",
+      "risk_score": 0.83,
+      "hit_count": 1
+    },
+    {
+      "id": "q_scope_ambiguity",
+      "type": "question",
+      "label": "scope_ambiguity",
+      "status": "UNVERIFIED",
+      "risk_score": 0.82,
+      "hit_count": 13
+    },
+    {
+      "id": "q_scope_s3_cluster",
+      "type": "question",
+      "label": "scope_s3_cluster",
+      "status": "RESOLVED",
+      "risk_score": 0.62,
+      "hit_count": 1
+    },
+    {
+      "id": "q_scope_s3b",
+      "type": "question",
+      "label": "scope_s3b",
+      "status": "RESOLVED",
+      "risk_score": 0.6,
+      "hit_count": 1
+    }
+  ]
+}

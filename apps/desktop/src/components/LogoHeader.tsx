@@ -3,16 +3,17 @@ import SonaEyeGraph from "./SonaEyeGraph";
 
 interface LogoHeaderProps {
   status: "idle" | "processing";
+  eyeMode?: "relaxed" | "tense";
   onOpenSettings: () => void;
   onRefresh: () => void;
 }
 
-export function LogoHeader({ status, onOpenSettings, onRefresh }: LogoHeaderProps) {
+export function LogoHeader({ status, eyeMode = "relaxed", onOpenSettings, onRefresh }: LogoHeaderProps) {
   return (
     <div className="area-header">
       <div className="flex items-center gap-3 text-gray-300">
         <div className="w-8 h-8 relative">
-            <SonaEyeGraph />
+            <SonaEyeGraph mode={eyeMode} />
         </div>
         <div className="flex flex-col">
             <span className="font-bold tracking-tight leading-none">Sophia</span>

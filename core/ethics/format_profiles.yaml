@@ -1,0 +1,12 @@
+profiles:
+  chat:
+    require_plain_text: true
+    max_length: 4000
+  report:
+    require_sections: false
+  instruction:
+    require_clear_steps: true
+  json:
+    require_valid_json: true
+  other:
+    passthrough: true

@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-02-18T03:59:46.314817Z",
+  "clusters": [
+    {
+      "cluster_id": "scope_ambiguity",
+      "description": "범위 불명확",
+      "risk_score": 0.82,
+      "reason_code": "SONE_SCOPE_MISSING",
+      "evidence": "slot.scope is empty",
+      "category": "missing_slot",
+      "reason_description": "설계 범위(scope)가 명시되지 않았습니다."
+    },
+    {
+      "cluster_id": "requirement_conflict",
+      "description": "요구사항 충돌 가능성",
+      "risk_score": 0.86,
+      "reason_code": "SONE_REQUIREMENT_CONFLICT",
+      "evidence": "conflict keyword detected",
+      "category": "conflict",
+      "reason_description": "요구사항 충돌 가능성이 감지되었습니다."
+    }
+  ],
+  "threshold": 0.8
+}

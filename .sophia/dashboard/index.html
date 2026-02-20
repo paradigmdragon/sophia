@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sophia Project Status</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #111; color: #eee; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        header { position: absolute; top: 0; left: 0; right: 0; height: 50px; background: rgba(0,0,0,0.5); display: flex; align-items: center; padding: 0 20px; z-index: 10; border-bottom: 1px solid #333; }
+        h1 { font-size: 18px; margin: 0; font-weight: 600; }
+        .badge { background: #333; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 12px; margin-left: 10px; }
+        .badge.error { background: #ff4444; }
+        #main { flex: 1; position: relative; }
+        #sidebar { width: 300px; background: #1a1a1a; border-left: 1px solid #333; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
+        .node-detail h2 { font-size: 16px; margin-top: 0; }
+        .log-entry { font-size: 12px; color: #aaa; border-bottom: 1px solid #333; padding: 8px 0; }
+        .log-entry:last-child { border-bottom: none; }
+        .status-DONE { color: #4CAF50; }
+        .status-IN_PROGRESS { color: #2196F3; }
+        .status-BLOCKED { color: #F44336; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Sophia Project Observer</h1>
+        <div id="status-badges"></div>
+    </header>
+    <div id="main">
+        <div class="mermaid" id="diagram">
+graph TD
+root["Sophia Project<br/>(TODO)"]
+feat_core_engine["Core Engine<br/>(TODO)"]
+root --> feat_core_engine
+feat_memory_layer["Memory Layer<br/>(TODO)"]
+root --> feat_memory_layer
+feat_epidora["Epidora Validator<br/>(TODO)"]
+root --> feat_epidora
+feat_sone_automation["SonE Automation<br/>(TODO)"]
+root --> feat_sone_automation
+feat_infra_observer["Project Observer<br/>(DONE)"]
+root --> feat_infra_observer
+style root fill:#999,stroke:#333,stroke-width:2px,color:#fff
+style feat_core_engine fill:#999,stroke:#333,stroke-width:2px,color:#fff
+style feat_memory_layer fill:#999,stroke:#333,stroke-width:2px,color:#fff
+style feat_epidora fill:#999,stroke:#333,stroke-width:2px,color:#fff
+style feat_sone_automation fill:#999,stroke:#333,stroke-width:2px,color:#fff
+style feat_infra_observer fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+</div>
+    </div>
+    <div id="sidebar">
+        <div id="node-detail" class="node-detail">
+            <h2>Select a node</h2>
+            <p style="color: #666;">Click on a node in the graph to see details.</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+        
+        // This data object will be populated by the compiler
+        const PROJECT_DATA = {"nodes": {"root": {"id": "root", "type": "project", "label": "Sophia Project", "status": "IN_PROGRESS", "logs": [], "current_status": "TODO"}, "feat.core.engine": {"id": "feat.core.engine", "type": "feature", "label": "Core Engine", "parent": "root", "status": "DONE", "logs": [], "current_status": "TODO"}, "feat.memory.layer": {"id": "feat.memory.layer", "type": "feature", "label": "Memory Layer", "parent": "root", "status": "DONE", "logs": [], "current_status": "TODO"}, "feat.epidora": {"id": "feat.epidora", "type": "feature", "label": "Epidora Validator", "parent": "root", "status": "DONE", "logs": [], "current_status": "TODO"}, "feat.sone.automation": {"id": "feat.sone.automation", "type": "feature", "label": "SonE Automation", "parent": "root", "status": "DONE", "logs": [], "current_status": "TODO"}, "feat.infra.observer": {"id": "feat.infra.observer", "type": "feature", "label": "Project Observer", "parent": "root", "status": "IN_PROGRESS", "logs": [{"ts": "2026-02-14T16:04:58.674180+00:00", "node_id": "feat.infra.observer", "status": "DONE", "summary": "Initial Observer Setup Complete", "evidence": "system:init"}], "current_status": "DONE", "last_updated": "2026-02-14T16:04:58.674180+00:00"}}}; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // Basic interaction logic (placeholder)
+        });
+    </script>
+</body>
+</html>

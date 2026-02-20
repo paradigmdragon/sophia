@@ -3,54 +3,613 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sophia Canopy</title>
+  <title>Sophia Forest Canopy</title>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
     mermaid.initialize({ startOnLoad: true, theme: "dark" });
   </script>
   <style>
-    body { margin: 0; background: #0b1020; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .wrap { padding: 20px; display: grid; gap: 14px; }
-    .card { background: #111827; border: 1px solid #374151; border-radius: 10px; padding: 12px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .pill { background: #1f2937; border: 1px solid #4b5563; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
-    .title { font-size: 16px; font-weight: 700; margin: 0 0 8px 0; }
-    .stage { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; margin: 0 0 10px 0; }
-    .sub { color: #9ca3af; font-size: 12px; }
-    .list { font-size: 12px; line-height: 1.5; max-height: 240px; overflow: auto; white-space: pre-wrap; }
+    :root {
+      --bg: #090f1f;
+      --panel: #111827;
+      --line: #25324a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --blue: #60a5fa;
+    }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .wrap { padding: 18px; display: grid; gap: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+    .title { margin: 0 0 10px 0; font-size: 16px; font-weight: 700; }
+    .sub { margin: 0; font-size: 12px; color: var(--muted); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { background: #0f172a; border: 1px solid #334155; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+    .grid-2 { display: grid; gap: 12px; grid-template-columns: 1.4fr 1fr; }
+    .grid-3 { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .module-grid { display: grid; gap: 10px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .module-card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 10px; }
+    .trackable.highlight { border-color: #f59e0b !important; box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.6) inset, 0 0 14px rgba(245, 158, 11, 0.35); }
+    tr.trackable.highlight td { background: rgba(245, 158, 11, 0.12); }
+    .module-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .module-top h3 { margin: 0; font-size: 14px; }
+    .importance { font-size: 11px; color: #fbbf24; }
+    .module-progress { margin: 6px 0; font-weight: 700; color: #bfdbfe; }
+    .module-sub { margin: 6px 0 0 0; font-size: 11px; color: var(--muted); }
+    .mini-card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 8px; }
+    .mini-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .badge { font-size: 11px; border: 1px solid #475569; border-radius: 999px; padding: 2px 8px; color: #e2e8f0; }
+    .score { font-size: 11px; color: #fca5a5; }
+    .mini-title { margin: 0 0 6px 0; font-size: 13px; font-weight: 600; }
+    .mini-sub { margin: 0; font-size: 11px; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #25324a; text-align: left; font-size: 12px; padding: 7px 6px; vertical-align: top; }
+    th { color: #bfdbfe; font-weight: 600; }
+    .empty { font-size: 12px; color: var(--muted); border: 1px dashed #334155; border-radius: 8px; padding: 12px; text-align: center; }
+    .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 10px; font-size: 12px; }
+    .k { color: #93c5fd; }
+    .v { color: #e2e8f0; }
+    @media (max-width: 1360px) {
+      .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <p class="title">Canopy Status</p>
+      <p class="title">Sophia Forest Canopy</p>
       <div class="row">
-        <span class="pill">READY: 0</span>
-        <span class="pill">IN_PROGRESS: 0</span>
-        <span class="pill">DONE: 2</span>
-        <span class="pill">BLOCKED: 3</span>
+        <span class="pill">READY: 10</span>
+        <span class="pill">IN_PROGRESS: 1</span>
+        <span class="pill">DONE: 10</span>
+        <span class="pill">BLOCKED: 0</span>
         <span class="pill">FAILED: 0</span>
-        <span class="pill">UNVERIFIED: 5</span>
+        <span class="pill">UNVERIFIED: 7</span>
+        <span class="pill">SORT: IMPORTANCE</span>
+        <span class="pill">EVENTS: ALL</span>
       </div>
-      <p class="sub">상태 계산: DB 기반(read-only) · Forest는 export view</p>
+      <p class="sub">설계·검토·현황 관제 전용 대시보드 · generated_at: 2026-02-20T05:33:14.767413Z</p>
     </div>
+
     <div class="card">
-      <p class="title">Question Queue / Work Queue / Recent Events</p>
-      <div class="mermaid">flowchart TD
-subgraph WorkQueue["Work Queue"]
-wp_10cee24315eb4af4ba50c97d61d58713["S2\n[BLOCKED]"]:::BLOCKED
-wp_cff76fb7e8ff4229ae0211276eb2b67b["S1\n[DONE]"]:::DONE
-wp_c810ebe8cdf04fd49d9425c187dc4af5["Rehearsal S2\n[BLOCKED]"]:::BLOCKED
-wp_df90a9828201480db81954abc99fd5ab["Rehearsal S1\n[DONE]"]:::DONE
-wp_c910e1aaf5234682b4f2c204822fd480["Part4.5 rehearsal package\n[BLOCKED]"]:::BLOCKED
+      <p class="title">Module Overview</p>
+      <div class="module-grid">
+            <div class="module-card trackable" data-canopy-id="module:forest">
+              <div class="module-top">
+                <h3>소피아 숲</h3>
+                <span class="importance">중요도 100</span>
+              </div>
+              <p class="module-progress">진행률 42%</p>
+              <div class="row">
+                <span class="pill">WORK 18</span>
+                <span class="pill">DONE 10</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 6</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: 2026-02-20T03:27:15.570559Z</p>
+            </div>
+            
+
+            <div class="module-card trackable" data-canopy-id="module:editor">
+              <div class="module-top">
+                <h3>에디터</h3>
+                <span class="importance">중요도 86</span>
+              </div>
+              <p class="module-progress">진행률 0%</p>
+              <div class="row">
+                <span class="pill">WORK 0</span>
+                <span class="pill">DONE 0</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 2</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: N/A</p>
+            </div>
+            
+
+            <div class="module-card trackable" data-canopy-id="module:chat">
+              <div class="module-top">
+                <h3>채팅</h3>
+                <span class="importance">중요도 40</span>
+              </div>
+              <p class="module-progress">진행률 0%</p>
+              <div class="row">
+                <span class="pill">WORK 0</span>
+                <span class="pill">DONE 0</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 0</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: N/A</p>
+            </div>
+            
+
+            <div class="module-card trackable" data-canopy-id="module:core">
+              <div class="module-top">
+                <h3>코어</h3>
+                <span class="importance">중요도 40</span>
+              </div>
+              <p class="module-progress">진행률 0%</p>
+              <div class="row">
+                <span class="pill">WORK 3</span>
+                <span class="pill">DONE 0</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 0</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: 2026-02-19T17:46:11.134026Z</p>
+            </div>
+            
+
+            <div class="module-card trackable" data-canopy-id="module:note">
+              <div class="module-top">
+                <h3>소피아 노트</h3>
+                <span class="importance">중요도 40</span>
+              </div>
+              <p class="module-progress">진행률 0%</p>
+              <div class="row">
+                <span class="pill">WORK 0</span>
+                <span class="pill">DONE 0</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 0</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: N/A</p>
+            </div>
+            
+
+            <div class="module-card trackable" data-canopy-id="module:subtitle">
+              <div class="module-top">
+                <h3>자막 편집</h3>
+                <span class="importance">중요도 40</span>
+              </div>
+              <p class="module-progress">진행률 0%</p>
+              <div class="row">
+                <span class="pill">WORK 0</span>
+                <span class="pill">DONE 0</span>
+                <span class="pill">BLOCKED 0</span>
+                <span class="pill">Q 0</span>
+                
+              </div>
+              <p class="module-sub">최근 갱신: N/A</p>
+            </div>
+            </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <p class="title">Roadmap / Progress</p>
+        <div class="row">
+          <span class="pill">TOTAL_WORK: 21</span>
+          <span class="pill">REMAINING: 18</span>
+          <span class="pill">DONE_7D: 10</span>
+          <span class="pill">ETA_DAYS: 8</span>
+        </div>
+        <p class="sub" style="margin-top:8px;">최근 7일 완료 10건 기준, 약 8일 예상</p>
+        <div class="grid-3" style="margin-top:10px;">
+          <div>
+            <p class="sub" style="margin-bottom:8px;">IN PROGRESS</p>
+            
+            <div class="mini-card trackable" data-canopy-id="work:wp_0a662b3de9974dc5b254bcde8369d85a">
+              <div class="mini-top">
+                <span class="badge">IN_PROGRESS</span>
+                <span class="score">P75</span>
+              </div>
+              <p class="mini-title">Bitmap 저장/검증 파이프라인 정합성 점검</p>
+              <p class="mini-sub">코어 · MIGRATE</p>
+              <p class="mini-sub">2026-02-18T03:46:11.841019Z</p>
+            </div>
+            
+          </div>
+          <div>
+            <p class="sub" style="margin-bottom:8px;">PENDING / BLOCKED</p>
+            
+            <div class="mini-card trackable" data-canopy-id="work:wp_2b9abe559ff54060919f46d3c92c131d">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] 에디터/명세 분석 연계</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.129025Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_f4bd546d7fc04b799274285c1f28954d">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] AI contract/gate 라우팅</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.131070Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_e61eb5af0e6347b5ab5055adcdea17a1">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] Bitmap 저장/검증 파이프라인</p>
+              <p class="mini-sub">코어 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.131552Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_3845232792924806bd3181482d04d4b2">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] Canopy 관제/현황판</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.132018Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_6fc5601201584c22bd66cf757c8effa2">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] Roadmap/Status 동기화 루프</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.132456Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_c491008148c84f2691559679e2a17460">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] Work package 수명주기</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.133072Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_9ceece22a9ae4ff0916c6b43f9afef2f">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] Shortcuts/Bridge 연계</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.133505Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_ec03ed6a31984b2bbe58cd0375b46063">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] 채팅 응답/게이트 파이프라인</p>
+              <p class="mini-sub">코어 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-19T17:46:11.134026Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_34613f357c8d44a6bc53d4a6851f4c76">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] 소피아 노트/리플렉션</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-20T03:27:15.569606Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_3f71758079b2490dae7ad4f737e9768a">
+              <div class="mini-top">
+                <span class="badge">READY</span>
+                <span class="score">P60</span>
+              </div>
+              <p class="mini-title">[SYS] 자막 파이프라인</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-20T03:27:15.570559Z</p>
+            </div>
+            
+          </div>
+          <div>
+            <p class="sub" style="margin-bottom:8px;">DONE (RECENT)</p>
+            
+            <div class="mini-card trackable" data-canopy-id="work:wp_25a4530e96764f31a6ad21e5ea3b153b">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P20</span>
+              </div>
+              <p class="mini-title">Roadmap 자동 동기화 기준 강화</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-18T03:46:11.841019Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_sone_verify_loop_v1">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P20</span>
+              </div>
+              <p class="mini-title">SonE 검증 루프 점검</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-18T03:41:11.953715Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_status_sync_auto_v1">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P20</span>
+              </div>
+              <p class="mini-title">status sync 자동 점검</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-18T03:39:25.501089Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_focus_tree_min_v1">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">Focus 트리 최소화 정리</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-18T03:39:25.501089Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_c93f14bc5cdd42df9fa37968f1e6a417">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">Focus View 계획/진행/완료 분리 고도화</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-18T03:37:49.523423Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_c810ebe8cdf04fd49d9425c187dc4af5">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">Rehearsal S2</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-17T23:35:46.527358Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_10cee24315eb4af4ba50c97d61d58713">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">S2</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-17T23:35:46.397882Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_c910e1aaf5234682b4f2c204822fd480">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">Part4.5 rehearsal package</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-17T23:35:46.246448Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_cff76fb7e8ff4229ae0211276eb2b67b">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">S1</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-14T21:58:38Z</p>
+            </div>
+            
+
+            <div class="mini-card trackable" data-canopy-id="work:wp_df90a9828201480db81954abc99fd5ab">
+              <div class="mini-top">
+                <span class="badge">DONE</span>
+                <span class="score">P41</span>
+              </div>
+              <p class="mini-title">Rehearsal S1</p>
+              <p class="mini-sub">소피아 숲 · IMPLEMENT</p>
+              <p class="mini-sub">2026-02-14T21:57:55Z</p>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="title">SonE Validation Summary</p>
+        <div class="kv">
+          <div class="k">source_doc</div><div class="v">.md</div>
+          <div class="k">generated_at</div><div class="v">2026-02-18T03:59:46.314834Z</div>
+          <div class="k">missing_slots</div><div class="v">1</div>
+          <div class="k">impact_targets</div><div class="v">0</div>
+          <div class="k">risk_clusters</div><div class="v">2</div>
+          <div class="k">max_risk</div><div class="v">0.86</div>
+          <div class="k">dependency</div><div class="v">nodes 1 / edges 0</div>
+          <div class="k">validation_stage</div><div class="v">heuristic_v0_1</div>
+        </div>
+        <p class="sub" style="margin-top:10px;">Missing Slots</p>
+        <div style="max-height:180px; overflow:auto; font-size:12px;">[
+  {
+    "target": "spec-module",
+    "status": "missing_success_condition",
+    "evidence": ".md",
+    "reason_code": "SONE_SUCCESS_CONDITION_MISSING",
+    "reason_description": "성공 조건(success_condition)이 명시되지 않았습니다."
+  }
+]</div>
+        <p class="sub" style="margin-top:10px;">Risk Reasons</p>
+        <div style="max-height:180px; overflow:auto; font-size:12px;">[
+  {
+    "cluster_id": "requirement_conflict",
+    "description": "요구사항 충돌 가능성",
+    "risk_score": 0.86,
+    "reason_code": "SONE_REQUIREMENT_CONFLICT",
+    "reason_description": "요구사항 충돌 가능성이 감지되었습니다.",
+    "category": "conflict",
+    "evidence": "conflict keyword detected"
+  },
+  {
+    "cluster_id": "scope_ambiguity",
+    "description": "범위 불명확",
+    "risk_score": 0.82,
+    "reason_code": "SONE_SCOPE_MISSING",
+    "reason_description": "설계 범위(scope)가 명시되지 않았습니다.",
+    "category": "missing_slot",
+    "evidence": "slot.scope is empty"
+  }
+]</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="title">Bitmap Health (Storage Integrity)</p>
+      <div class="row">
+        <span class="pill">WINDOW: 7d</span>
+        <span class="pill">CANDIDATES: 0</span>
+        <span class="pill">PENDING: 0</span>
+        <span class="pill">ADOPTION: 0%</span>
+      </div>
+      <div class="kv" style="margin-top:10px;">
+        <div class="k">invalid_count_7d</div><div class="v">0</div>
+        <div class="k">conflict_mark_count_7d</div><div class="v">0</div>
+        <div class="k">duplicate_groups</div><div class="v">0</div>
+        <div class="k">duplicate_backbone_rows</div><div class="v">0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="title">Project Progress Sync</p>
+      <div class='kv'><div class='k'>synced_at</div><div class='v'>2026-02-20T05:33:14.767623Z</div><div class='k'>total_work</div><div class='v'>21</div><div class='k'>remaining</div><div class='v'>18</div><div class='k'>done_last_7d</div><div class='v'>10</div><div class='k'>eta_hint</div><div class='v'>최근 7일 완료 10건 기준, 약 8일 예상</div></div><p class='sub' style='margin-top:10px;'>다음 실행 항목</p><ul style='margin:8px 0 0 18px; padding:0; font-size:12px; line-height:1.5;'><li><strong>[P0]</strong> 질문 클러스터 정리: requirement_conflict <span style='color:#9ca3af;'>- risk 0.86</span></li><li><strong>[P0]</strong> 질문 클러스터 정리: scope_s2 <span style='color:#9ca3af;'>- risk 0.84</span></li><li><strong>[P0]</strong> 질문 클러스터 정리: scope_s2b <span style='color:#9ca3af;'>- risk 0.84</span></li><li><strong>[P1]</strong> [SYS] 에디터/명세 분석 연계 <span style='color:#9ca3af;'>- 대기 작업 우선순위 결정</span></li><li><strong>[P1]</strong> [SYS] AI contract/gate 라우팅 <span style='color:#9ca3af;'>- 대기 작업 우선순위 결정</span></li><li><strong>[P1]</strong> [SYS] Bitmap 저장/검증 파이프라인 <span style='color:#9ca3af;'>- 대기 작업 우선순위 결정</span></li></ul>
+    </div>
+
+    <div class="card">
+      <p class="title">Dependency / Execution Map</p>
+      <div class="mermaid">flowchart LR
+subgraph Modules["Modules"]
+module_forest["소피아 숲\n42%"]:::MODULE
+module_editor["에디터\n0%"]:::MODULE
+module_chat["채팅\n0%"]:::MODULE
+module_core["코어\n0%"]:::MODULE
+module_note["소피아 노트\n0%"]:::MODULE
+module_subtitle["자막 편집\n0%"]:::MODULE
 end
-subgraph QuestionQueue["Question Queue"]
-q_scope_s2["scope_s2\n[UNVERIFIED]"]:::UNVERIFIED
-q_scope_s2b["scope_s2b\n[UNVERIFIED]"]:::UNVERIFIED
-q_dep_s1["dep_s1\n[UNVERIFIED]"]:::UNVERIFIED
-q_dep_s1b["dep_s1b\n[UNVERIFIED]"]:::UNVERIFIED
-q_dependency_missing["dependency_missing\n[UNVERIFIED]"]:::UNVERIFIED
+subgraph Work["Work Packages"]
+work_wp_2b9abe559ff54060919f46d3c92c131d["[SYS] 에디터/명세 분석 연계\n[READY]"]:::READY
+work_wp_f4bd546d7fc04b799274285c1f28954d["[SYS] AI contract/gate 라우팅\n[READY]"]:::READY
+work_wp_e61eb5af0e6347b5ab5055adcdea17a1["[SYS] Bitmap 저장/검증 파이프라인\n[READY]"]:::READY
+work_wp_3845232792924806bd3181482d04d4b2["[SYS] Canopy 관제/현황판\n[READY]"]:::READY
+work_wp_6fc5601201584c22bd66cf757c8effa2["[SYS] Roadmap/Status 동기화 루프\n[READY]"]:::READY
+work_wp_c491008148c84f2691559679e2a17460["[SYS] Work package 수명주기\n[READY]"]:::READY
+work_wp_9ceece22a9ae4ff0916c6b43f9afef2f["[SYS] Shortcuts/Bridge 연계\n[READY]"]:::READY
+work_wp_ec03ed6a31984b2bbe58cd0375b46063["[SYS] 채팅 응답/게이트 파이프라인\n[READY]"]:::READY
+work_wp_34613f357c8d44a6bc53d4a6851f4c76["[SYS] 소피아 노트/리플렉션\n[READY]"]:::READY
+work_wp_3f71758079b2490dae7ad4f737e9768a["[SYS] 자막 파이프라인\n[READY]"]:::READY
+work_wp_0a662b3de9974dc5b254bcde8369d85a["Bitmap 저장/검증 파이프라인 정합성 점검\n[IN_PROGRESS]"]:::IN_PROGRESS
+work_wp_df90a9828201480db81954abc99fd5ab["Rehearsal S1\n[DONE]"]:::DONE
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b["S1\n[DONE]"]:::DONE
+work_wp_c910e1aaf5234682b4f2c204822fd480["Part4.5 rehearsal package\n[DONE]"]:::DONE
+work_wp_10cee24315eb4af4ba50c97d61d58713["S2\n[DONE]"]:::DONE
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5["Rehearsal S2\n[DONE]"]:::DONE
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417["Focus View 계획/진행/완료 분리 고도화\n[DONE]"]:::DONE
+work_wp_focus_tree_min_v1["Focus 트리 최소화 정리\n[DONE]"]:::DONE
+work_wp_status_sync_auto_v1["status sync 자동 점검\n[DONE]"]:::DONE
+work_wp_sone_verify_loop_v1["SonE 검증 루프 점검\n[DONE]"]:::DONE
+work_wp_25a4530e96764f31a6ad21e5ea3b153b["Roadmap 자동 동기화 기준 강화\n[DONE]"]:::DONE
 end
+subgraph Questions["Risk Clusters"]
+question_requirement_conflict["requirement_conflict\n[risk 0.86]"]:::UNVERIFIED
+question_scope_s2["scope_s2\n[risk 0.84]"]:::ACKNOWLEDGED
+question_scope_s2b["scope_s2b\n[risk 0.84]"]:::ACKNOWLEDGED
+question_dep_s1["dep_s1\n[risk 0.83]"]:::ACKNOWLEDGED
+question_dep_s1b["dep_s1b\n[risk 0.83]"]:::ACKNOWLEDGED
+question_dependency_missing["dependency_missing\n[risk 0.83]"]:::ACKNOWLEDGED
+question_scope_ambiguity["scope_ambiguity\n[risk 0.82]"]:::UNVERIFIED
+question_scope_s3_cluster["scope_s3_cluster\n[risk 0.62]"]:::RESOLVED
+question_scope_s3b["scope_s3b\n[risk 0.60]"]:::RESOLVED
+end
+module_forest --> work_wp_2b9abe559ff54060919f46d3c92c131d
+module_forest --> work_wp_f4bd546d7fc04b799274285c1f28954d
+module_core --> work_wp_e61eb5af0e6347b5ab5055adcdea17a1
+module_forest --> work_wp_3845232792924806bd3181482d04d4b2
+module_forest --> work_wp_6fc5601201584c22bd66cf757c8effa2
+module_forest --> work_wp_c491008148c84f2691559679e2a17460
+module_forest --> work_wp_9ceece22a9ae4ff0916c6b43f9afef2f
+module_core --> work_wp_ec03ed6a31984b2bbe58cd0375b46063
+module_forest --> work_wp_34613f357c8d44a6bc53d4a6851f4c76
+module_forest --> work_wp_3f71758079b2490dae7ad4f737e9768a
+module_core --> work_wp_0a662b3de9974dc5b254bcde8369d85a
+module_forest --> work_wp_df90a9828201480db81954abc99fd5ab
+module_forest --> work_wp_cff76fb7e8ff4229ae0211276eb2b67b
+module_forest --> work_wp_c910e1aaf5234682b4f2c204822fd480
+module_forest --> work_wp_10cee24315eb4af4ba50c97d61d58713
+module_forest --> work_wp_c810ebe8cdf04fd49d9425c187dc4af5
+module_forest --> work_wp_c93f14bc5cdd42df9fa37968f1e6a417
+module_forest --> work_wp_focus_tree_min_v1
+module_forest --> work_wp_status_sync_auto_v1
+module_forest --> work_wp_sone_verify_loop_v1
+module_forest --> work_wp_25a4530e96764f31a6ad21e5ea3b153b
+module_forest --> question_requirement_conflict
+module_core --> question_requirement_conflict
+work_wp_df90a9828201480db81954abc99fd5ab --> question_scope_s2
+work_wp_df90a9828201480db81954abc99fd5ab --> question_scope_s2b
+work_wp_df90a9828201480db81954abc99fd5ab --> question_dep_s1
+work_wp_df90a9828201480db81954abc99fd5ab --> question_dep_s1b
+work_wp_df90a9828201480db81954abc99fd5ab --> question_dependency_missing
+work_wp_df90a9828201480db81954abc99fd5ab --> question_scope_ambiguity
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_scope_s2
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_scope_s2b
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_dep_s1
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_dep_s1b
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_dependency_missing
+work_wp_cff76fb7e8ff4229ae0211276eb2b67b --> question_scope_ambiguity
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_scope_s2
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_scope_s2b
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_dep_s1
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_dep_s1b
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_dependency_missing
+work_wp_c910e1aaf5234682b4f2c204822fd480 --> question_scope_ambiguity
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_scope_s2
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_scope_s2b
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_dep_s1
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_dep_s1b
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_dependency_missing
+work_wp_10cee24315eb4af4ba50c97d61d58713 --> question_scope_ambiguity
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_scope_s2
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_scope_s2b
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_dep_s1
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_dep_s1b
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_dependency_missing
+work_wp_c810ebe8cdf04fd49d9425c187dc4af5 --> question_scope_ambiguity
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_scope_s2
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_scope_s2b
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_dep_s1
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_dep_s1b
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_dependency_missing
+work_wp_c93f14bc5cdd42df9fa37968f1e6a417 --> question_scope_ambiguity
+work_wp_focus_tree_min_v1 --> question_scope_s2
+work_wp_focus_tree_min_v1 --> question_scope_s2b
+work_wp_focus_tree_min_v1 --> question_dep_s1
+work_wp_focus_tree_min_v1 --> question_dep_s1b
+work_wp_focus_tree_min_v1 --> question_dependency_missing
+work_wp_focus_tree_min_v1 --> question_scope_ambiguity
+classDef MODULE fill:#312e81,stroke:#a5b4fc,color:#e0e7ff;
 classDef READY fill:#1e3a8a,stroke:#93c5fd,color:#dbeafe;
 classDef IN_PROGRESS fill:#0f766e,stroke:#5eead4,color:#ccfbf1;
 classDef DONE fill:#14532d,stroke:#86efac,color:#dcfce7;
@@ -58,536 +617,82 @@ classDef BLOCKED fill:#7f1d1d,stroke:#fca5a5,color:#fee2e2;
 classDef FAILED fill:#4c0519,stroke:#f9a8d4,color:#fce7f3;
 classDef UNVERIFIED fill:#78350f,stroke:#fcd34d,color:#fef3c7;</div>
     </div>
+
     <div class="card">
-      <p class="title">Recent Events</p>
-      <div class="list">[
-  {
-    "timestamp": "2026-02-17T01:33:48.298573Z",
-    "event_type": "QUESTION_SIGNAL",
-    "target": "dependency_missing",
-    "summary": "question signal: hit=3 risk=0.72",
-    "payload": {
-      "cluster_id": "dependency_missing",
-      "hit_count": 3,
-      "risk_score": 0.72,
-      "status": "ready_to_ask"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.336810Z",
-    "event_type": "QUESTION_ASKED",
-    "target": "dependency_missing",
-    "summary": "question asked: count=1",
-    "payload": {
-      "cluster_id": "dependency_missing",
-      "asked_count": 1,
-      "risk_score": 0.72,
-      "message_id": "msg_738d680d78894de69a96085364132a81"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.380363Z",
-    "event_type": "QUESTION_SIGNAL",
-    "target": "dependency_missing",
-    "summary": "question signal: hit=4 risk=0.72",
-    "payload": {
-      "cluster_id": "dependency_missing",
-      "hit_count": 4,
-      "risk_score": 0.72,
-      "status": "pending"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.424913Z",
-    "event_type": "QUESTION_ACKNOWLEDGED",
-    "target": "dependency_missing",
-    "summary": "event: QUESTION_ACKNOWLEDGED",
-    "payload": {
-      "cluster_id": "dependency_missing",
-      "question_status": "acknowledged",
-      "messages_updated": 1
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.464136Z",
-    "event_type": "MESSAGE_READ",
-    "target": "msg_738d680d78894de69a96085364132a81",
-    "summary": "event: MESSAGE_READ",
-    "payload": {
-      "message_id": "msg_738d680d78894de69a96085364132a81",
-      "status": "acknowledged",
-      "linked_cluster": "dependency_missing"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.506054Z",
-    "event_type": "QUESTION_RESOLVED",
-    "target": "dependency_missing",
-    "summary": "question resolved",
-    "payload": {
-      "cluster_id": "dependency_missing",
-      "messages_updated": 1,
-      "question_status": "resolved"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.578855Z",
-    "event_type": "QUESTION_SIGNAL",
-    "target": "scope_ambiguity",
-    "summary": "question signal: hit=1 risk=0.6",
-    "payload": {
-      "cluster_id": "scope_ambiguity",
-      "hit_count": 1,
-      "risk_score": 0.6,
-      "status": "collecting"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.633289Z",
-    "event_type": "QUESTION_READY",
-    "target": "scope_ambiguity",
-    "summary": "question ready: risk=0.82",
-    "payload": {
-      "cluster_id": "scope_ambiguity",
-      "hit_count": 2,
-      "risk_score": 0.82
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.679136Z",
-    "event_type": "QUESTION_SIGNAL",
-    "target": "scope_ambiguity",
-    "summary": "question signal: hit=2 risk=0.82",
-    "payload": {
-      "cluster_id": "scope_ambiguity",
-      "hit_count": 2,
-      "risk_score": 0.82,
-      "status": "ready_to_ask"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.708920Z",
-    "event_type": "QUESTION_ASKED",
-    "target": "scope_ambiguity",
-    "summary": "question asked: count=1",
-    "payload": {
-      "cluster_id": "scope_ambiguity",
-      "asked_count": 1,
-      "risk_score": 0.82,
-      "message_id": "msg_b6a36278d6824fb6a6bb4493903574c8"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.747622Z",
-    "event_type": "QUESTION_RESOLVED",
-    "target": "scope_ambiguity",
-    "summary": "question resolved",
-    "payload": {
-      "project": "sophia",
-      "cluster_id": "scope_ambiguity",
-      "messages_updated": 1,
-      "question_status": "resolved"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.785085Z",
-    "event_type": "QUESTION_RESPONSE_ANALYZED",
-    "target": "scope_ambiguity",
-    "summary": "event: QUESTION_RESPONSE_ANALYZED",
-    "payload": {
-      "project": "sophia",
-      "cluster_id": "scope_ambiguity",
-      "signals": 1,
-      "source_doc": "question_response_scope_ambiguity_20260217_013348.md"
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.823413Z",
-    "event_type": "ETHICS_FIX_COMMITTED",
-    "target": "sophia",
-    "summary": "event: ETHICS_FIX_COMMITTED",
-    "payload": {
-      "project": "sophia",
-      "endpoint": "/chat/messages",
-      "task": "chat.timeline_append",
-      "trace_id": "req_12ea7501008741168a9feb3acc420389",
-      "provider_final": "local",
-      "fallback_applied": false,
-      "gate_reason": "",
-      "generation": {
-        "provider": "ollama",
-        "model": "unknown",
-        "route": "local",
-        "capabilities": {
-          "web_access": false,
-          "file_access": false,
-          "exec_access": false,
-          "device_actions": false
-        },
-        "latency_ms": 1,
-        "tokens_in": null,
-        "tokens_out": null,
-        "trace_id": "req_12ea7501008741168a9feb3acc420389",
-        "created_at": "2026-02-17T01:33:48.629436Z",
-        "shortcuts_request": false,
-        "shortcuts_signature_valid": null,
-        "shortcuts_status": "UNVERIFIED",
-        "integration": {
-          "apple": {
-            "shortcuts": "UNVERIFIED"
-          }
-        }
-      },
-      "ethics": {
-        "outcome": "FIX",
-        "reason_codes": [],
-        "required_inputs": null,
-        "next_action": null,
-        "patch": null,
-        "commit_meta": {
-          "event_id": "cmt_41969bf9f7b24b06b218ad12d8344c8f",
-          "timestamp": "2026-02-17T01:33:48.823186Z",
-          "subject": "reply",
-          "source": "assistant",
-          "facet": "CANDIDATE",
-          "refs": [
-            "question-queue",
-            "msg_8d396a81d528474db7f1ff4fde4a8c9a",
-            "msg_d4e465d811a745dbb2426b0e475fc856"
-          ],
-          "hash": "sha256:e16d27c6aee337ccd33612ac34639caf5a50a18d5814d2ca60a74b8b1b9389c5",
-          "policy_version": "ethics_protocol_v1_0",
-          "redaction": {
-            "pii_removed": false,
-            "fields": []
-          },
-          "review": {
-            "required": true,
-            "state": "pending"
-          }
-        }
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:48.909534Z",
-    "event_type": "ETHICS_FIX_COMMITTED",
-    "target": "sophia",
-    "summary": "event: ETHICS_FIX_COMMITTED",
-    "payload": {
-      "project": "sophia",
-      "endpoint": "/chat/messages",
-      "task": "chat.timeline_append",
-      "trace_id": "req_78c1015cf4b249dd80f1588fd1bf912d",
-      "provider_final": "local",
-      "fallback_applied": false,
-      "gate_reason": "",
-      "generation": {
-        "provider": "mock",
-        "model": "unconscious_v0",
-        "route": "local",
-        "capabilities": {
-          "web_access": false,
-          "file_access": false,
-          "exec_access": false,
-          "device_actions": false
-        },
-        "latency_ms": 0,
-        "tokens_in": null,
-        "tokens_out": null,
-        "trace_id": "req_78c1015cf4b249dd80f1588fd1bf912d",
-        "created_at": "2026-02-17T01:33:48.903822Z",
-        "shortcuts_request": false,
-        "shortcuts_signature_valid": null,
-        "shortcuts_status": "UNVERIFIED",
-        "integration": {
-          "apple": {
-            "shortcuts": "UNVERIFIED"
-          }
-        }
-      },
-      "ethics": {
-        "outcome": "FIX",
-        "reason_codes": [],
-        "required_inputs": null,
-        "next_action": null,
-        "patch": null,
-        "commit_meta": {
-          "event_id": "cmt_2c0cc805cfde4fe3b71d3df0b138a437",
-          "timestamp": "2026-02-17T01:33:48.909339Z",
-          "subject": "reply",
-          "source": "assistant",
-          "facet": "CANDIDATE",
-          "refs": [
-            "chat",
-            "msg_32d326bdc1ac4ceb99ee45f56df596c2",
-            "msg_46475c52af9d4330893fc0c8e3263ffd"
-          ],
-          "hash": "sha256:488537d798510d318348eb26bd877ddcd7b21342797e0c1d81aebe204c0c3cef",
-          "policy_version": "ethics_protocol_v1_0",
-          "redaction": {
-            "pii_removed": false,
-            "fields": []
-          },
-          "review": {
-            "required": true,
-            "state": "pending"
-          }
-        }
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:33:49.038695Z",
-    "event_type": "ETHICS_FIX_COMMITTED",
-    "target": "sophia",
-    "summary": "event: ETHICS_FIX_COMMITTED",
-    "payload": {
-      "project": "sophia",
-      "endpoint": "/chat/messages",
-      "task": "chat.timeline_append",
-      "trace_id": "req_b03aefedc23641e4af911c938d68ba1c",
-      "provider_final": "local",
-      "fallback_applied": false,
-      "gate_reason": "",
-      "generation": {
-        "provider": "mock",
-        "model": "unconscious_v0",
-        "route": "local",
-        "capabilities": {
-          "web_access": false,
-          "file_access": false,
-          "exec_access": false,
-          "device_actions": false
-        },
-        "latency_ms": 0,
-        "tokens_in": null,
-        "tokens_out": null,
-        "trace_id": "req_b03aefedc23641e4af911c938d68ba1c",
-        "created_at": "2026-02-17T01:33:49.032439Z",
-        "shortcuts_request": false,
-        "shortcuts_signature_valid": null,
-        "shortcuts_status": "UNVERIFIED",
-        "integration": {
-          "apple": {
-            "shortcuts": "UNVERIFIED"
-          }
-        }
-      },
-      "ethics": {
-        "outcome": "FIX",
-        "reason_codes": [],
-        "required_inputs": null,
-        "next_action": null,
-        "patch": null,
-        "commit_meta": {
-          "event_id": "cmt_193f2e9dd16e47ffb011bcb331f009f0",
-          "timestamp": "2026-02-17T01:33:49.038491Z",
-          "subject": "reply",
-          "source": "assistant",
-          "facet": "CANDIDATE",
-          "refs": [
-            "chat",
-            "msg_0d0a7a827773468fb1d5baabc4fed5a1",
-            "msg_9abfa226142543f98f48a6ec8047d5a7"
-          ],
-          "hash": "sha256:ddca0c074eb9cab333ad4065baac9965908ec77d65629640af6d95ce7df5d868",
-          "policy_version": "ethics_protocol_v1_0",
-          "redaction": {
-            "pii_removed": false,
-            "fields": []
-          },
-          "review": {
-            "required": true,
-            "state": "pending"
-          }
-        }
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:34:07.571532Z",
-    "event_type": "ETHICS_FIX_COMMITTED",
-    "target": "sophia",
-    "summary": "event: ETHICS_FIX_COMMITTED",
-    "payload": {
-      "project": "sophia",
-      "endpoint": "/chat/messages",
-      "task": "chat.timeline_append",
-      "trace_id": "req_4aa107ed1e664aadbe755e1efa3f15fe",
-      "provider_final": "local",
-      "fallback_applied": false,
-      "gate_reason": "",
-      "generation": {
-        "provider": "mock",
-        "model": "unconscious_v0",
-        "route": "local",
-        "capabilities": {
-          "web_access": false,
-          "file_access": false,
-          "exec_access": false,
-          "device_actions": false
-        },
-        "latency_ms": 0,
-        "tokens_in": null,
-        "tokens_out": null,
-        "trace_id": "req_4aa107ed1e664aadbe755e1efa3f15fe",
-        "created_at": "2026-02-17T01:34:07.567674Z",
-        "shortcuts_request": false,
-        "shortcuts_signature_valid": null,
-        "shortcuts_status": "UNVERIFIED",
-        "integration": {
-          "apple": {
-            "shortcuts": "UNVERIFIED"
-          }
-        }
-      },
-      "ethics": {
-        "outcome": "FIX",
-        "reason_codes": [],
-        "required_inputs": null,
-        "next_action": null,
-        "patch": null,
-        "commit_meta": {
-          "event_id": "cmt_01bdd809d18a447598dd9582fb0a23ba",
-          "timestamp": "2026-02-17T01:34:07.571242Z",
-          "subject": "reply",
-          "source": "assistant",
-          "facet": "CANDIDATE",
-          "refs": [
-            "chat",
-            "msg_c5183cc6dc3b4292bef66f55e5bc2594",
-            "msg_a1ac1c00167c4b92845ad97d1da7fc0b"
-          ],
-          "hash": "sha256:f05c9dd2bacb1b3a6c602ef88dcb5ad02f84822a85d5762d0b7922687d471ba5",
-          "policy_version": "ethics_protocol_v1_0",
-          "redaction": {
-            "pii_removed": false,
-            "fields": []
-          },
-          "review": {
-            "required": true,
-            "state": "pending"
-          }
-        }
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:35:10.056633Z",
-    "event_type": "CANOPY_EXPORTED",
-    "target": "sophia",
-    "summary": "canopy dashboard exported",
-    "payload": {
-      "status_summary": {
-        "READY": 0,
-        "IN_PROGRESS": 0,
-        "DONE": 2,
-        "BLOCKED": 3,
-        "FAILED": 0,
-        "UNVERIFIED": 5
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:35:10.056876Z",
-    "event_type": "FOREST_CANOPY_EXPORTED",
-    "target": "sophia",
-    "summary": "event: FOREST_CANOPY_EXPORTED",
-    "payload": {
-      "project": "sophia",
-      "status_summary": {
-        "READY": 0,
-        "IN_PROGRESS": 0,
-        "DONE": 2,
-        "BLOCKED": 3,
-        "FAILED": 0,
-        "UNVERIFIED": 5
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:35:27.781215Z",
-    "event_type": "CANOPY_EXPORTED",
-    "target": "sophia",
-    "summary": "canopy dashboard exported",
-    "payload": {
-      "status_summary": {
-        "READY": 0,
-        "IN_PROGRESS": 0,
-        "DONE": 2,
-        "BLOCKED": 3,
-        "FAILED": 0,
-        "UNVERIFIED": 5
-      }
-    }
-  },
-  {
-    "timestamp": "2026-02-17T01:35:27.781417Z",
-    "event_type": "FOREST_CANOPY_EXPORTED",
-    "target": "sophia",
-    "summary": "event: FOREST_CANOPY_EXPORTED",
-    "payload": {
-      "project": "sophia",
-      "status_summary": {
-        "READY": 0,
-        "IN_PROGRESS": 0,
-        "DONE": 2,
-        "BLOCKED": 3,
-        "FAILED": 0,
-        "UNVERIFIED": 5
-      }
-    }
-  }
-]</div>
+      <p class="title">Question Queue</p>
+      <table>
+        <thead>
+          <tr><th>Cluster</th><th>Risk</th><th>Hit</th><th>Status</th><th>Linked</th></tr>
+        </thead>
+        <tbody>
+          <tr class='trackable' data-canopy-id='question:requirement_conflict'><td>requirement_conflict</td><td>0.86</td><td>12</td><td>ready_to_ask</td><td>spec-module</td></tr>
+<tr class='trackable' data-canopy-id='question:scope_s2'><td>scope_s2</td><td>0.84</td><td>2</td><td>acknowledged</td><td>forest:canopy</td></tr>
+<tr class='trackable' data-canopy-id='question:scope_s2b'><td>scope_s2b</td><td>0.84</td><td>2</td><td>acknowledged</td><td>forest:canopy</td></tr>
+<tr class='trackable' data-canopy-id='question:dep_s1'><td>dep_s1</td><td>0.83</td><td>1</td><td>acknowledged</td><td>forest:canopy</td></tr>
+<tr class='trackable' data-canopy-id='question:dep_s1b'><td>dep_s1b</td><td>0.83</td><td>1</td><td>acknowledged</td><td>forest:canopy</td></tr>
+<tr class='trackable' data-canopy-id='question:dependency_missing'><td>dependency_missing</td><td>0.83</td><td>1</td><td>acknowledged</td><td>forest:canopy</td></tr>
+<tr class='trackable' data-canopy-id='question:scope_ambiguity'><td>scope_ambiguity</td><td>0.82</td><td>13</td><td>ready_to_ask</td><td>forest:canopy, spec-module</td></tr>
+<tr class='trackable' data-canopy-id='question:scope_s3_cluster'><td>scope_s3_cluster</td><td>0.62</td><td>1</td><td>resolved</td><td>-</td></tr>
+<tr class='trackable' data-canopy-id='question:scope_s3b'><td>scope_s3b</td><td>0.60</td><td>1</td><td>resolved</td><td>-</td></tr>
+        </tbody>
+      </table>
     </div>
+
     <div class="card">
-      <p class="title">Learning Summary</p>
-      <p class="stage">SPROUT</p>
-      <div class="row">
-        <span class="pill">TOTAL: 39</span>
-        <span class="pill">NONZERO_KINDS: 5</span>
-        <span class="pill">LAST_EVENT: 2026-02-17T01:34:07.570838Z</span>
-        <span class="pill">UNCONSCIOUS: 33.3%</span>
-        <span class="pill">PREFERENCE: 5.1%</span>
-        <span class="pill">TOPIC: 33.3%</span>
-      </div>
-      <p class="sub">Tracked Events (All)</p>
-      <div class="list">{
-  "UNCONSCIOUS_HIT": 13,
-  "UNCONSCIOUS_PATTERN_SEEN": 7,
-  "TERM_MAPPING": 4,
-  "TOPIC_SEEN": 13,
-  "USER_PREFERENCE": 2
-}</div>
-      <p class="sub">Tracked Events (24h)</p>
-      <div class="list">{
-  "UNCONSCIOUS_HIT": 13,
-  "UNCONSCIOUS_PATTERN_SEEN": 7,
-  "TERM_MAPPING": 4,
-  "TOPIC_SEEN": 13,
-  "USER_PREFERENCE": 2
-}</div>
-      <p class="sub">Top Unconscious Patterns</p>
-      <div class="list">[
-  {
-    "pattern_id": "SMOKE_OK",
-    "count": 8
-  },
-  {
-    "pattern_id": "GREET",
-    "count": 6
-  },
-  {
-    "pattern_id": "PING_OK",
-    "count": 3
-  },
-  {
-    "pattern_id": "UNKNOWN_BUT_ACTIONABLE",
-    "count": 3
-  }
-]</div>
+      <p class="title">Recent Change Log</p>
+      <table>
+        <thead>
+          <tr><th>Timestamp</th><th>Event</th><th>Target</th><th>Summary</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2026-02-20T04:09:14.350701Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:09:14.350887Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:09:14.434400Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:09:14.611254Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:09:14.611466Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:09:14.696197Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:09:14.879234Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:09:14.879438Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:09:14.966760Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:53:18.601702Z</td><td>INACTIVITY_CHECKED</td><td>system</td><td>event: INACTIVITY_CHECKED</td></tr>
+<tr><td>2026-02-20T04:55:18.525094Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:18.525282Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:18.561585Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:55:18.844870Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:18.845075Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:18.939415Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:55:26.113634Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:26.113859Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:26.231022Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:55:26.369455Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:26.369638Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:26.451784Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:55:26.715876Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:26.716053Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:26.808958Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T04:55:27.013611Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T04:55:27.013825Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+<tr><td>2026-02-20T04:55:27.100139Z</td><td>FOREST_ROADMAP_LIVE_RECORDED</td><td>sophia</td><td>event: FOREST_ROADMAP_LIVE_RECORDED</td></tr>
+<tr><td>2026-02-20T05:06:54.285625Z</td><td>STATUS_SYNCED</td><td>sophia</td><td>project progress snapshot synced</td></tr>
+<tr><td>2026-02-20T05:06:54.285847Z</td><td>FOREST_STATUS_SYNCED</td><td>sophia</td><td>event: FOREST_STATUS_SYNCED</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const highlight = params.get("highlight");
+      if (!highlight) return;
+      const nodes = Array.from(document.querySelectorAll("[data-canopy-id]"));
+      const matched = nodes.filter((node) => node.getAttribute("data-canopy-id") === highlight);
+      if (!matched.length) return;
+      matched.forEach((node) => node.classList.add("highlight"));
+      const first = matched[0];
+      if (first && typeof first.scrollIntoView === "function") {
+        first.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    })();
+  </script>
 </body>
 </html>

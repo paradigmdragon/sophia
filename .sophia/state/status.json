@@ -1,0 +1,69 @@
+{
+  "project": "Sophia",
+  "version": "0.1.0",
+  "last_updated": "2026-02-14T16:04:58.717377+00:00",
+  "nodes": {
+    "root": {
+      "id": "root",
+      "type": "project",
+      "label": "Sophia Project",
+      "status": "IN_PROGRESS",
+      "logs": [],
+      "current_status": "TODO"
+    },
+    "feat.core.engine": {
+      "id": "feat.core.engine",
+      "type": "feature",
+      "label": "Core Engine",
+      "parent": "root",
+      "status": "DONE",
+      "logs": [],
+      "current_status": "TODO"
+    },
+    "feat.memory.layer": {
+      "id": "feat.memory.layer",
+      "type": "feature",
+      "label": "Memory Layer",
+      "parent": "root",
+      "status": "DONE",
+      "logs": [],
+      "current_status": "TODO"
+    },
+    "feat.epidora": {
+      "id": "feat.epidora",
+      "type": "feature",
+      "label": "Epidora Validator",
+      "parent": "root",
+      "status": "DONE",
+      "logs": [],
+      "current_status": "TODO"
+    },
+    "feat.sone.automation": {
+      "id": "feat.sone.automation",
+      "type": "feature",
+      "label": "SonE Automation",
+      "parent": "root",
+      "status": "DONE",
+      "logs": [],
+      "current_status": "TODO"
+    },
+    "feat.infra.observer": {
+      "id": "feat.infra.observer",
+      "type": "feature",
+      "label": "Project Observer",
+      "parent": "root",
+      "status": "IN_PROGRESS",
+      "logs": [
+        {
+          "ts": "2026-02-14T16:04:58.674180+00:00",
+          "node_id": "feat.infra.observer",
+          "status": "DONE",
+          "summary": "Initial Observer Setup Complete",
+          "evidence": "system:init"
+        }
+      ],
+      "current_status": "DONE",
+      "last_updated": "2026-02-14T16:04:58.674180+00:00"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "default_tone": "neutral",
+  "tones": {
+    "neutral": {
+      "prefix": "",
+      "suffix": ""
+    }
+  }
+}

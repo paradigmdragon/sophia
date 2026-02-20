@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
-const SonaEyeGraph = () => {
+interface SonaEyeGraphProps {
+  mode?: 'relaxed' | 'tense';
+}
+
+const SonaEyeGraph = ({ mode = 'relaxed' }: SonaEyeGraphProps) => {
   // Path Definitions: Relaxed (Default) vs Tense state
   // Relaxed: Center is higher, closer to a circle (y: 10) - gathering inward
   // Tense: Center is flatter, spreading outward (y: 50) - expanding outward
@@ -11,7 +15,7 @@ const SonaEyeGraph = () => {
   // Animation Variables
   // Card appearance delay: 1.3
   const cardAppearDelay = 1.1;
-  const breathingDuration = 9.9; // Breathing cycle (seconds) — repeat animation speed
+  const breathingDuration = mode === 'tense' ? 2.0 : 9.9; // Faster breathing if tense
 
   // Animation settings for each path
   const getPathAnimation = (index: number) => {
@@ -23,8 +27,10 @@ const SonaEyeGraph = () => {
       pathLength: [0, 1],
       opacity: [0, 0.8],
       // Breathing animation
-      d: [bellCurveRelaxed, bellCurveTense, bellCurveRelaxed],
-      strokeWidth: [1, 2.5, 1],
+      d: mode === 'tense' 
+         ? [bellCurveTense, bellCurveRelaxed, bellCurveTense] // Aggressive pulse
+         : [bellCurveRelaxed, bellCurveTense, bellCurveRelaxed],
+      strokeWidth: mode === 'tense' ? [2, 4, 2] : [1, 2.5, 1],
       filter: ['url(#glow-weak)', 'url(#glow-strong)', 'url(#glow-weak)'],
       transition: {
         // Initial appearance transition
@@ -69,12 +75,12 @@ const SonaEyeGraph = () => {
         <defs>
           {/* Gradient: Transparent ends to make line fade out naturally */}
           <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0" />
-            <stop offset="40%" stopColor="#8B5CF6" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#FDE68A" stopOpacity="1" />{' '}
-            {/* Center is slightly yellow */}
-            <stop offset="60%" stopColor="#EF4444" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
+            <stop offset="0%" stopColor={mode === 'tense' ? "#EF4444" : "#3B82F6"} stopOpacity="0" />
+            <stop offset="40%" stopColor={mode === 'tense' ? "#EF4444" : "#8B5CF6"} stopOpacity="0.8" />
+            <stop offset="50%" stopColor={mode === 'tense' ? "#F87171" : "#FDE68A"} stopOpacity="1" />{' '}
+            {/* Center is slightly yellow/red */}
+            <stop offset="60%" stopColor={mode === 'tense' ? "#EF4444" : "#EF4444"} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={mode === 'tense' ? "#EF4444" : "#EF4444"} stopOpacity="0" />
           </linearGradient>
 
           {/* Glow Filters */}

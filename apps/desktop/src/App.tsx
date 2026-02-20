@@ -6,6 +6,7 @@ import { HearingPage } from "./pages/HearingPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { AnchorWidget } from "./components/AnchorWidget";
 import { TitleBar } from "./components/TitleBar";
+import { ReportPage } from "./pages/ReportPage";
 
 function App() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function App() {
           <Route path="/note" element={<SophiaNotePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/report" element={<ReportPage />} />
         </Routes>
       </div>
 

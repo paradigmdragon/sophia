@@ -88,11 +88,16 @@ class Candidate(Base):
     backbone_bits = Column(Integer, nullable=False)
     facets_json = Column(JSON, nullable=False)   # List of {id, val}
     confidence = Column(Integer, default=0)
-    status = Column(String, default='PENDING')   # PENDING, REJECTED
+    status = Column(String, default='PENDING')   # PENDING, ADOPTED, REJECTED
     proposed_at = Column(DateTime, default=func.now())
     note_thin = Column(String, nullable=True)
 
     episode = relationship("Episode", back_populates="candidates")
+
+    __table_args__ = (
+        Index('idx_candidate_episode_status', 'episode_id', 'status'),
+        Index('idx_candidate_proposed_at', 'proposed_at'),
+    )
 
 class Event(Base):
     """
@@ -108,6 +113,11 @@ class Event(Base):
     at = Column(DateTime, default=func.now())
 
     episode = relationship("Episode", back_populates="events")
+
+    __table_args__ = (
+        Index('idx_event_type_at', 'type', 'at'),
+        Index('idx_event_episode_type_at', 'episode_id', 'type', 'at'),
+    )
 
 class MessageQueue(Base):
     __tablename__ = 'message_queue'

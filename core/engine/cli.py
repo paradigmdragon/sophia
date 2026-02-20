@@ -25,7 +25,17 @@ def cmd_ingest(args):
     """
     sophia ingest <ref_uri>
     """
-    log_ref = {"uri": args.ref_uri, "type": "cli_manual"}
+    # If ref_uri is simple filename, assume it's in SOPHIA_DOCS if exists
+    import os
+    from core.engine.constants import SOPHIA_DOCS
+    
+    target_uri = args.ref_uri
+    if not os.path.exists(target_uri):
+        potential = os.path.join(SOPHIA_DOCS, target_uri)
+        if os.path.exists(potential):
+            target_uri = potential
+            
+    log_ref = {"uri": target_uri, "type": "cli_manual"}
     ep_id = workflow.ingest(log_ref)
     print(f"Created Episode: {ep_id}")
 
@@ -203,8 +213,50 @@ def main():
         cmd_heart_dispatch(args)
     elif args.command == "set_state":
         cmd_heart_state(args)
+    # Bridge
+    p_bridge = subparsers.add_parser("bridge", help="Trigger Codex Skill manually")
+    p_bridge.add_argument("state_code", help="State Code (e.g. 0x6)")
+    p_bridge.add_argument("--uri", help="Resource URI")
+
+    args = parser.parse_args()
+    
+    if args.command == "ingest":
+        cmd_ingest(args)
+    elif args.command == "propose":
+        cmd_propose(args)
+    elif args.command == "adopt":
+        cmd_adopt(args)
+    elif args.command == "reject":
+        cmd_reject(args)
+    elif args.command == "search":
+        cmd_search(args)
+    elif args.command == "status":
+        cmd_heart_status(args)
+    elif args.command == "dispatch":
+        cmd_heart_dispatch(args)
+    elif args.command == "set_state":
+        cmd_heart_state(args)
+    elif args.command == "bridge":
+        cmd_bridge(args)
     else:
         parser.print_help()
+
+def cmd_bridge(args):
+    """
+    sophia bridge <state_code> --uri ...
+    """
+    from core.engine.skill_bridge import SkillBridge
+    bridge = SkillBridge()
+    
+    context = {}
+    if args.uri:
+        context['uri'] = args.uri
+        
+    result = bridge.check_and_trigger(args.state_code, context)
+    if result:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"No skill registered for state: {args.state_code}")
 
 if __name__ == "__main__":
     main()

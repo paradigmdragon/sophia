@@ -73,6 +73,46 @@
           "format": "date-time"
         }
       }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "provider_final": {
+          "type": "string"
+        },
+        "fallback_applied": {
+          "type": "boolean"
+        },
+        "gate_reason": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "attempts_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quality_state": {
+          "type": "string",
+          "enum": [
+            "NORMAL",
+            "FALLBACK",
+            "SANITIZED"
+          ]
+        },
+        "mind_item_id": {
+          "type": "string"
+        },
+        "input_len": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   }
 }

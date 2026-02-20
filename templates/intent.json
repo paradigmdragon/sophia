@@ -1,0 +1,26 @@
+{
+  "approve": [
+    "intent.approve.a",
+    "intent.approve.b"
+  ],
+  "reject": [
+    "intent.reject.a",
+    "intent.reject.b"
+  ],
+  "hold": [
+    "intent.hold.a",
+    "intent.hold.b"
+  ],
+  "question": [
+    "intent.question.a",
+    "intent.question.b"
+  ],
+  "directive": [
+    "intent.directive.a",
+    "intent.directive.b"
+  ],
+  "general": [
+    "intent.general.a",
+    "intent.general.b"
+  ]
+}

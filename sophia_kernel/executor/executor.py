@@ -32,7 +32,31 @@ def _error_diff_ref(exc: Exception) -> str:
     return f"error://type={type(exc).__name__};message={str(exc)}"
 
 
-def resolve_entrypoint(entrypoint: str):
+def _skill_id(manifest: dict) -> str:
+    skill_id = manifest.get("skill_id", manifest.get("id"))
+    if not isinstance(skill_id, str) or not skill_id:
+        raise KeyError("manifest skill id is required")
+    return skill_id
+
+
+def _verification_mode(manifest: dict) -> str:
+    raw = manifest.get("verification", {})
+    if isinstance(raw, str):
+        return raw
+    if isinstance(raw, dict):
+        return str(raw.get("mode", "advisory"))
+    return "advisory"
+
+
+def resolve_entrypoint(entrypoint: str, manifest: dict | None = None):
+    if entrypoint == "external.execute":
+        from sophia_kernel.skills.external import execute as external_execute
+
+        def _external_run(inputs: dict) -> dict:
+            return external_execute.run(inputs=inputs, manifest=manifest)
+
+        return _external_run
+
     if entrypoint == "memory.append":
         from sophia_kernel.skills.memory import append
 
@@ -61,8 +85,12 @@ def execute_skill(skill_id: str, version: str, inputs: dict) -> dict:
     manifest = registry.get_skill(skill_id, version)
 
     capabilities = set(manifest.get("capabilities", []))
-    verification_mode = manifest.get("verification", {}).get("mode")
-    needs_strict = "fs.write" in capabilities or "manifest.write" in capabilities
+    verification_mode = _verification_mode(manifest)
+    needs_strict = (
+        "fs.write" in capabilities
+        or "manifest.write" in capabilities
+        or "external.run" in capabilities
+    )
     if needs_strict and verification_mode != "strict":
         raise PermissionError("strict verification is required for write capabilities")
 
@@ -70,7 +98,8 @@ def execute_skill(skill_id: str, version: str, inputs: dict) -> dict:
     started_at = _utc_now()
     run_id = f"run_{uuid4()}"
 
-    runner = resolve_entrypoint(manifest["entrypoint"])
+    runner = resolve_entrypoint(manifest["entrypoint"], manifest=manifest)
+    skill_manifest_id = _skill_id(manifest)
     try:
         outputs = runner(inputs)
     except Exception as exc:
@@ -79,7 +108,7 @@ def execute_skill(skill_id: str, version: str, inputs: dict) -> dict:
         record = {
             "schema_version": "0.1",
             "run_id": run_id,
-            "skill_id": manifest["skill_id"],
+            "skill_id": skill_manifest_id,
             "inputs_hash": _sha256_json(inputs),
             "outputs_hash": _sha256_json(error_output),
             "diff_refs": [_error_diff_ref(exc)],
@@ -110,7 +139,7 @@ def execute_skill(skill_id: str, version: str, inputs: dict) -> dict:
     record = {
         "schema_version": "0.1",
         "run_id": run_id,
-        "skill_id": manifest["skill_id"],
+        "skill_id": skill_manifest_id,
         "inputs_hash": _sha256_json(inputs),
         "outputs_hash": _sha256_json(outputs),
         "diff_refs": [_verifier_diff_ref(report)],

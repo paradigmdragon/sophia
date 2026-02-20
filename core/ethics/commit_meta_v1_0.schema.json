@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "commit_meta_v1_0.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "timestamp",
+    "subject",
+    "source",
+    "facet",
+    "refs",
+    "hash",
+    "policy_version",
+    "redaction",
+    "review"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1},
+    "timestamp": {"type": "string", "minLength": 1},
+    "subject": {"type": "string", "enum": ["reply", "action", "rule", "summary", "decision"]},
+    "source": {"type": "string", "enum": ["user", "assistant", "system"]},
+    "facet": {"type": "string", "enum": ["EPHEMERAL", "CANDIDATE", "VERIFIED", "USER_DEF"]},
+    "refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "hash": {"type": "string", "minLength": 1},
+    "policy_version": {"type": "string", "const": "ethics_protocol_v1_0"},
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pii_removed", "fields"],
+      "properties": {
+        "pii_removed": {"type": "boolean"},
+        "fields": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "state"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "state": {"type": "string", "enum": ["pending", "approved", "rejected"]}
+      }
+    }
+  }
+}

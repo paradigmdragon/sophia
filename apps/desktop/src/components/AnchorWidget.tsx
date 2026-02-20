@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { AnchorMenu } from "./AnchorMenu";
 import { inboxService } from "../lib/inboxService";
 import SonaEyeGraph from "./SonaEyeGraph";
+import { useEpidoraState } from "../hooks/useEpidoraState";
 
 export function AnchorWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [itemCount, setItemCount] = useState(0);
+    const eyeMode = useEpidoraState();
 
     useEffect(() => {
         checkInbox();
@@ -46,7 +48,7 @@ export function AnchorWidget() {
             >
                 {/* Sona Eye Graph Logo */}
                 <div className="w-full h-full flex items-center justify-center scale-[1.8]">
-                    <SonaEyeGraph />
+                    <SonaEyeGraph mode={eyeMode} />
                 </div>
                 
                 {/* Red Badge */}

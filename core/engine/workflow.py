@@ -6,14 +6,89 @@ from core.engine.schema import Episode, Backbone, Facet, Candidate, Event, Messa
 from core.engine.constants import FacetID, FacetValueCertainty, RuleID
 from core.engine.conflict_rules import check_conflicts
 from core.engine.heart import HeartEngine
+from core.engine.epidora import EpidoraValidator
+from core.engine.bitmap_validator import InvalidBitmapError, validate_bitmap
 
 class WorkflowEngine:
     def __init__(self, session_factory):
         self.session_factory = session_factory
         self.heart = HeartEngine(session_factory) # Phase 0 Heart
+        self.epidora = EpidoraValidator()
 
     def _get_session(self):
         return self.session_factory()
+
+    def _append_event(self, session: Session, *, episode_id: str | None, event_type: str, payload: Dict) -> None:
+        session.add(
+            Event(
+                event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                episode_id=episode_id,
+                type=event_type,
+                payload=payload,
+            )
+        )
+
+    @staticmethod
+    def _payload_as_dict(value) -> Dict:
+        if isinstance(value, dict):
+            return value
+        return {}
+
+    def _find_adopted_backbone_id(self, session: Session, *, episode_id: str, candidate_id: str) -> str | None:
+        rows = (
+            session.query(Event)
+            .filter_by(episode_id=episode_id, type="ADOPT")
+            .order_by(Event.at.desc())
+            .limit(200)
+            .all()
+        )
+        for row in rows:
+            payload = self._payload_as_dict(row.payload)
+            if str(payload.get("candidate_id", "")) == candidate_id:
+                backbone_id = str(payload.get("backbone_id", "")).strip()
+                if backbone_id:
+                    return backbone_id
+        return None
+
+    def _load_candidate_for_episode(self, session: Session, *, episode_id: str, candidate_id: str) -> Candidate:
+        candidate = session.query(Candidate).filter_by(candidate_id=candidate_id).first()
+        if candidate is None:
+            raise ValueError("Candidate not found")
+
+        candidate_episode_id = str(candidate.episode_id or "").strip()
+        requested_episode_id = str(episode_id or "").strip()
+        if candidate_episode_id != requested_episode_id:
+            raise ValueError(
+                f"Candidate episode mismatch: candidate={candidate_episode_id} requested={requested_episode_id}"
+            )
+        return candidate
+
+    def _record_bitmap_invalid(
+        self,
+        session: Session,
+        *,
+        episode_id: str,
+        stage: str,
+        bits_raw: object,
+        reason: str,
+        error: str,
+        source: str | None = None,
+        candidate_id: str | None = None,
+        candidate_index: int | None = None,
+    ) -> None:
+        payload: Dict[str, object] = {
+            "stage": stage,
+            "bits_raw": bits_raw,
+            "reason": reason,
+            "error": error,
+        }
+        if source:
+            payload["source"] = source
+        if candidate_id:
+            payload["candidate_id"] = candidate_id
+        if candidate_index is not None:
+            payload["candidate_index"] = int(candidate_index)
+        self._append_event(session, episode_id=episode_id, event_type="BITMAP_INVALID", payload=payload)
 
     def ingest(self, log_ref: Dict) -> str:
         """
@@ -51,13 +126,37 @@ class WorkflowEngine:
         session = self._get_session()
         created_ids = []
         try:
-            for c_data in candidates_data:
+            validated_data: list[tuple[Dict, int]] = []
+            for idx, c_data in enumerate(candidates_data):
+                bits_raw = c_data.get('backbone_bits')
+                try:
+                    validated = validate_bitmap(int(bits_raw))
+                except (TypeError, ValueError, InvalidBitmapError) as exc:
+                    reason = getattr(exc, "reason", "INVALID_BITMAP")
+                    self._record_bitmap_invalid(
+                        session,
+                        episode_id=episode_id,
+                        stage="propose",
+                        bits_raw=bits_raw,
+                        reason=reason,
+                        error=str(exc),
+                        source=source,
+                        candidate_index=idx,
+                    )
+                    session.commit()
+                    raise ValueError(
+                        f"invalid backbone_bits for candidate: {bits_raw} [reason={reason}] ({exc})"
+                    ) from exc
+                validated_data.append((c_data, validated.bits))
+
+            bits_hex: list[str] = []
+            for c_data, valid_bits in validated_data:
                 c_id = f"cand_{uuid.uuid4().hex[:8]}"
                 candidate = Candidate(
                     candidate_id=c_id,
                     episode_id=episode_id,
                     proposed_by=source,
-                    backbone_bits=c_data['backbone_bits'],
+                    backbone_bits=valid_bits,
                     facets_json=c_data.get('facets', []),
                     note_thin=c_data.get('note'),
                     confidence=c_data.get('confidence', 0),
@@ -65,6 +164,7 @@ class WorkflowEngine:
                 )
                 session.add(candidate)
                 created_ids.append(c_id)
+                bits_hex.append(f"0x{valid_bits:04X}")
 
                 # Heart Trigger: Low Confidence
                 # If ANY candidate has low confidence (< 50), trigger P3 ASK
@@ -80,13 +180,19 @@ class WorkflowEngine:
                     )
             
             # Log Event
-            event = Event(
-                event_id=f"evt_{uuid.uuid4().hex[:8]}",
+            self._append_event(
+                session,
                 episode_id=episode_id,
-                type="PROPOSE",
-                payload={"count": len(created_ids), "source": source}
+                event_type="PROPOSE",
+                payload={
+                    "count": len(created_ids),
+                    "source": source,
+                    "bitmap_meta": {
+                        "validated_count": len(validated_data),
+                        "bits_hex": bits_hex[:10],
+                    },
+                },
             )
-            session.add(event)
             session.commit()
             return created_ids
         finally:
@@ -101,10 +207,20 @@ class WorkflowEngine:
         """
         session = self._get_session()
         try:
-            candidate = session.query(Candidate).filter_by(candidate_id=candidate_id).first()
-            if not candidate:
-                raise ValueError("Candidate not found")
-            if candidate.status != 'PENDING':
+            candidate = self._load_candidate_for_episode(
+                session, episode_id=episode_id, candidate_id=candidate_id
+            )
+            status = str(candidate.status or "").upper()
+            if status == "ADOPTED":
+                existing_backbone_id = self._find_adopted_backbone_id(
+                    session, episode_id=episode_id, candidate_id=candidate_id
+                )
+                if existing_backbone_id:
+                    return existing_backbone_id
+                raise ValueError("Candidate status is ADOPTED")
+            if status == "REJECTED":
+                raise ValueError("Candidate status is REJECTED")
+            if status != 'PENDING':
                 raise ValueError(f"Candidate status is {candidate.status}")
 
             # 1. Determine Role
@@ -114,17 +230,30 @@ class WorkflowEngine:
             # 2. Create Backbone
             b_id = f"bb_{uuid.uuid4().hex[:8]}"
             bits = candidate.backbone_bits
-            # Decode bits for searching
-            bits_a = (bits >> 12) & 0xF
-            bits_b = (bits >> 8) & 0xF
-            bits_c = (bits >> 4) & 0xF
-            bits_d = bits & 0xF
+            try:
+                validated = validate_bitmap(int(bits))
+            except (TypeError, ValueError, InvalidBitmapError) as exc:
+                reason = getattr(exc, "reason", "INVALID_BITMAP")
+                self._record_bitmap_invalid(
+                    session,
+                    episode_id=episode_id,
+                    stage="adopt",
+                    bits_raw=bits,
+                    reason=reason,
+                    error=str(exc),
+                    candidate_id=candidate_id,
+                )
+                session.commit()
+                raise ValueError(f"invalid backbone_bits for adopt: {bits} [reason={reason}] ({exc})") from exc
 
             backbone = Backbone(
                 backbone_id=b_id,
                 episode_id=episode_id,
-                bits_a=bits_a, bits_b=bits_b, bits_c=bits_c, bits_d=bits_d,
-                combined_bits=bits,
+                bits_a=validated.bits_a,
+                bits_b=validated.bits_b,
+                bits_c=validated.bits_c,
+                bits_d=validated.bits_d,
+                combined_bits=validated.bits,
                 role=role,
                 origin="ADOPT"
             )
@@ -243,6 +372,52 @@ class WorkflowEngine:
                     context={"conflict_rules": [c['rule_id'] for c in conflicts]}
                 )
 
+            # 8. Epidora Structural Validation (Antigravity Implementation)
+            if candidate.note_thin:
+                epidora_errors = self.epidora.validate(candidate.note_thin)
+                if epidora_errors:
+                    for error in epidora_errors:
+                        # 8.1 Create Alignment Facet (0x4)
+                        # Check if exists (might have multiple errors? Facet table allows unique (ep, facet_id)? 
+                        # Constants say FacetID is unique per episode usually.
+                        # For now, just take the first error or update.
+                        
+                        existing_align = session.query(Facet).filter_by(episode_id=episode_id, facet_id=FacetID.ALIGNMENT).first()
+                        err_val = error['error_id']
+                        
+                        if existing_align:
+                            existing_align.value = err_val
+                        else:
+                            session.add(Facet(
+                                facet_uuid=f"f_{uuid.uuid4().hex[:8]}",
+                                episode_id=episode_id,
+                                facet_id=FacetID.ALIGNMENT,
+                                value=err_val
+                            ))
+                        
+                        # 8.2 Heart Trigger: Epidora Error
+                        # Revealing Question
+                        question = self.epidora.get_philosophical_feedback(err_val)
+                        
+                        self.heart.trigger_message(
+                            priority="P2",
+                            type="ASK",
+                            intent="epidora_reveal",
+                            content=f"Structural Insight: {question} (Detected {error['name']})",
+                            episode_id=episode_id,
+                            context={"epidora_error": error}
+                        )
+                        
+                         # Log Event
+                        session.add(Event(
+                            event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                            episode_id=episode_id,
+                            type="EPIDORA_MARK",
+                            payload=error
+                        ))
+                    
+                    session.commit()
+
             return b_id
         except Exception as e:
             session.rollback()
@@ -250,42 +425,58 @@ class WorkflowEngine:
         finally:
             session.close()
 
-    def reject(self, episode_id: str, candidate_id: str):
+    def reject(self, episode_id: str, candidate_id: str, reason: str | None = None) -> bool:
         session = self._get_session()
         try:
-            candidate = session.query(Candidate).filter_by(candidate_id=candidate_id).first()
-            if candidate:
-                candidate.status = 'REJECTED'
+            candidate = self._load_candidate_for_episode(
+                session, episode_id=episode_id, candidate_id=candidate_id
+            )
+
+            status = str(candidate.status or "").upper()
+            if status == "ADOPTED":
+                raise ValueError("Candidate status is ADOPTED")
+            if status == "REJECTED":
+                return False
+            if status != "PENDING":
+                raise ValueError(f"Candidate status is {candidate.status}")
+
+            candidate.status = 'REJECTED'
+            reason_text = str(reason or "").strip()
+            
+            # Log to Event Table
+            event_payload = {"candidate_id": candidate_id}
+            if reason_text:
+                event_payload["reason"] = reason_text
+            session.add(Event(
+                event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                episode_id=episode_id,
+                type="REJECT",
+                payload=event_payload,
+            ))
+            session.commit()
+            
+            # Log to File (Error Pattern)
+            try:
+                import json
+                import os
+                log_entry = {
+                    "timestamp": datetime.now().isoformat(),
+                    "episode_id": episode_id,
+                    "candidate_id": candidate_id,
+                    "backbone_bits": candidate.backbone_bits,
+                    "facets": candidate.facets_json,
+                    "confidence": candidate.confidence,
+                    "source": candidate.proposed_by,
+                    "note": candidate.note_thin,
+                    "reason": reason_text,
+                }
                 
-                # Log to Event Table
-                session.add(Event(
-                    event_id=f"evt_{uuid.uuid4().hex[:8]}",
-                    episode_id=episode_id,
-                    type="REJECT",
-                    payload={"candidate_id": candidate_id}
-                ))
-                session.commit()
-                
-                # Log to File (Error Pattern)
-                try:
-                    import json
-                    import os
-                    log_entry = {
-                        "timestamp": datetime.now().isoformat(),
-                        "episode_id": episode_id,
-                        "candidate_id": candidate_id,
-                        "backbone_bits": candidate.backbone_bits,
-                        "facets": candidate.facets_json,
-                        "confidence": candidate.confidence,
-                        "source": candidate.proposed_by,
-                        "note": candidate.note_thin
-                    }
-                    
-                    os.makedirs("data", exist_ok=True)
-                    with open("data/error_patterns.jsonl", "a") as f:
-                        f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
-                except Exception as file_err:
-                    print(f"Warning: Failed to log error pattern: {file_err}")
+                os.makedirs("data", exist_ok=True)
+                with open("data/error_patterns.jsonl", "a") as f:
+                    f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+            except Exception as file_err:
+                print(f"Warning: Failed to log error pattern: {file_err}")
+            return True
 
         finally:
             session.close()

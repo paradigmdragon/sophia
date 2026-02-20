@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Settings, Edit2, Film } from "lucide-react";
+import { Settings, Edit2, Film, LayoutDashboard } from "lucide-react";
 
 export function TitleBar() {
     const navigate = useNavigate();
@@ -57,6 +57,16 @@ export function TitleBar() {
                     title="Settings"
                  >
                     <Settings size={16} />
+                 </button>
+
+                 <div className="w-[1px] h-4 bg-[#333] mx-1"></div>
+
+                 <button 
+                    onClick={() => navigate('/report')}
+                    className={`p-1.5 rounded-md transition-colors ${isActive('/report') ? 'text-green-500 bg-[#252526]' : 'text-gray-400 hover:text-green-500 hover:bg-[#333]'}`}
+                    title="Sophia Forest"
+                 >
+                    <LayoutDashboard size={16} />
                  </button>
             </div>
         </header>

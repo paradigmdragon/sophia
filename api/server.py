@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+import re
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
@@ -6,13 +8,15 @@ from core.system import SophiaSystem
 from api.config import settings
 from api.memory_router import router as memory_router
 from api.sone_router import router as sone_router
+from api.ai_router import router as ai_router
 from api.work_router import router as work_router
 from api.forest_router import router as forest_router
 from api.mind_router import router as mind_router
+from api.sync_router import router as sync_router
 from api.inactivity_watch_service import InactivityWatcherConfig, InactivityWatcherService
 from core.engine.scheduler import get_scheduler
-import asyncio
 from datetime import datetime
+from fastapi.responses import RedirectResponse
 
 
 app = FastAPI(title="Sophia Bit-Hybrid Engine API", version="0.1.0")
@@ -60,43 +64,52 @@ def register_watcher_jobs(target_scheduler=None) -> bool:
 
 app.include_router(memory_router)
 app.include_router(sone_router)
+app.include_router(ai_router)
 app.include_router(work_router)
 app.include_router(forest_router)
 app.include_router(mind_router)
+app.include_router(sync_router)
 from api.chat_router import router as chat_router
 app.include_router(chat_router)
 
 from fastapi.staticfiles import StaticFiles
-import os
 from pathlib import Path
 
-# Use absolute path resolution
-# Use absolute path resolution
 BASE_DIR = Path(__file__).resolve().parent.parent # Resolve to Sophia/
 from core.engine.constants import FOREST_ROOT
-DASHBOARD_PATH = BASE_DIR / FOREST_ROOT / "project" / "sophia" / "dashboard"
+DASHBOARD_ROOT = BASE_DIR / FOREST_ROOT / "project"
+DEFAULT_DASHBOARD_PATH = DASHBOARD_ROOT / "sophia" / "dashboard"
 
 print(f"[API] Server File: {__file__}")
 print(f"[API] Base Dir: {BASE_DIR}")
-print(f"[API] Dashboard Path: {DASHBOARD_PATH}")
-print(f"[API] Index Exists? {(DASHBOARD_PATH / 'index.html').exists()}")
+print(f"[API] Dashboard Root: {DASHBOARD_ROOT}")
+print(f"[API] Default Dashboard Path: {DEFAULT_DASHBOARD_PATH}")
+print(f"[API] Default Index Exists? {(DEFAULT_DASHBOARD_PATH / 'index.html').exists()}")
 
-if not DASHBOARD_PATH.exists():
-    print(f"[API] Creating Dashboard directory at {DASHBOARD_PATH}")
-    DASHBOARD_PATH.mkdir(parents=True, exist_ok=True)
+if not DASHBOARD_ROOT.exists():
+    print(f"[API] Creating Dashboard root at {DASHBOARD_ROOT}")
+    DASHBOARD_ROOT.mkdir(parents=True, exist_ok=True)
 
 # Force mount to surface errors
 import sys
-sys.stderr.write(f"[API] Mounting dashboard from {DASHBOARD_PATH}\n")
-app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_PATH), html=True), name="dashboard")
+sys.stderr.write(f"[API] Mounting dashboard from {DASHBOARD_ROOT}\n")
+
+@app.get("/dashboard")
+@app.get("/dashboard/")
+async def dashboard_default():
+    return RedirectResponse(url="/dashboard/sophia/dashboard/")
+
+app.mount("/dashboard", StaticFiles(directory=str(DASHBOARD_ROOT), html=True), name="dashboard")
 
 @app.get("/debug/dashboard")
 async def debug_dashboard():
     return {
-        "path": str(DASHBOARD_PATH),
-        "exists": DASHBOARD_PATH.exists(),
-        "index_exists": (DASHBOARD_PATH / "index.html").exists(),
-        "files": [f.name for f in DASHBOARD_PATH.glob("*")] if DASHBOARD_PATH.exists() else []
+        "root_path": str(DASHBOARD_ROOT),
+        "root_exists": DASHBOARD_ROOT.exists(),
+        "default_path": str(DEFAULT_DASHBOARD_PATH),
+        "default_exists": DEFAULT_DASHBOARD_PATH.exists(),
+        "default_index_exists": (DEFAULT_DASHBOARD_PATH / "index.html").exists(),
+        "projects": [f.name for f in DASHBOARD_ROOT.glob("*") if f.is_dir()] if DASHBOARD_ROOT.exists() else []
     }
 
 
@@ -121,6 +134,12 @@ class ProposeRequest(BaseModel):
 class AdoptRequest(BaseModel):
     episode_id: str
     candidate_id: str
+
+
+class RejectRequest(BaseModel):
+    episode_id: str
+    candidate_id: str
+    reason: str | None = None
 
 class DispatchRequest(BaseModel):
     context: Optional[Dict[str, Any]] = {}
@@ -208,6 +227,22 @@ async def propose(req: ProposeRequest):
                         print(f"[API] Failed to write auto-reply to manifest: {e}")
 
         return {"candidate_ids": candidate_ids}
+    except ValueError as e:
+        message = str(e)
+        if "invalid backbone_bits" in message:
+            reason = "INVALID_BITMAP"
+            match = re.search(r"reason=([A-Z_]+)", message)
+            if match:
+                reason = match.group(1)
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "BITMAP_INVALID",
+                    "reason": reason,
+                    "message": message,
+                },
+            )
+        raise HTTPException(status_code=400, detail={"code": "PROPOSE_INVALID", "message": message})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -229,8 +264,70 @@ async def graph_data():
 @app.post("/adopt")
 async def adopt(req: AdoptRequest):
     try:
+        candidate = system.get_candidate(req.candidate_id)
+        if candidate is None:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+        was_adopted = str(candidate.get("status", "")).upper() == "ADOPTED"
         b_id = system.adopt(req.episode_id, req.candidate_id)
-        return {"backbone_id": b_id, "status": "adopted"}
+        return {
+            "backbone_id": b_id,
+            "status": "already_adopted" if was_adopted else "adopted",
+            "idempotent": bool(was_adopted),
+        }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        message = str(e)
+        if "EPISODE MISMATCH" in message.upper():
+            raise HTTPException(
+                status_code=409,
+                detail={"code": "CANDIDATE_EPISODE_MISMATCH", "message": message},
+            )
+        if "REJECTED" in message.upper():
+            raise HTTPException(
+                status_code=409,
+                detail={"code": "CANDIDATE_ALREADY_REJECTED", "message": message},
+            )
+        if "ADOPTED" in message.upper():
+            raise HTTPException(
+                status_code=409,
+                detail={"code": "CANDIDATE_ALREADY_ADOPTED", "message": message},
+            )
+        raise HTTPException(status_code=400, detail={"code": "ADOPT_INVALID", "message": message})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/reject")
+async def reject(req: RejectRequest):
+    try:
+        candidate = system.get_candidate(req.candidate_id)
+        if candidate is None:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+        was_rejected = str(candidate.get("status", "")).upper() == "REJECTED"
+        reason = str(req.reason or "").strip()
+        changed = bool(system.reject(req.episode_id, req.candidate_id, reason=reason or None))
+        return {
+            "status": "already_rejected" if (was_rejected or not changed) else "rejected",
+            "candidate_id": req.candidate_id,
+            "reason": reason or None,
+            "idempotent": bool(was_rejected or not changed),
+        }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        message = str(e)
+        if "EPISODE MISMATCH" in message.upper():
+            raise HTTPException(
+                status_code=409,
+                detail={"code": "CANDIDATE_EPISODE_MISMATCH", "message": message},
+            )
+        if "ADOPTED" in message.upper():
+            raise HTTPException(
+                status_code=409,
+                detail={"code": "CANDIDATE_ALREADY_ADOPTED", "message": message},
+            )
+        raise HTTPException(status_code=400, detail={"code": "REJECT_INVALID", "message": message})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -253,10 +350,6 @@ async def dispatch(req: DispatchRequest):
 async def set_state(req: StateRequest):
     system.set_heart_state(req.state)
     return {"status": "success", "state": req.state}
-
-@app.get("/health")
-async def health():
-    return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
 if __name__ == "__main__":
     import uvicorn

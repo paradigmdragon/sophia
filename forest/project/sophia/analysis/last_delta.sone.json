@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-02-18T03:59:46.314834Z",
+  "source_doc": ".md",
+  "slots": [
+    {
+      "target": "spec-module",
+      "change": "문서 변경 검토",
+      "scope": "",
+      "success_condition": null,
+      "constraints": [
+        "logs: ['[Agent] 구글 클라우드 콘솔 설정 확인 필요', '[Focus] 현재 작업 집중 구간'],"
+      ],
+      "impact": [],
+      "evidence": ".md",
+      "status": "missing_success_condition",
+      "reason_codes": [
+        "SONE_SUCCESS_CONDITION_MISSING"
+      ]
+    }
+  ]
+}

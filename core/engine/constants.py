@@ -1,5 +1,16 @@
 from enum import IntEnum, unique
 
+# Forest Paths
+FOREST_ROOT = "forest"
+SOPHIA_PROJECT_ROOT = f"{FOREST_ROOT}/project/sophia"
+SOPHIA_DOCS = f"{SOPHIA_PROJECT_ROOT}/docs"
+SOPHIA_LEDGER = f"{SOPHIA_PROJECT_ROOT}/ledger"
+SOPHIA_MIND = f"{SOPHIA_PROJECT_ROOT}/state/sophia_mind.md"
+
+# Existing Workspace (Legacy/General)
+WORKSPACE_ROOT = "workspace"
+NOTES_PATH = f"{WORKSPACE_ROOT}/notes"
+
 @unique
 class ChunkA(IntEnum):
     """

@@ -1,0 +1,10 @@
+risk_default_outcome:
+  none: ALLOW
+  low: ALLOW
+  med: PENDING
+  high: BLOCK
+
+high_risk_action_policy:
+  allow_direct_output: false
+  min_outcome: PENDING
+  preferred_outcome: BLOCK

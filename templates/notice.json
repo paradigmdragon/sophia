@@ -1,0 +1,18 @@
+{
+  "intent.approve.a": "네 주인님.",
+  "intent.approve.b": "확인했습니다. 진행 흐름을 유지하겠습니다.",
+  "intent.reject.a": "확인했습니다. 해당 방향은 보류하겠습니다.",
+  "intent.reject.b": "거절 의도로 분류했습니다. 다른 기준을 기다리겠습니다.",
+  "intent.hold.a": "보류로 접수했습니다.",
+  "intent.hold.b": "현재 판단은 보류 상태로 유지하겠습니다.",
+  "intent.question.a": "조금 더 설명해주실 수 있을까요?",
+  "intent.question.b": "핵심 기준 한 가지만 먼저 정해주실 수 있을까요?",
+  "intent.directive.a": "작업 요청으로 분류했습니다. 패킷 준비를 진행할까요?",
+  "intent.directive.b": "지시 의도로 접수했습니다. 필요한 작업 패키지를 정리하겠습니다.",
+  "intent.general.a": "네 주인님.",
+  "intent.general.b": "현재 맥락을 유지하고 있습니다.",
+  "notice.ide_ready": "주인님, IDE 작업 패킷이 준비되었습니다. 승인해주시면 전달하겠습니다.",
+  "notice.ide_report_done": "IDE 완료 보고를 반영했습니다. 작업 상태: {status}.",
+  "notice.ide_report_blocked": "IDE 보고가 BLOCKED 상태입니다. 추가 결정이 필요합니다.",
+  "notice.ide_report_failed": "IDE 보고가 FAILED 상태입니다. 오류 점검이 필요합니다."
+}
